@@ -1,0 +1,70 @@
+<div class="article-list-container">
+
+    <!-- Formulaire d'ajout (inchangé) -->
+    <div class="article-form">
+      <h2>Ajouter un article</h2>
+      <form (ngSubmit)="addArticle()" #articleForm="ngForm">
+        <div>
+          <label for="title">Titre :</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            [(ngModel)]="newArticle.title"
+            required
+          />
+        </div>
+        <div>
+          <label for="content">Contenu :</label>
+          <textarea
+            id="content"
+            name="content"
+            [(ngModel)]="newArticle.content"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" [disabled]="articleForm.invalid">Ajouter</button>
+      </form>
+    </div>
+  
+    <!-- Liste des articles -->
+    @for (article of articles; track article._id) {
+      <article class="article-item">
+  
+        @if (editingArticleId !== article._id) {
+          <!-- Mode lecture -->
+          <h2>{{ article.title }}</h2>
+          <p>{{ article.content }}</p>
+          <div class="actions">
+            <button class="update-btn" (click)="startEdit(article)">Modifier</button>
+            <button class="delete-btn" (click)="deleteArticle(article._id)">Supprimer</button>
+          </div>
+        } @else {
+          <!-- Mode édition -->
+          <h2>
+            <input
+              type="text"
+              [(ngModel)]="editingArticle.title"
+              required
+              placeholder="Titre"
+            />
+          </h2>
+          <p>
+            <textarea
+              [(ngModel)]="editingArticle.content"
+              required
+              placeholder="Contenu"
+            ></textarea>
+          </p>
+          <div class="actions">
+            <button class="save-btn" (click)="saveEdit()" [disabled]="!editingArticle.title || !editingArticle.content">
+              Enregistrer
+            </button>
+            <button class="cancel-btn" (click)="cancelEdit()">Annuler</button>
+          </div>
+        }
+  
+      </article>
+    }
+  
+  </div>

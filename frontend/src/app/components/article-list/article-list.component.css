@@ -1,0 +1,225 @@
+/* Styles globaux du composant */
+:host {
+    display: block;
+    font-family: system-ui, -apple-system, BlinkMacOS, "Segoe UI", Roboto, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    background: #f8fafc;
+    min-height: 100vh;
+    color: #1e293b;
+  }
+  
+  /* Container principal */
+  .article-list-container {
+    width: 100%;
+  }
+  
+  /* Formulaire d'ajout */
+  .article-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2.5rem;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .article-form h2 {
+    margin: 0 0 1.8rem 0;
+    color: #0f172a;
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+  
+  .article-form div {
+    margin-bottom: 1.5rem;
+  }
+  
+  .article-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #334155;
+    font-size: 0.95rem;
+  }
+  
+  .article-form input,
+  .article-form textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: #f1f5f9;
+  }
+  
+  .article-form input:focus,
+  .article-form textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: white;
+  }
+  
+  .article-form textarea {
+    min-height: 140px;
+    resize: vertical;
+  }
+  
+  .article-form button {
+    background: #3b82f6; /* bleu pour "Ajouter" */
+    color: white;
+    border: none;
+    padding: 0.8rem 1.6rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+  }
+  
+  .article-form button:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-2px);
+  }
+  
+  .article-form button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+  }
+  
+  /* Article item (lecture + édition) */
+  .article-item {
+    background: white;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+  }
+  
+  .article-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .article-item h2 {
+    margin: 0 0 1rem 0;
+    font-size: 1.4rem;
+    color: #0f172a;
+    line-height: 1.3;
+  }
+  
+  .article-item p {
+    margin: 0 0 1.5rem 0;
+    color: #475569;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  
+  /* Boutons d'actions (communs) */
+  .actions {
+    margin-top: 1.2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  button {
+    border: none;
+    padding: 0.65rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  /* Boutons spécifiques */
+  .update-btn {
+    background: #f59e0b; /* orange */
+    color: white;
+  }
+  
+  .update-btn:hover {
+    background: #d97706;
+  }
+  
+  .delete-btn {
+    background: #ef4444; /* rouge */
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background: #dc2626;
+  }
+  
+  .save-btn {
+    background: #10b981; /* vert */
+    color: white;
+  }
+  
+  .save-btn:hover:not(:disabled) {
+    background: #059669;
+  }
+  
+  .save-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+  
+  .cancel-btn {
+    background: #6b7280; /* gris */
+    color: white;
+  }
+  
+  .cancel-btn:hover {
+    background: #4b5563;
+  }
+  
+  /* Inputs/textarea en mode édition */
+  .article-item input,
+  .article-item textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    background: #f8fafc;
+  }
+  
+  .article-item input:focus,
+  .article-item textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: white;
+  }
+  
+  .article-item textarea {
+    min-height: 130px;
+    resize: vertical;
+  }
+  
+  /* Responsive */
+  @media (max-width: 640px) {
+    :host {
+      padding: 1.5rem 1rem;
+    }
+    
+    .article-form {
+      padding: 1.5rem;
+    }
+    
+    .article-item {
+      padding: 1.4rem;
+    }
+    
+    .actions {
+      flex-direction: column;
+    }
+  }
