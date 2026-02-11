@@ -16,10 +16,10 @@ mongoose.connect(process.env.MONGO_URI)
 
  // Routes
 const authRoutes = require('./routes/auth');
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 app.use('/articles', require('./routes/articleRoutes'));
 app.use('/grille', require('./routes/grilleRoutes'));
 app.use('/blocks', require('./routes/blockRoutes'));
-app.use('/api/shops', require('./routes/shopRoutes'));
+app.use('/shops', require('./routes/shopRoutes'));
 app.listen(PORT, () => console.log(`Serveur démarré sur le port
 ${PORT}`));

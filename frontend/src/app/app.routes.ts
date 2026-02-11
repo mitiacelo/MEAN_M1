@@ -1,8 +1,21 @@
 import { Routes } from '@angular/router';
 import { ArticleListComponent } from './components/article-list/article-list.component';
 import { GrilleComponent } from './components/grille/grille.component';
+import { LandingComponent } from './pages/landing/landing.component';
 export const routes: Routes = [
  { path: 'articles', component: ArticleListComponent }, // Route pour article-list
  { path: 'grille', component: GrilleComponent }, // Route pour article-list
- { path: '', redirectTo: 'grille', pathMatch: 'full' } // Redirection par défaut
+ { path: '', redirectTo: 'grille', pathMatch: 'full' }, // Redirection par défaut
+ {
+    path: 'landing',
+    component: LandingComponent
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent)
+  },
 ];
