@@ -1,0 +1,89 @@
+<div class="landing-wrapper">
+    <!-- Barre de navigation fixe en haut -->
+    <header class="top-bar">
+      <div class="logo">
+        <h1>Plaza</h1>
+      </div>
+  
+      <div class="auth-buttons">
+        @if (!authService.isLoggedIn) {
+          <button class="login-btn" routerLink="/login">Se connecter</button>
+          <button class="register-btn" routerLink="/register">S'inscrire</button>
+        } @else {
+          <span class="welcome">Bonjour {{ authService.currentUser?.firstname }}</span>
+          <button class="logout-btn" (click)="authService.logout()">Déconnexion</button>
+        }
+      </div>
+    </header>
+  
+    <!-- Contenu principal – landing -->
+    <main class="hero">
+      <div class="hero-content">
+        <h1 class="main-title">Plaza</h1>
+        <p class="main-subtitle">
+          Le cœur battant d'Antananarivo
+        </p>
+  
+        <p class="catchphrase">
+          Découvrez l’expérience shopping et lifestyle la plus moderne de la capitale.<br>
+          Plus de 120 boutiques, restaurants, cinéma, espaces de loisirs…<br>
+          <strong>Votre destination préférée commence ici.</strong>
+        </p>
+  
+        @if (!authService.isLoggedIn) {
+          <div class="cta-buttons">
+            <button class="cta-primary" routerLink="/register">Créer mon compte</button>
+            <button class="cta-secondary" routerLink="/login">J'ai déjà un compte</button>
+          </div>
+        } @else {
+          <div class="cta-buttons">
+            <button class="cta-primary" routerLink="/articles">Voir les actualités & promotions</button>
+          </div>
+        }
+      </div>
+
+      <!-- ... header et hero inchangés ... -->
+
+<!-- Section boutiques disponibles -->
+<section class="shops-section available">
+    <h2>Boutiques disponibles à la location</h2>
+    <p class="section-intro">Trouvez l'espace parfait pour votre projet.</p>
+  
+    @if (loading) {
+      <p class="loading">Chargement des boutiques disponibles...</p>
+    } @else if (availableShops.length === 0) {
+      <p class="empty">Aucune boutique disponible pour le moment.</p>
+    } @else {
+      <div class="shops-grid">
+        @for (shop of availableShops; track shop._id) {
+          <div class="shop-card">
+            <h3>{{ shop.name }}</h3>
+            <p class="superficie">{{ shop.superficie }} m²</p>
+            <p class="description">{{ shop.description || 'Aucune description' }}</p>
+            <button class="details-btn" [routerLink]="['/shop', shop._id]">
+              Voir détails
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </section>
+  
+  <!-- Section boutiques actives -->
+  <section class="shops-section active">
+    <h2>Nos boutiques ouvertes</h2>
+    <p class="section-intro">Découvrez les enseignes déjà installées.</p>
+  
+    <div class="shops-grid">
+      @for (shop of activeShops; track shop._id) {
+        <div class="shop-card active">
+          <h3>{{ shop.name }}</h3>
+          <p class="superficie">{{ shop.superficie }} m²</p>
+          <p class="description">{{ shop.description || 'Aucune description' }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+    </main>
+  </div>

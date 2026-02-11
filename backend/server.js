@@ -15,8 +15,11 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error("Erreur de connexion MongoDB :", err));
 
  // Routes
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
 app.use('/articles', require('./routes/articleRoutes'));
 app.use('/grille', require('./routes/grilleRoutes'));
 app.use('/blocks', require('./routes/blockRoutes'));
+app.use('/api/shops', require('./routes/shopRoutes'));
 app.listen(PORT, () => console.log(`Serveur démarré sur le port
 ${PORT}`));
