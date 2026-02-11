@@ -1,0 +1,67 @@
+<div class="grille-container">
+  <h2>Quelle échelle préférez-vous pour modéliser votre centre commercial? </h2>
+  
+  <!-- Sélection de la taille -->
+  <div class="selects-container">
+    <div class="select-group">
+      <label for="lignes">Nombre de lignes :</label>
+      <select id="lignes" [(ngModel)]="lignes" name="lignes">
+        <option *ngFor="let option of options" [value]="option">
+          {{ option }}
+        </option>
+      </select>
+    </div>
+
+    <div class="select-group">
+      <label for="colonnes">Nombre de colonnes :</label>
+      <select id="colonnes" [(ngModel)]="colonnes" name="colonnes">
+        <option *ngFor="let option of options" [value]="option">
+          {{ option }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Affichage du format -->
+  <div class="format-display">
+    <h3>Format choisi : {{ format }}</h3>
+  </div>
+
+  <!-- Affichage de la grille visuelle (toujours visible) -->
+  <div class="grille-visuelle">
+    <h3>Aperçu de la grille :</h3>
+    
+    <table class="grille-table" 
+      [style.--colonnes]="colonnes" 
+      [style.--lignes]="lignes">
+  <!-- En-tête avec les numéros de colonnes -->
+  <thead>
+    <tr>
+      <th></th>
+      <th *ngFor="let num of getNumeros()">{{ num }}</th>
+    </tr>
+  </thead>
+  
+  <!-- Corps avec les lettres et les blocs -->
+  <tbody>
+    <tr *ngFor="let lettre of getLettres()">
+      <td class="lettre-col">{{ lettre }}</td>
+      <td *ngFor="let num of getNumeros()" class="block-cell">
+        {{ getBlockId(lettre, num) }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+  </div>
+
+  <!-- Bouton de sauvegarde en bas -->
+  <button 
+  (click)="sauvegarder()" 
+  class="save-btn">
+  {{ grilleExiste ? 'Mettre à jour la grille' : 'Sauvegarder cette grille' }}
+</button>
+
+<p *ngIf="grilleExiste" class="message-info">
+  Grille actuelle : {{ grilleId }} ({{ lignes }}×{{ colonnes }})
+</p>
+</div>

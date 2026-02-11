@@ -1,0 +1,232 @@
+.grille-container {
+  max-width: 95vw;
+  margin: 10px auto;
+  padding: 15px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.grille-container h2 {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* ✅ CONFIGURATION COMPACTE - Tout sur une ligne */
+.selects-container {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.select-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select-group label {
+  font-weight: 600;
+  color: #555;
+  font-size: 13px;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.select-group select {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s;
+  width: 70px;
+}
+
+.select-group select:hover {
+  border-color: #999;
+}
+
+.select-group select:focus {
+  outline: none;
+  border-color: #666;
+}
+
+/* ✅ FORMAT AFFICHÉ INLINE */
+.format-display {
+  background-color: #f8f9fa;
+  padding: 8px 20px;
+  border-radius: 8px;
+  text-align: center;
+  display: inline-block;
+  border: 2px solid #e9ecef;
+}
+
+.format-display h3 {
+  margin: 0;
+  color: #495057;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* GRILLE VISUELLE - Plus d'espace */
+.grille-visuelle {
+  margin: 10px auto;
+  max-width: 95vw;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.grille-visuelle h3 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 16px;
+}
+
+.grille-table {
+  border-collapse: separate;
+  border-spacing: clamp(3px, 0.5vw, 8px);
+  margin: 0 auto;
+}
+
+.grille-table th,
+.grille-table td {
+  --cell-size: calc(min(85vw, 75vh) / max(var(--colonnes, 5), var(--lignes, 5)) - 10px);
+  
+  width: clamp(25px, var(--cell-size), 80px);
+  height: clamp(25px, var(--cell-size), 80px);
+  
+  text-align: center;
+  vertical-align: middle;
+  font-size: clamp(8px, 1vw, 13px);
+  font-weight: 500;
+}
+
+/* En-tête (numéros de colonnes) */
+.grille-table thead th {
+  background: none;
+  border: none;
+  color: #999;
+  font-weight: 600;
+  padding: 0;
+  height: auto;
+  min-height: 20px;
+  max-height: 30px;
+}
+
+/* Colonne de lettres (A, B, C...) */
+.lettre-col {
+  background: none;
+  border: none;
+  color: #999;
+  font-weight: 600;
+  padding: 0;
+  width: auto;
+  min-width: 20px;
+  max-width: 30px;
+}
+
+/* Cellules des blocs */
+.block-cell {
+  background-color: #e9ecef;
+  border-radius: clamp(6px, 1vw, 12px);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  color: rgba(0, 0, 0, 0.15);
+  font-size: clamp(8px, 0.8vw, 11px);
+  font-weight: 500;
+}
+
+.block-cell:hover {
+  background-color: #d3d3d3;
+  transform: scale(1.05);
+  color: rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+/* BOUTON DE SAUVEGARDE - Plus compact */
+.save-btn {
+  display: block;
+  max-width: 350px;
+  margin: 15px auto 10px;
+  padding: 10px 25px;
+  background-color: #495057;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-btn:hover:not(:disabled) {
+  background-color: #343a40;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.save-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* MESSAGE DE SUCCÈS */
+.message-succes {
+  color: #28a745;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .grille-container {
+    padding: 10px;
+    margin: 5px auto;
+  }
+  
+  .grille-container h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .selects-container {
+    gap: 10px;
+  }
+  
+  .select-group label {
+    font-size: 12px;
+  }
+  
+  .select-group select {
+    width: 60px;
+    font-size: 13px;
+  }
+  
+  .format-display h3 {
+    font-size: 14px;
+  }
+  
+  .grille-table th,
+  .grille-table td {
+    --cell-size: calc(min(90vw, 80vh) / max(var(--colonnes, 5), var(--lignes, 5)) - 8px);
+    width: clamp(20px, var(--cell-size), 60px);
+    height: clamp(20px, var(--cell-size), 60px);
+  }
+}
