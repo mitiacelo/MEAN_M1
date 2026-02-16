@@ -1,0 +1,43 @@
+<div class="shop-page">
+    <header class="page-header">
+      <h1>Toutes les boutiques</h1>
+      <p>Découvrez l’ensemble des espaces disponibles et déjà occupés à Plaza</p>
+    </header>
+  
+    @if (loading) {
+      <div class="loading-container">
+        <p>Chargement des boutiques...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="error-container">
+        <p>{{ errorMessage }}</p>
+      </div>
+    } @else if (shops.length === 0) {
+      <div class="empty-container">
+        <p>Aucune boutique n'est enregistrée pour le moment.</p>
+      </div>
+    } @else {
+      <div class="shops-grid">
+        @for (shop of shops; track shop._id) {
+          <div class="shop-card" [ngClass]="{'active': shop.status === 'actif'}">
+            <h3>{{ shop.name }}</h3>
+            
+            <div class="status-badge">
+              @if (shop.status === 'actif') {
+                <span class="badge-active">Ouverte</span>
+              } @else {
+                <span class="badge-available">Disponible à la location</span>
+              }
+            </div>
+  
+            <p class="superficie">{{ shop.superficie }} m²</p>
+            <p class="description">{{ shop.description || 'Aucune description disponible' }}</p>
+  
+            <button class="consult-btn" [routerLink]="['/shop', shop._id]">
+              Consulter la boutique
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>

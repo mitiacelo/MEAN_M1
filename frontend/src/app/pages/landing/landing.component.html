@@ -42,51 +42,8 @@
         }
       </div>
 
-      <!-- ... header et hero inchangés ... -->
+      <app-shop></app-shop>
 
-<!-- Section boutiques disponibles -->
-<section class="shops-section available">
-    <h2>Boutiques disponibles à la location</h2>
-    <p class="section-intro">Trouvez l'espace parfait pour votre projet.</p>
-  
-    @if (loading) {
-      <p class="loading">Chargement des boutiques disponibles...</p>
-    } @else if (availableShops.length === 0) {
-      <p class="empty">Aucune boutique disponible pour le moment.</p>
-    } @else {
-      <div class="shops-grid">
-        @for (shop of availableShops; track shop._id) {
-          <div class="shop-card">
-            <h3>{{ shop.name }}</h3>
-            <p class="superficie">{{ shop.superficie }} m²</p>
-            <p class="description">{{ shop.description || 'Aucune description' }}</p>
-            <button class="details-btn" [routerLink]="['/shop', shop._id]">
-              Voir détails
-            </button>
-          </div>
-        }
-      </div>
-    }
-  </section>
-  
-  <!-- Section boutiques actives -->
-  <section class="shops-section active">
-    <h2>Nos boutiques ouvertes</h2>
-    <p class="section-intro">Découvrez les enseignes déjà installées.</p>
-  
-    <div class="shops-grid">
-      @for (shop of activeShops; track shop._id) {
-        <div class="shop-card active">
-          <h3>{{ shop.name }}</h3>
-          <p class="superficie">{{ shop.superficie }} m²</p>
-          <p class="description">{{ shop.description || 'Aucune description' }}</p>
-          <button class="consult-btn" [routerLink]="['/shop', shop._id]">
-            Consulter
-          </button>
-        </div>
-      }
-    </div>
-  </section>
 
     </main>
   </div>

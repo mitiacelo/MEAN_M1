@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ShopService, Shop } from '../../services/shop.service';
-import { ProductService, Product } from '../../services/product.service';
+import { ShopService, Shop } from '../../../services/shop.service';
+import { ProductService, Product } from '../../../services/product.service';
 
 @Component({
   selector: 'app-shop-details',
