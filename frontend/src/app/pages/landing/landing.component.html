@@ -80,6 +80,9 @@
           <h3>{{ shop.name }}</h3>
           <p class="superficie">{{ shop.superficie }} m²</p>
           <p class="description">{{ shop.description || 'Aucune description' }}</p>
+          <button class="consult-btn" [routerLink]="['/shop', shop._id]">
+            Consulter
+          </button>
         </div>
       }
     </div>

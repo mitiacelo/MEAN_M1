@@ -1,0 +1,37 @@
+<div class="shop-details-container">
+    @if (loading) {
+      <p class="loading">Chargement de la boutique...</p>
+    } @else if (error) {
+      <p class="error">{{ error }}</p>
+    } @else {
+      <!-- En-tête boutique -->
+      <header class="shop-header">
+        <h1>{{ shop?.name }}</h1>
+        <p class="superficie">{{ shop?.superficie }} m²</p>
+        <p class="description">{{ shop?.description || 'Aucune description disponible' }}</p>
+      </header>
+  
+      <!-- Liste des produits -->
+      <section class="products-section">
+        <h2>Produits disponibles</h2>
+  
+        @if (products.length === 0) {
+          <p class="empty">Aucun produit disponible dans cette boutique pour le moment.</p>
+        } @else {
+          <div class="products-grid">
+            @for (product of products; track product._id) {
+              <div class="product-card">
+                <h3>{{ product.name }}</h3>
+                <p class="description">{{ product.description || 'Pas de description' }}</p>
+                <!-- Si tu as populated id_type -->
+                <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
+                <button class="view-btn">Voir le produit</button>
+              </div>
+            }
+          </div>
+        }
+      </section>
+  
+      <button class="back-btn" routerLink="/landing">Retour à l'accueil</button>
+    }
+  </div>
