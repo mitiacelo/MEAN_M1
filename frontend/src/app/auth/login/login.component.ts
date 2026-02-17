@@ -15,12 +15,17 @@ export class LoginComponent {
   credentials = { email: '', password: '' };
   error = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService) {}
 
   onSubmit() {
     this.authService.login(this.credentials.email, this.credentials.password).subscribe({
-      next: () => this.router.navigate(['/landing']), // ou ta page principale
-      error: (err) => this.error = err.error?.message || 'Erreur de connexion'
+      next: () => {
+        // NE METS PLUS DE router.navigate ICI !
+        // La redirection est gérée dans AuthService
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Erreur de connexion';
+      }
     });
   }
 }

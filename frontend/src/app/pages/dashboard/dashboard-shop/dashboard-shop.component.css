@@ -1,0 +1,139 @@
+.dashboard-shop-container {
+    padding: 4rem 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1.5rem;
+  }
+  
+  .dashboard-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .primary { background: #2563eb; color: white; border: none; }
+  .secondary { background: #6b7280; color: white; border: none; }
+  .logout { background: #ef4444; color: white; border: none; }
+  .back { background: #9ca3af; color: white; border: none; }
+  
+  .shop-info-card {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  }
+  
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .info-item {
+    background: white;
+    padding: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  
+  .label {
+    display: block;
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 0.4rem;
+  }
+  
+  .value {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  .full-width {
+    grid-column: span 2;
+  }
+  
+  .manager-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  
+  .products-preview {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .coming-soon {
+    color: #6b7280;
+    font-style: italic;
+  }
+  
+  .no-shop {
+    text-align: center;
+    padding: 4rem;
+    color: #6b7280;
+    font-size: 1.3rem;
+  }
+
+  .products-section {
+    margin-top: 3rem;
+  }
+  
+  .products-section h2 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.8rem;
+  }
+  
+  .product-card {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transition: transform 0.2s;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  .product-card h3 {
+    margin: 0 0 0.8rem;
+    font-size: 1.4rem;
+  }
+  
+  .actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.8rem;
+  }
+  
+  .btn.edit { background: #3b82f6; color: white; }
+  .btn.delete { background: #ef4444; color: white; }

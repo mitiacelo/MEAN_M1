@@ -34,4 +34,9 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/shop/shop-edit/shop-edit.component')
       .then(m => m.ShopEditComponent)
   },
+  {
+    path: 'dashboard-shop',
+    loadComponent: () => import('./pages/dashboard/dashboard-shop/dashboard-shop.component')
+      .then(m => m.DashboardShopComponent)
+  },
 ];

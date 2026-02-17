@@ -1,0 +1,80 @@
+<div class="dashboard-shop-container">
+    <header class="dashboard-header">
+      <h1>Tableau de bord - Ma boutique</h1>
+      <p>Bienvenue, {{ authService.currentUser?.firstname }} !</p>
+  
+      <div class="actions">
+        <button class="btn logout" (click)="logout()">Déconnexion</button>
+        <button class="btn back" routerLink="/landing">Retour à l'accueil</button>
+      </div>
+    </header>
+  
+    @if (loadingShop) {
+      <p class="loading">Chargement des informations de votre boutique...</p>
+    } @else if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    } @else if (shop) {
+      <div class="shop-info-card">
+        <h2>{{ shop.name }}</h2>
+  
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Statut</span>
+            <span class="value" [ngClass]="{
+              'status-active': shop.status === 'actif',
+              'status-inactive': shop.status === 'inactif',
+              'status-pending': shop.status === 'en attente'
+            }">
+              {{ shop.status === 'actif' ? 'Ouverte' : shop.status === 'inactif' ? 'Disponible' : 'En attente' }}
+            </span>
+          </div>
+  
+          <div class="info-item">
+            <span class="label">Superficie</span>
+            <span class="value">{{ shop.superficie }} m²</span>
+          </div>
+  
+          <div class="info-item full-width">
+            <span class="label">Description</span>
+            <p>{{ shop.description || 'Aucune description pour le moment' }}</p>
+          </div>
+        </div>
+  
+        <!-- Actions manager -->
+        <div class="manager-actions">
+          <button class="btn primary">Ajouter un produit</button>
+          <button class="btn secondary">Modifier la boutique</button>
+          <button class="btn warning">Voir les demandes de visite</button>
+        </div>
+      </div>
+  
+      <!-- Liste des produits -->
+      <section class="products-section">
+        <h2>Mes produits ({{ products.length }})</h2>
+  
+        @if (loadingProducts) {
+          <p class="loading">Chargement de vos produits...</p>
+        } @else if (products.length === 0) {
+          <p class="empty">Vous n'avez pas encore ajouté de produit.</p>
+          <button class="btn primary">Ajouter mon premier produit</button>
+        } @else {
+          <div class="products-grid">
+            @for (product of products; track product._id) {
+              <div class="product-card">
+                <h3>{{ product.name }}</h3>
+                <p class="description">{{ product.description || 'Pas de description' }}</p>
+                <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
+                <!-- Ajoute plus tard : prix, stock, etc. -->
+                <div class="actions">
+                  <button class="btn edit">Modifier</button>
+                  <button class="btn delete">Supprimer</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    } @else {
+      <p class="no-shop">Vous n'avez pas encore de boutique associée.</p>
+    }
+  </div>

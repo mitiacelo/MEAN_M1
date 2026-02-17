@@ -1,17 +1,19 @@
-import { isPlatformBrowser } from '@angular/common'; // ← important
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Router } from '@angular/router';               // ← AJOUTÉ
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface User {
-    id: string;
-    name: string;
-    firstname: string;   
-    email: string;
-    role: string;
-  }
+  id: string;
+  name: string;
+  firstname: string;
+  email: string;
+  role: string;
+  id_shop?: string | null;  // ← rendu optionnel (peut être absent)
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -22,11 +24,11 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router  // ← INJECTION DU ROUTER
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
 
-    // Seulement si on est dans le navigateur
     if (this.isBrowser) {
       const token = localStorage.getItem('token');
       const userStr = localStorage.getItem('user');
@@ -39,11 +41,25 @@ export class AuthService {
   login(email: string, password: string): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/auth/login`, { email, password }).pipe(
       tap(res => {
+        console.log('LOGIN SUCCESS - User reçu :', res.user);
+
         if (this.isBrowser) {
           localStorage.setItem('token', res.token);
           localStorage.setItem('user', JSON.stringify(res.user));
         }
-        this.currentUserSubject.next(res.user);
+
+        const user = res.user as User;
+        this.currentUserSubject.next(user);
+
+        // REDIRECTION INTELLIGENTE APRÈS LOGIN
+        if (user?.role === 'manager' && user?.id_shop) {
+          this.router.navigate(['/dashboard-shop']);
+        } else if (user?.role === 'admin') {
+          this.router.navigate(['/dashboard']);
+        } else {
+          // Utilisateur normal ou rôle inconnu
+          this.router.navigate(['/']);
+        }
       })
     );
   }
@@ -54,6 +70,7 @@ export class AuthService {
       localStorage.removeItem('user');
     }
     this.currentUserSubject.next(null);
+    this.router.navigate(['/landing']);
   }
 
   get token(): string | null {
@@ -83,6 +100,14 @@ export class AuthService {
           localStorage.setItem('user', JSON.stringify(response.user));
         }
         this.currentUserSubject.next(response.user);
+
+        // Redirection après inscription (exemple : accueil ou dashboard si manager)
+        const user = response.user as User;
+        if (user?.role === 'manager' && user?.id_shop) {
+          this.router.navigate(['/dashboard-shop']);
+        } else {
+          this.router.navigate(['/']);
+        }
       })
     );
   }

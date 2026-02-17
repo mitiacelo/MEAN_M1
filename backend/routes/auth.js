@@ -88,7 +88,7 @@ router.post('/login', async (req, res) => {
   
       res.json({
         token,
-        user: { id: user._id, name: user.name, firstname: user.firstname, email: user.email, role: user.role }
+        user: { id: user._id, name: user.name, firstname: user.firstname, email: user.email, role: user.role, id_shop: user.id_shop?.toString()}
       });
     } catch (err) {
       console.error('ERREUR DANS /login :', err);
