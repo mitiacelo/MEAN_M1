@@ -81,6 +81,12 @@
       [disabled]="selectedCells.size === 0">
       Créer un shop avec les blocs sélectionnés
     </button>
+    <button
+    class="save-btn"
+    (click)="validerGrille()"
+    [disabled]="!grilleExiste">
+    Valider et voir le dashboard →
+  </button>
   </ng-container>
 
   <p *ngIf="grilleExiste" class="message-info">

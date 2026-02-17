@@ -95,5 +95,14 @@ router.post('/login', async (req, res) => {
       res.status(500).json({ message: err.message || 'Erreur serveur' });
     }
   });
+  // ✅ NOUVEAU : GET /auth/users → liste tous les users
+router.get('/users', async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 module.exports = router;

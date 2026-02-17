@@ -1,0 +1,56 @@
+<div class="dashboard">
+
+    <div class="dashboard-header">
+      <h2>Dashboard — Centre commercial</h2>
+      <button (click)="allerGrille()">Voir mon centre commercial</button>
+    </div>
+  
+    <div class="dashboard-body">
+  
+      <!-- GRILLE aperçu -->
+      <div class="grille-apercu">
+        <h3>Aperçu de la grille</h3>
+        <table class="grille-table"
+          [style.--colonnes]="colonnes"
+          [style.--lignes]="lignes">
+          <thead>
+            <tr>
+              <th></th>
+              <th *ngFor="let num of getNumeros()">{{ num }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let lettre of getLettres()">
+              <td class="lettre-col">{{ lettre }}</td>
+              <td
+                *ngFor="let num of getNumeros()"
+                class="block-cell"
+                [class.assigned]="isAssigned(lettre, num)"
+                [style.background-color]="getBlockColor(lettre, num)">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <!-- LISTE DES SHOPS -->
+      <div class="shops-liste">
+        <h3>Salles ({{ shops.length }})</h3>
+        <p *ngIf="shops.length === 0" class="empty">Aucune salle créée.</p>
+  
+        <div class="shop-card"
+          *ngFor="let shop of shops"
+          (click)="ouvrirShop(shop)">
+          <div class="shop-color-bar" [style.background-color]="getShopColor(shop._id)"></div>
+          <div class="shop-info">
+            <div class="shop-name">{{ shop.name }}</div>
+            <div class="shop-meta">
+              <span class="shop-status" [class]="'status-' + shop.status">{{ shop.status }}</span>
+              <span>{{ shop.superficie }} m²</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>

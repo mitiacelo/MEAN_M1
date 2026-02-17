@@ -1,0 +1,53 @@
+<div class="shop-edit">
+
+    @if (loading) {
+      <p>Chargement...</p>
+    } @else if (error) {
+      <p>{{ error }}</p>
+    } @else {
+  
+      <div class="edit-header">
+        <button (click)="retourDashboard()">← Dashboard</button>
+        <h2>{{ shop.name }} — Admin</h2>
+        <span class="shop-status" [class]="'status-' + shop.status">{{ shop.status }}</span>
+      </div>
+  
+      <!-- Infos générales -->
+      <div class="edit-section">
+        <h3>Informations</h3>
+  
+        <label>Nom</label>
+        <input [(ngModel)]="editNom" type="text" />
+  
+        <label>Description</label>
+        <textarea [(ngModel)]="editDescription" rows="3"></textarea>
+  
+        <label>Superficie (m²)</label>
+        <input [(ngModel)]="editSuperficie" type="number" />
+  
+        <button (click)="sauvegarderInfos()">Sauvegarder</button>
+      </div>
+  
+      <!-- Locataire -->
+      <div class="edit-section">
+        <h3>Locataire</h3>
+  
+        @if (shop.id_user) {
+          <p class="user-actuel">Assigné à : <strong>{{ getUserNom() }}</strong></p>
+          <button (click)="desassignerUser()">Retirer le locataire</button>
+        } @else {
+          <p class="user-actuel">Aucun locataire assigné</p>
+          <select [(ngModel)]="editUserId">
+            <option value="">-- Choisir un locataire --</option>
+            @for (user of users; track user._id) {
+              <option [value]="user._id">
+                {{ user.firstname }} {{ user.name }} — {{ user.email }}
+              </option>
+            }
+          </select>
+          <button (click)="assignerUser()" [disabled]="!editUserId">Assigner</button>
+        }
+      </div>
+  
+    }
+  </div>

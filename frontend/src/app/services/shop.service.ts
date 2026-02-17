@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -34,5 +34,11 @@ export class ShopService {
   }
   deleteShop(id: string): Observable<any> {
     return this.http.delete<any>(`${environment.apiUrl}/shops/${id}`);
+  }
+  getAllShops(): Observable<Shop[]> {
+    return this.http.get<Shop[]>(`${environment.apiUrl}/shops`);
+  }
+  updateShop(id: string, data: any): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/shops/${id}`, data);
   }
 }

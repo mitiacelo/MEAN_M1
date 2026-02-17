@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { BlockService } from '../../services/block.service';
 import { GrilleService } from '../../services/grille.service';
 import { ShopService } from '../../services/shop.service';
@@ -29,7 +30,8 @@ export class GrilleComponent implements OnInit {
   constructor(
     private grilleService: GrilleService,
     private blockService: BlockService,
-    private shopService: ShopService
+    private shopService: ShopService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -286,5 +288,8 @@ export class GrilleComponent implements OnInit {
       },
       error: (err) => alert(err.error?.message || "Erreur réassignation")
     });
+  }
+  validerGrille(): void {
+    this.router.navigate(['/dashboard']);
   }
 }

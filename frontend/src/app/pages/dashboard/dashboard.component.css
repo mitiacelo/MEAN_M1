@@ -1,0 +1,173 @@
+.dashboard {
+    padding: 20px;
+    max-width: 95vw;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+  }
+  
+  .dashboard-header h2 {
+    font-size: 20px;
+    color: #333;
+    margin: 0;
+  }
+  
+  .dashboard-body {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    height: calc(100vh - 100px);
+  }
+  
+  /* GRILLE */
+  .grille-apercu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  
+  .grille-apercu h3 {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 15px;
+    align-self: flex-start;
+  }
+  
+  .grille-table {
+    border-collapse: separate;
+    border-spacing: clamp(3px, 0.6vw, 8px);
+  }
+  
+  .grille-table th,
+  .grille-table td {
+    /* ✅ utilise 65vw pour occuper toute la zone flex */
+    --cell-size: calc(min(65vw, 80vh) / max(var(--colonnes, 5), var(--lignes, 5)) - 10px);
+    width: clamp(30px, var(--cell-size), 90px);
+    height: clamp(30px, var(--cell-size), 90px);
+    text-align: center;
+    vertical-align: middle;
+    font-size: clamp(7px, 0.8vw, 12px);
+    color: #999;
+  }
+  
+  .grille-table thead th {
+    background: none;
+    border: none;
+    color: #bbb;
+    font-weight: 600;
+    padding: 0;
+  }
+  
+  .lettre-col {
+    background: none;
+    border: none;
+    color: #bbb;
+    font-weight: 600;
+    padding: 0;
+    min-width: 20px;
+  }
+  
+  .block-cell {
+    background-color: #e9ecef;
+    border-radius: clamp(6px, 1vw, 12px);
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  
+  .block-cell:hover {
+    filter: brightness(0.93);
+  }
+  
+  /* LISTE SHOPS */
+  .shops-liste {
+    width: 260px;
+    flex-shrink: 0;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+  
+  .shops-liste h3 {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 10px;
+  }
+  
+  .empty {
+    color: #999;
+    font-size: 13px;
+  }
+  
+  .shop-card {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  
+  .shop-card:hover {
+    border-color: #aaa;
+  }
+  
+  .shop-color-bar {
+    width: 6px;
+    flex-shrink: 0;
+  }
+  
+  .shop-info {
+    padding: 10px 12px;
+    flex: 1;
+  }
+  
+  .shop-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 4px;
+  }
+  
+  .shop-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 11px;
+    color: #555;
+  }
+  
+  .shop-status {
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  
+  .status-inactif { background-color: #f0f0f0; color: #666; }
+  .status-actif { background-color: #d4edda; color: #155724; }
+  .shop-status[class*="attente"] { background-color: #fff3cd; color: #856404; }
+  
+  button {
+    padding: 7px 14px;
+    background-color: #495057;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  button:hover:not(:disabled) { background-color: #343a40; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }

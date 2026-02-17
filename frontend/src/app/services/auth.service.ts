@@ -1,18 +1,16 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';          // ← important
+import { isPlatformBrowser } from '@angular/common'; // ← important
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface User {
     id: string;
     name: string;
-    firstname: string;     // ← AJOUTE CETTE LIGNE
+    firstname: string;   
     email: string;
     role: string;
-    // Ajoute éventuellement d'autres champs si ton API les renvoie
-    // id_shop?: string | null;
   }
 
 @Injectable({ providedIn: 'root' })
@@ -87,5 +85,9 @@ export class AuthService {
         this.currentUserSubject.next(response.user);
       })
     );
+  }
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/auth/users`);
   }
 }
