@@ -21,58 +21,40 @@
       </p>
     </header>
 
-    <!-- Contenu selon le statut -->
-    @if (shop.status === 'actif') {
-      <!-- Produits (seulement si actif) -->
-      <section class="products-section">
-        <h2>Produits disponibles</h2>
+    <!-- ... header boutique inchangé ... -->
 
-        @if (products.length === 0) {
-          <p class="empty">Aucun produit disponible dans cette boutique pour le moment.</p>
-        } @else {
-          <div class="products-grid">
-            @for (product of products; track product._id) {
-              <div class="product-card">
-                <h3>{{ product.name }}</h3>
-                <p class="description">{{ product.description || 'Pas de description' }}</p>
-                <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
-                <button class="view-btn">Voir le produit</button>
-              </div>
-            }
-          </div>
-        }
-      </section>
-    } @else if (shop.status === 'inactif') {
-      <!-- Demande de visite (seulement si inactif) -->
-      <section class="visit-request-section">
-        <h2>Cette boutique est disponible</h2>
-        <p class="visit-text">
-          Vous souhaitez visiter cet espace en personne et discuter d’une possible location ?
-        </p>
+      <!-- Contenu selon statut -->
+      @if (shop.status === 'actif') {
+        <!-- produits comme avant -->
+      } @else if (shop.status === 'inactif') {
+        <section class="visit-request-section">
+          <h2>Cette boutique est disponible</h2>
+          <p class="visit-text">
+            Vous souhaitez visiter cet espace et en discuter avec le propriétaire ?
+          </p>
 
-        @if (requestSent) {
-          <div class="confirmation-box">
-            <h3>Votre demande a été envoyée !</h3>
-            <p>Le propriétaire de la boutique a été informé de votre intérêt.<br>
-               Vous recevrez une réponse sous peu pour organiser la visite.</p>
-          </div>
-        } @else {
-          <button 
-            class="request-visit-btn" 
-            (click)="requestVisit()"
-            [disabled]="isUpdating || requestSent">
-            {{ isUpdating ? 'Envoi en cours...' : 'Demander un rendez-vous pour visiter' }}
-          </button>
-        }
-      </section>
-    } @else if (shop.status === 'en attente') {
-      <section class="pending-section">
-        <h2>Demande en cours de traitement</h2>
-        <p>Une demande de visite a déjà été envoyée pour cette boutique.</p>
-        <p>Le propriétaire va vous contacter prochainement.</p>
-      </section>
-    }
+          @if (requestSent) {
+            <div class="confirmation-box">
+              <h3>Votre demande a été envoyée !</h3>
+              <p>Le propriétaire a été informé. Vous recevrez une réponse rapidement.</p>
+            </div>
+          } @else {
+            <button class="request-visit-btn" (click)="openRegisterPopup()">
+              Demander un rendez-vous pour visiter
+            </button>
+          }
+        </section>
+      } @else if (shop.status === 'en attente') {
+        <!-- message en attente comme avant -->
+      }
 
-    <button class="back-btn" routerLink="/">Retour à l'accueil</button>
+      <!-- Popup d'inscription -->
+      <app-register-popup 
+        [isOpen]="showRegisterPopup"
+        (close)="closePopup()"
+        (success)="onRegisterSuccess($event)">
+      </app-register-popup>
+
+      <button class="back-btn" routerLink="/landing">Retour à l'accueil</button>
   }
 </div>

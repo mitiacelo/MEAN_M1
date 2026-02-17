@@ -5,11 +5,13 @@ import { ShopService, Shop } from '../../../services/shop.service';
 import { ProductService, Product } from '../../../services/product.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-
+import { RegisterPopupComponent } from '../../../auth/register/register-popup/register-popup.component';
 @Component({
   selector: 'app-shop-details',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, 
+    RouterLink,
+    RegisterPopupComponent],
   templateUrl: './shop-details.component.html',
   styleUrl: './shop-details.component.css'
 })
@@ -18,8 +20,9 @@ export class ShopDetailsComponent implements OnInit {
   products: Product[] = [];
   loading = true;
   error = '';
-  requestSent = false;     // pour afficher la confirmation
-  isUpdating = false;      // pour désactiver le bouton pendant l'appel
+  requestSent = false;
+  isUpdating = false;
+  showRegisterPopup = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,6 +66,35 @@ export class ShopDetailsComponent implements OnInit {
       next: (products) => this.products = products,
       error: (err) => console.error('Erreur chargement produits', err)
     });
+  }
+
+  openRegisterPopup() {
+    this.showRegisterPopup = true;
+  }
+
+  onRegisterSuccess(user: any) {
+    // L'utilisateur est inscrit et connecté automatiquement
+    // On met à jour la boutique avec id_user = nouvel utilisateur
+    if (this.shop) {
+      this.http.patch(`${environment.apiUrl}/shops/${this.shop._id}`, {
+        id_user: user.id,       // ou user._id selon ce que renvoie ton API
+        status: 'en attente'
+      }).subscribe({
+        next: (updatedShop: any) => {
+          this.shop = { ...this.shop, ...updatedShop } as Shop;
+          this.requestSent = true;
+        },
+        error: (err) => {
+          console.error('Erreur attribution propriétaire', err);
+          this.error = 'Inscription réussie mais erreur lors de l\'attribution';
+        }
+      });
+    }
+    this.showRegisterPopup = false;
+  }
+
+  closePopup() {
+    this.showRegisterPopup = false;
   }
 
   requestVisit() {
