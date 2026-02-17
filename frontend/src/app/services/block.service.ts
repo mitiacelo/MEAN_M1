@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -29,5 +29,11 @@ export class BlockService {
   // Mettre à jour un bloc
   updateBlock(id: string, block: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, block);
+  }
+  assignShop(blockIds: string[], shopId: string) {
+    return this.http.put(`${this.apiUrl}/assign-shop`, {
+      blockIds,
+      shopId
+    });
   }
 }

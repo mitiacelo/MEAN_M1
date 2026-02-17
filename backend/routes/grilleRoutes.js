@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Grille = require('../models/Grille');
 const Block = require('../models/Block');
+const Shop = require('../models/Shop');
 
 // Récupérer LA grille unique (s'il y en a une)
 router.get('/', async (req, res) => {

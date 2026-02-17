@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-export interface Shop {
+export interface Shop{
   _id: string;
   name: string;
   description?: string;
@@ -17,6 +17,9 @@ export interface Shop {
 @Injectable({ providedIn: 'root' })
 export class ShopService {
   constructor(private http: HttpClient) {}
+  createShop(shop: any) {
+    return this.http.post<any>(`${environment.apiUrl}/shops`, shop);
+  }
 
   getAvailableShops(): Observable<Shop[]> {
     return this.http.get<Shop[]>(`${environment.apiUrl}/shops/available`);

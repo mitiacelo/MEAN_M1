@@ -156,6 +156,23 @@
   color: rgba(0, 0, 0, 0.4);
   z-index: 10;
 }
+.block-cell.selected {
+  background-color: #495057;
+  color: white;
+  transform: scale(1.05);
+}
+/* ✅ Bloc déjà assigné à un shop — verrouillé */
+.block-cell.assigned {
+  cursor: not-allowed;
+  transform: none !important;
+  opacity: 0.85;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+.block-cell.assigned:hover {
+  transform: none !important;
+  filter: brightness(0.95);
+}
 
 /* BOUTON DE SAUVEGARDE - Plus compact */
 .save-btn {

@@ -26,7 +26,11 @@ const shopSchema = new mongoose.Schema({
   id_user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: [true, "Le propriétaire est obligatoire"]
+    required: false  // facultatif
+  },
+  color: {
+    type: String,
+    default: null
   }
 }, {
   timestamps: true   // createdAt & updatedAt automatiques

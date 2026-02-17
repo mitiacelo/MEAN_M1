@@ -24,8 +24,16 @@ const BlockSchema = new mongoose.Schema({
   contenu: { 
     type: String, 
     default: '' 
-  } // Pour stocker du texte/couleur/etc plus tard
-  
+  }, // Pour stocker du texte/couleur/etc plus tard
+  shopId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Shop',
+    default: null
+  },
+  color: {
+    type: String,
+    default: null
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Block', BlockSchema);
