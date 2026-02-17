@@ -16,14 +16,15 @@ export class GrilleComponent implements OnInit {
   lignes: number = 5;
   colonnes: number = 5;
   options: number[] = [5, 10, 15, 20];
-  
   grilleId: string = '';
   grilleExiste: boolean = false;
-
   selectedCells: Set<string> = new Set();
-
-  // ✅ Map blockId -> couleur (ex: "A1" -> "hsl(200, 50%, 85%)")
   blockColors: Map<string, string> = new Map();
+
+  // ✅ NOUVEAU
+  blockShopIds: Map<string, string> = new Map();
+  selectedShopId: string | null = null;
+  modeModification: boolean = false;
 
   constructor(
     private grilleService: GrilleService,
@@ -35,13 +36,18 @@ export class GrilleComponent implements OnInit {
     this.chargerGrille();
   }
 
-  // ✅ On bloque le clic si le bloc a déjà une couleur
   toggleCell(lettre: string, numero: number): void {
     const id = this.getBlockId(lettre, numero);
 
-    // 🔒 Bloc déjà assigné = on ne fait rien
-    if (this.blockColors.has(id)) return;
+    // ✅ Bloc assigné → sélectionne tout le groupe du shop
+    if (this.blockShopIds.has(id)) {
+      const shopId = this.blockShopIds.get(id)!;
+      this.selectedShopId = shopId;
+      this.modeModification = false;
+      return;
+    }
 
+    // Bloc libre → sélection normale
     if (this.selectedCells.has(id)) {
       this.selectedCells.delete(id);
     } else {
@@ -53,14 +59,18 @@ export class GrilleComponent implements OnInit {
     return this.selectedCells.has(this.getBlockId(lettre, numero));
   }
 
-  // ✅ Retourne la couleur du bloc s'il est assigné
   getBlockColor(lettre: string, numero: number): string | null {
     return this.blockColors.get(this.getBlockId(lettre, numero)) || null;
   }
 
-  // ✅ Vrai si le bloc est déjà assigné à un shop
   isAssigned(lettre: string, numero: number): boolean {
-    return this.blockColors.has(this.getBlockId(lettre, numero));
+    return this.blockShopIds.has(this.getBlockId(lettre, numero));
+  }
+
+  // ✅ NOUVEAU : bloc appartient au shop sélectionné
+  isInSelectedShop(lettre: string, numero: number): boolean {
+    const id = this.getBlockId(lettre, numero);
+    return this.blockShopIds.get(id) === this.selectedShopId;
   }
 
   get format(): string {
@@ -68,7 +78,7 @@ export class GrilleComponent implements OnInit {
   }
 
   getLettres(): string[] {
-    return Array.from({ length: this.lignes }, (_, i) => 
+    return Array.from({ length: this.lignes }, (_, i) =>
       String.fromCharCode(65 + i)
     );
   }
@@ -89,8 +99,6 @@ export class GrilleComponent implements OnInit {
           this.lignes = grille.lignes;
           this.colonnes = grille.colonnes;
           this.grilleExiste = true;
-
-          // ✅ Charger les couleurs des blocs existants
           this.chargerCouleurBlocs();
         }
       },
@@ -98,14 +106,17 @@ export class GrilleComponent implements OnInit {
     });
   }
 
-  // ✅ Récupère tous les blocs et stocke leurs couleurs dans la Map
   chargerCouleurBlocs(): void {
     this.blockService.getBlocksByGrille(this.grilleId).subscribe({
       next: (blocks: any[]) => {
         this.blockColors.clear();
+        this.blockShopIds.clear(); // ✅ NOUVEAU
         blocks.forEach(block => {
           if (block.color) {
             this.blockColors.set(block.blockId, block.color);
+          }
+          if (block.shopId) {
+            this.blockShopIds.set(block.blockId, block.shopId); // ✅ NOUVEAU
           }
         });
       },
@@ -115,7 +126,6 @@ export class GrilleComponent implements OnInit {
 
   sauvegarder(): void {
     const grille = { lignes: this.lignes, colonnes: this.colonnes };
-    
     this.grilleService.saveGrille(grille).subscribe({
       next: (data) => {
         this.grilleId = data._id;
@@ -131,10 +141,9 @@ export class GrilleComponent implements OnInit {
       ...block,
       grilleId: this.grilleId
     }));
-    
     this.blockService.createBlocks(blocks).subscribe({
-      next: (data) => {
-        console.log('✅ Blocs sauvegardés:', data.length, 'blocs');
+      next: () => {
+        this.chargerCouleurBlocs(); // ✅ recharger pour garder les couleurs à jour
         alert('Grille sauvegardée avec succès ! 🎉');
       },
       error: (err) => console.error('❌ Erreur sauvegarde blocs:', err)
@@ -145,7 +154,6 @@ export class GrilleComponent implements OnInit {
     const blocks = [];
     const lettres = this.getLettres();
     const numeros = this.getNumeros();
-    
     for (let lettre of lettres) {
       for (let numero of numeros) {
         blocks.push({
@@ -156,13 +164,11 @@ export class GrilleComponent implements OnInit {
         });
       }
     }
-    
     return blocks;
   }
 
   creerShopDepuisSelection(): void {
     const blocksSelectionnes = Array.from(this.selectedCells);
-
     if (blocksSelectionnes.length === 0) {
       alert("Veuillez sélectionner au moins un bloc !");
       return;
@@ -181,18 +187,14 @@ export class GrilleComponent implements OnInit {
           alert("Erreur lors de la création du shop !");
           return;
         }
-
-        // ✅ Assigner les blocs — le backend génère et retourne la couleur
         this.blockService.assignShop(blocksSelectionnes, shop._id.toString())
           .subscribe({
             next: (response: any) => {
               const color = response.color;
-
-              // ✅ Mettre à jour la Map avec la couleur reçue
               blocksSelectionnes.forEach(blockId => {
                 this.blockColors.set(blockId, color);
+                this.blockShopIds.set(blockId, shop._id.toString()); // ✅ NOUVEAU
               });
-
               alert("Shop créé et blocs colorés 🎉");
               this.selectedCells.clear();
             },
@@ -206,6 +208,83 @@ export class GrilleComponent implements OnInit {
         console.error("Erreur création shop:", err);
         alert("Impossible de créer le shop !");
       }
+    });
+  }
+
+  // ✅ NOUVEAU : fermer le panneau
+  annulerSelection(): void {
+    this.selectedShopId = null;
+    this.modeModification = false;
+    this.selectedCells.clear();
+  }
+
+  // ✅ NOUVEAU : supprimer le shop + libérer ses blocs
+  supprimerShop(): void {
+    if (!this.selectedShopId) return;
+    const shopId = this.selectedShopId;
+
+    this.blockService.unassignShop(shopId).subscribe({
+      next: () => {
+        this.shopService.deleteShop(shopId).subscribe({
+          next: () => {
+            // Nettoyer les Maps localement
+            this.blockShopIds.forEach((sId, blockId) => {
+              if (sId === shopId) {
+                this.blockColors.delete(blockId);
+                this.blockShopIds.delete(blockId);
+              }
+            });
+            this.selectedShopId = null;
+            alert("Shop supprimé ✅");
+          },
+          error: (err) => console.error("Erreur suppression shop:", err)
+        });
+      },
+      error: (err) => console.error("Erreur libération blocs:", err)
+    });
+  }
+
+  // ✅ NOUVEAU : libérer les blocs, garder le shop, re-sélectionner
+  modifierShop(): void {
+    if (!this.selectedShopId) return;
+    const shopId = this.selectedShopId;
+
+    this.blockService.unassignShop(shopId).subscribe({
+      next: () => {
+        this.blockShopIds.forEach((sId, blockId) => {
+          if (sId === shopId) {
+            this.blockColors.delete(blockId);
+            this.blockShopIds.delete(blockId);
+          }
+        });
+        this.modeModification = true;
+        this.selectedCells.clear();
+      },
+      error: (err) => console.error("Erreur libération blocs:", err)
+    });
+  }
+
+  // ✅ NOUVEAU : réassigner les nouveaux blocs au shop existant
+  reassignerShop(): void {
+    const blocksSelectionnes = Array.from(this.selectedCells);
+    if (blocksSelectionnes.length === 0) {
+      alert("Sélectionnez au moins un bloc !");
+      return;
+    }
+
+    this.blockService.assignShop(blocksSelectionnes, this.selectedShopId!).subscribe({
+      next: (response: any) => {
+        const color = response.color;
+        blocksSelectionnes.forEach(blockId => {
+          this.blockColors.set(blockId, color);
+          this.blockShopIds.set(blockId, this.selectedShopId!);
+        });
+        this.selectedCells.clear();
+        this.selectedShopId = null;
+        this.modeModification = false;
+        alert("Shop réassigné ✅");
+      },
+      error: (err) => alert(err.error?.message || "Erreur réassignation")
     });
   }
 }

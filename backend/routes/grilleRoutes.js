@@ -25,9 +25,6 @@ router.post('/', async (req, res) => {
       grille.colonnes = req.body.colonnes;
       await grille.save();
       
-      // ⚠️ Supprimer TOUS les anciens blocs
-      await Block.deleteMany({ grilleId: grille._id });
-      
       res.json({ ...grille.toObject(), isUpdate: true });
     } else {
       // Sinon, on crée une nouvelle grille

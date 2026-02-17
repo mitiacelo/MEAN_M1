@@ -1,6 +1,6 @@
 <div class="grille-container">
   <h2>Quelle échelle préférez-vous pour modéliser votre centre commercial?</h2>
-  
+
   <div class="selects-container">
     <div class="select-group">
       <label for="lignes">Nombre de lignes :</label>
@@ -20,11 +20,28 @@
     <h3>Format choisi : {{ format }}</h3>
   </div>
 
+  <!-- ✅ Panneau : shop sélectionné -->
+  <div class="shop-action-panel" *ngIf="selectedShopId && !modeModification">
+    <p>Que voulez-vous faire avec ce shop ?</p>
+    <button class="btn-danger" (click)="supprimerShop()">🗑 Supprimer</button>
+    <button class="btn-warning" (click)="modifierShop()">✏️ Modifier les blocs</button>
+    <button class="btn-cancel" (click)="annulerSelection()">Annuler</button>
+  </div>
+
+  <!-- ✅ Panneau : mode modification -->
+  <div class="shop-action-panel" *ngIf="modeModification">
+    <p>Sélectionnez les nouveaux blocs pour ce shop</p>
+    <button class="btn-success" (click)="reassignerShop()" [disabled]="selectedCells.size === 0">
+      ✅ Réassigner ({{ selectedCells.size }} blocs)
+    </button>
+    <button class="btn-cancel" (click)="annulerSelection()">Annuler</button>
+  </div>
+
   <div class="grille-visuelle">
     <h3>Aperçu de la grille :</h3>
-    
-    <table class="grille-table" 
-      [style.--colonnes]="colonnes" 
+
+    <table class="grille-table"
+      [style.--colonnes]="colonnes"
       [style.--lignes]="lignes">
       <thead>
         <tr>
@@ -35,15 +52,15 @@
       <tbody>
         <tr *ngFor="let lettre of getLettres()">
           <td class="lettre-col">{{ lettre }}</td>
-          <td 
-            *ngFor="let num of getNumeros()" 
+          <td
+            *ngFor="let num of getNumeros()"
             class="block-cell"
             [class.selected]="isSelected(lettre, num)"
-            [class.assigned]="isAssigned(lettre, num)"
+            [class.assigned]="isAssigned(lettre, num) && !isInSelectedShop(lettre, num)"
+            [class.shop-selected]="isInSelectedShop(lettre, num)"
             [style.background-color]="getBlockColor(lettre, num)"
             (click)="toggleCell(lettre, num)"
           >
-            <!-- ✅ On cache le texte si le bloc est coloré -->
             <span *ngIf="!isAssigned(lettre, num)">
               {{ getBlockId(lettre, num) }}
             </span>
@@ -53,16 +70,18 @@
     </table>
   </div>
 
-  <button (click)="sauvegarder()" class="save-btn">
-    {{ grilleExiste ? 'Mettre à jour la grille' : 'Sauvegarder cette grille' }}
-  </button>
-
-  <button 
-    class="save-btn"
-    (click)="creerShopDepuisSelection()"
-    [disabled]="selectedCells.size === 0">
-    Créer un shop avec les blocs sélectionnés
-  </button>
+  <!-- Boutons principaux cachés pendant une action sur un shop -->
+  <ng-container *ngIf="!selectedShopId && !modeModification">
+    <button (click)="sauvegarder()" class="save-btn">
+      {{ grilleExiste ? 'Mettre à jour la grille' : 'Sauvegarder cette grille' }}
+    </button>
+    <button
+      class="save-btn"
+      (click)="creerShopDepuisSelection()"
+      [disabled]="selectedCells.size === 0">
+      Créer un shop avec les blocs sélectionnés
+    </button>
+  </ng-container>
 
   <p *ngIf="grilleExiste" class="message-info">
     Grille actuelle : {{ grilleId }} ({{ lignes }}×{{ colonnes }})

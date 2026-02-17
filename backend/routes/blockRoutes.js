@@ -17,8 +17,21 @@ router.get('/grille/:grilleId', async (req, res) => {
 // Créer plusieurs blocs en une fois
 router.post('/bulk', async (req, res) => {
   try {
-    const blocks = await Block.insertMany(req.body);
-    res.status(201).json(blocks);
+    const blocks = req.body;
+
+    const operations = blocks.map(block => ({
+      updateOne: {
+        filter: { grilleId: block.grilleId, blockId: block.blockId },
+        update: { $setOnInsert: block },
+        upsert: true
+      }
+    }));
+
+    const result = await Block.bulkWrite(operations);
+    res.status(201).json({ 
+      inserted: result.upsertedCount, 
+      existing: blocks.length - result.upsertedCount 
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -75,7 +88,24 @@ router.put('/assign-shop', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+// ✅ Remettre les blocs d'un shop à zéro (shopId: null, color: null)
+router.put('/unassign-shop', async (req, res) => {
+  const { shopId } = req.body;
 
+  if (!shopId) {
+    return res.status(400).json({ message: "shopId obligatoire" });
+  }
+
+  try {
+    await Block.updateMany(
+      { shopId },
+      { $set: { shopId: null, color: null } }
+    );
+    res.json({ message: "Blocs libérés ✅" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 // Mettre à jour un bloc
 router.put('/:id', async (req, res) => {
   try {

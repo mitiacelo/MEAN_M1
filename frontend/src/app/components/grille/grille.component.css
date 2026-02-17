@@ -14,7 +14,6 @@
   color: #333;
 }
 
-/* ✅ CONFIGURATION COMPACTE - Tout sur une ligne */
 .selects-container {
   display: flex;
   gap: 15px;
@@ -49,16 +48,9 @@
   width: 70px;
 }
 
-.select-group select:hover {
-  border-color: #999;
-}
+.select-group select:hover { border-color: #999; }
+.select-group select:focus { outline: none; border-color: #666; }
 
-.select-group select:focus {
-  outline: none;
-  border-color: #666;
-}
-
-/* ✅ FORMAT AFFICHÉ INLINE */
 .format-display {
   background-color: #f8f9fa;
   padding: 8px 20px;
@@ -75,7 +67,6 @@
   font-weight: 600;
 }
 
-/* GRILLE VISUELLE - Plus d'espace */
 .grille-visuelle {
   margin: 10px auto;
   max-width: 95vw;
@@ -103,17 +94,14 @@
 .grille-table th,
 .grille-table td {
   --cell-size: calc(min(85vw, 75vh) / max(var(--colonnes, 5), var(--lignes, 5)) - 10px);
-  
   width: clamp(25px, var(--cell-size), 80px);
   height: clamp(25px, var(--cell-size), 80px);
-  
   text-align: center;
   vertical-align: middle;
   font-size: clamp(8px, 1vw, 13px);
   font-weight: 500;
 }
 
-/* En-tête (numéros de colonnes) */
 .grille-table thead th {
   background: none;
   border: none;
@@ -125,7 +113,6 @@
   max-height: 30px;
 }
 
-/* Colonne de lettres (A, B, C...) */
 .lettre-col {
   background: none;
   border: none;
@@ -137,7 +124,6 @@
   max-width: 30px;
 }
 
-/* Cellules des blocs */
 .block-cell {
   background-color: #e9ecef;
   border-radius: clamp(6px, 1vw, 12px);
@@ -156,90 +142,89 @@
   color: rgba(0, 0, 0, 0.4);
   z-index: 10;
 }
+
 .block-cell.selected {
   background-color: #495057;
   color: white;
   transform: scale(1.05);
 }
-/* ✅ Bloc déjà assigné à un shop — verrouillé */
+
 .block-cell.assigned {
-  cursor: not-allowed;
-  transform: none !important;
+  cursor: pointer;
   opacity: 0.85;
   border: 2px solid rgba(0, 0, 0, 0.08);
 }
 
 .block-cell.assigned:hover {
-  transform: none !important;
-  filter: brightness(0.95);
+  filter: brightness(0.92);
 }
 
-/* BOUTON DE SAUVEGARDE - Plus compact */
-.save-btn {
-  display: block;
-  max-width: 350px;
-  margin: 15px auto 10px;
-  padding: 10px 25px;
+.block-cell.shop-selected {
+  outline: 3px solid #343a40;
+  outline-offset: -3px;
+  transform: scale(1.05);
+  z-index: 10;
+  filter: brightness(0.88);
+}
+
+/* ✅ Tous les boutons — style unique simple */
+button {
+  padding: 8px 16px;
   background-color: #495057;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s;
 }
 
-.save-btn:hover:not(:disabled) {
+button:hover:not(:disabled) {
   background-color: #343a40;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.save-btn:disabled {
-  background-color: #6c757d;
+button:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
-/* MESSAGE DE SUCCÈS */
-.message-succes {
-  color: #28a745;
-  font-weight: 600;
+.save-btn {
+  display: block;
+  max-width: 350px;
+  margin: 10px auto;
+}
+
+/* ✅ Panneau action shop — simple */
+.shop-action-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin: 8px auto;
+  max-width: 500px;
+  flex-wrap: wrap;
+}
+
+.shop-action-panel p {
+  width: 100%;
   text-align: center;
-  margin-top: 8px;
   font-size: 13px;
+  color: #495057;
+  margin: 0 0 5px 0;
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
-  .grille-container {
-    padding: 10px;
-    margin: 5px auto;
-  }
-  
-  .grille-container h2 {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-  
-  .selects-container {
-    gap: 10px;
-  }
-  
-  .select-group label {
-    font-size: 12px;
-  }
-  
-  .select-group select {
-    width: 60px;
-    font-size: 13px;
-  }
-  
-  .format-display h3 {
-    font-size: 14px;
-  }
-  
+  .grille-container { padding: 10px; margin: 5px auto; }
+  .grille-container h2 { font-size: 18px; margin-bottom: 10px; }
+  .selects-container { gap: 10px; }
+  .select-group label { font-size: 12px; }
+  .select-group select { width: 60px; font-size: 13px; }
+  .format-display h3 { font-size: 14px; }
   .grille-table th,
   .grille-table td {
     --cell-size: calc(min(90vw, 80vh) / max(var(--colonnes, 5), var(--lignes, 5)) - 8px);

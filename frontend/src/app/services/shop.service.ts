@@ -32,4 +32,7 @@ export class ShopService {
   getShopById(id: string): Observable<Shop> {
     return this.http.get<Shop>(`${environment.apiUrl}/shops/${id}`);
   }
+  deleteShop(id: string): Observable<any> {
+    return this.http.delete<any>(`${environment.apiUrl}/shops/${id}`);
+  }
 }

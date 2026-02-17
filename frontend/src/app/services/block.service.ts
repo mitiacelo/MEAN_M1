@@ -36,4 +36,7 @@ export class BlockService {
       shopId
     });
   }
+  unassignShop(shopId: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/unassign-shop`, { shopId });
+  }
 }
