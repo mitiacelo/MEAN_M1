@@ -22,5 +22,6 @@ app.use('/grille', require('./routes/grilleRoutes'));
 app.use('/blocks', require('./routes/blockRoutes'));
 app.use('/shops', require('./routes/shopRoutes'));
 app.use('/products', require('./routes/productRoutes'));
+app.use('/types', require('./routes/typeRoutes'));
 app.listen(PORT, () => console.log(`Serveur démarré sur le port
 ${PORT}`));

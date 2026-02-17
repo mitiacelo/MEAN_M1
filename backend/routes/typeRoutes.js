@@ -1,7 +1,7 @@
 // backend/routes/domaineRoutes.js (exemple pour Domaine)
 const express = require('express');
 const router = express.Router();
-const Domaine = require('../models/Type');
+const Type = require('../models/Type');
 
 router.get('/', async (req, res) => {
   try {

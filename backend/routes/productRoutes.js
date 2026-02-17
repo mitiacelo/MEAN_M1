@@ -88,4 +88,70 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// POST /api/products → créer un produit (protégé plus tard si besoin)
+router.post('/', async (req, res) => {
+  console.log('POST /products - Body reçu :', req.body);
+
+  try {
+    const product = new Product(req.body);
+    await product.save();
+    res.status(201).json(product);
+  } catch (err) {
+    console.error('Erreur création produit :', err.message);
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// PUT /api/products/:id → mise à jour complète d'un produit
+router.put('/:id', async (req, res) => {
+  const productId = req.params.id;
+
+  console.log(`PUT /products/${productId} - Body reçu :`, req.body);
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ message: 'ID produit invalide' });
+  }
+
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: 'Produit non trouvé' });
+    }
+
+    res.json(updatedProduct);
+  } catch (err) {
+    console.error('Erreur mise à jour produit :', err.message);
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// DELETE /api/products/:id → supprimer un produit
+router.delete('/:id', async (req, res) => {
+  const productId = req.params.id;
+
+  console.log(`DELETE /products/${productId}`);
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ message: 'ID produit invalide' });
+  }
+
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+
+    if (!deletedProduct) {
+      return res.status(404).json({ message: 'Produit non trouvé' });
+    }
+
+    res.json({ message: 'Produit supprimé avec succès' });
+  } catch (err) {
+    console.error('Erreur suppression produit :', err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
