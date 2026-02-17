@@ -11,38 +11,52 @@ import { ShopService, Shop } from '../../services/shop.service';
   styleUrl: './shop.component.css'
 })
 export class ShopComponent implements OnInit {
-  shops: Shop[] = [];
+  availableShops: Shop[] = [];   // statut "inactif" → en attente
+  activeShops: Shop[] = [];      // statut "actif" → ouvertes
   loading = true;
   errorMessage = '';
 
   constructor(private shopService: ShopService) {}
 
   ngOnInit(): void {
-    this.loadAllShops();
+    this.loadShops();
   }
 
-  private loadAllShops(): void {
-    // On combine les deux appels (disponibles + actives)
+  private loadShops(): void {
+    // Chargement boutiques disponibles (inactif)
     this.shopService.getAvailableShops().subscribe({
-      next: (available) => {
-        this.shops = [...available];
-        this.shopService.getActiveShops().subscribe({
-          next: (active) => {
-            this.shops = [...this.shops, ...active];
-            this.loading = false;
-          },
-          error: (err) => {
-            this.errorMessage = 'Impossible de charger les boutiques ouvertes';
-            this.loading = false;
-            console.error(err);
-          }
-        });
+      next: (shops) => {
+        this.availableShops = shops;
+        this.checkLoadingComplete();
       },
       error: (err) => {
+        console.error('Erreur chargement boutiques disponibles', err);
         this.errorMessage = 'Impossible de charger les boutiques disponibles';
-        this.loading = false;
-        console.error(err);
+        this.checkLoadingComplete();
       }
     });
+
+    // Chargement boutiques actives
+    this.shopService.getActiveShops().subscribe({
+      next: (shops) => {
+        this.activeShops = shops;
+        this.checkLoadingComplete();
+      },
+      error: (err) => {
+        console.error('Erreur chargement boutiques actives', err);
+        this.errorMessage = 'Impossible de charger les boutiques ouvertes';
+        this.checkLoadingComplete();
+      }
+    });
+  }
+
+  private checkLoadingComplete(): void {
+    // Arrête le loading quand les deux appels ont répondu (ou échoué)
+    if (
+      (this.availableShops.length >= 0 || this.errorMessage) &&
+      (this.activeShops.length >= 0 || this.errorMessage)
+    ) {
+      this.loading = false;
+    }
   }
 }

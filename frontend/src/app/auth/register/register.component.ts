@@ -36,7 +36,7 @@ export class RegisterComponent {
         this.isLoading = false;
         // Option 1 : connexion automatique après inscription
         this.authService.login(this.user.email, this.user.password).subscribe({
-          next: () => this.router.navigate(['/articles']),
+          next: () => this.router.navigate(['/landing']),
           error: () => this.error = 'Inscription réussie mais erreur lors de la connexion automatique'
         });
         

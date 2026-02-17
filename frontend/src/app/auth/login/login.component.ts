@@ -19,7 +19,7 @@ export class LoginComponent {
 
   onSubmit() {
     this.authService.login(this.credentials.email, this.credentials.password).subscribe({
-      next: () => this.router.navigate(['/articles']), // ou ta page principale
+      next: () => this.router.navigate(['/landing']), // ou ta page principale
       error: (err) => this.error = err.error?.message || 'Erreur de connexion'
     });
   }
