@@ -21,4 +21,10 @@ export class NotificationService {
   createNotification(data: any): Observable<Notification> {
     return this.http.post<Notification>(`${environment.apiUrl}/notifications`, data);
   }
+
+  checkIfRequestExists(userId: string, shopId: string): Observable<boolean> {
+    return this.http.get<boolean>(
+      `${environment.apiUrl}/notifications/exists?user=${userId}&shop=${shopId}`
+    );
+  }
 }

@@ -23,7 +23,6 @@
     @if (shop.status === 'actif') {
       <section class="products-section">
         <h2>Produits disponibles</h2>
-
         @if (products.length === 0) {
           <p class="empty">Aucun produit disponible dans cette boutique pour le moment.</p>
         } @else {
@@ -46,7 +45,7 @@
           Vous souhaitez visiter cet espace en personne et discuter d’une possible location ?
         </p>
 
-        @if (requestSent) {
+        @if (requestSent || hasRequested) {
           <div class="confirmation-box">
             <h3>Votre demande a été envoyée !</h3>
             <p>Le propriétaire a été informé. Vous recevrez une réponse rapidement.</p>

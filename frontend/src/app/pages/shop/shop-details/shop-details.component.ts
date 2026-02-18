@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { ShopService, Shop } from '../../../services/shop.service';
 import { ProductService, Product } from '../../../services/product.service';
+import { NotificationService } from '../../../services/notification.service';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -21,6 +22,7 @@ export class ShopDetailsComponent implements OnInit {
   loading = true;
   error = '';
   requestSent = false;
+  hasRequested = false;
 
   visitForm = {
     phone: '',
@@ -32,6 +34,7 @@ export class ShopDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private shopService: ShopService,
     private productService: ProductService,
+    private notificationService: NotificationService,
     private http: HttpClient,
     public authService: AuthService
   ) {}
@@ -58,12 +61,26 @@ export class ShopDetailsComponent implements OnInit {
         }
 
         this.visitForm.email = this.authService.currentUser?.email || '';
+
+        this.checkIfAlreadyRequested(shopId);
       },
       error: (err) => {
         this.error = 'Impossible de charger la boutique';
         this.loading = false;
         console.error(err);
       }
+    });
+  }
+
+  private checkIfAlreadyRequested(shopId: string) {
+    const userId = this.authService.currentUser?.id;
+    if (!userId) return;
+
+    this.notificationService.checkIfRequestExists(userId, shopId).subscribe({
+      next: (exists) => {
+        this.hasRequested = exists;
+      },
+      error: (err) => console.error('Erreur vérification demande existante', err)
     });
   }
 
@@ -80,11 +97,9 @@ export class ShopDetailsComponent implements OnInit {
       return;
     }
 
-    const shopId = this.shop._id;
-
     const payload = {
       user: this.authService.currentUser?.id,
-      shop: shopId,
+      shop: this.shop._id,
       phone: this.visitForm.phone,
       email: this.visitForm.email,
       message: this.visitForm.message
@@ -92,19 +107,9 @@ export class ShopDetailsComponent implements OnInit {
 
     this.http.post(`${environment.apiUrl}/notifications`, payload).subscribe({
       next: () => {
-        this.http.patch(`${environment.apiUrl}/shops/${shopId}`, {
-          status: 'en attente'
-        }).subscribe({
-          next: (updatedShop: any) => {
-            this.shop = { ...this.shop, status: updatedShop.status } as Shop;
-            this.requestSent = true;
-            this.error = '';
-          },
-          error: (err) => {
-            console.error('Erreur mise à jour statut', err);
-            this.error = 'Demande envoyée mais erreur lors de la mise à jour du statut';
-          }
-        });
+        this.requestSent = true;
+        this.hasRequested = true;
+        this.error = '';
       },
       error: (err) => {
         this.error = 'Erreur lors de l\'envoi de la demande';
