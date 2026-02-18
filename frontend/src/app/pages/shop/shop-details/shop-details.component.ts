@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ShopService, Shop } from '../../../services/shop.service';
-import { ProductService, Product } from '../../../services/product.service';
+import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { RegisterPopupComponent } from '../../../auth/register/register-popup/register-popup.component';
+import { ShopService, Shop } from '../../../services/shop.service';
+import { ProductService, Product } from '../../../services/product.service';
+import { AuthService } from '../../../services/auth.service';
+
 @Component({
   selector: 'app-shop-details',
   standalone: true,
-  imports: [CommonModule, 
-    RouterLink,
-    RegisterPopupComponent],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './shop-details.component.html',
   styleUrl: './shop-details.component.css'
 })
@@ -21,14 +21,19 @@ export class ShopDetailsComponent implements OnInit {
   loading = true;
   error = '';
   requestSent = false;
-  isUpdating = false;
-  showRegisterPopup = false;
+
+  visitForm = {
+    phone: '',
+    email: '',
+    message: ''
+  };
 
   constructor(
     private route: ActivatedRoute,
     private shopService: ShopService,
     private productService: ProductService,
-    private http: HttpClient
+    private http: HttpClient,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -48,10 +53,11 @@ export class ShopDetailsComponent implements OnInit {
         this.shop = shop;
         this.loading = false;
 
-        // Charger les produits UNIQUEMENT si actif
         if (shop.status === 'actif') {
           this.loadProducts(shopId);
         }
+
+        this.visitForm.email = this.authService.currentUser?.email || '';
       },
       error: (err) => {
         this.error = 'Impossible de charger la boutique';
@@ -68,52 +74,41 @@ export class ShopDetailsComponent implements OnInit {
     });
   }
 
-  openRegisterPopup() {
-    this.showRegisterPopup = true;
-  }
-
-  onRegisterSuccess(user: any) {
-    // L'utilisateur est inscrit et connecté automatiquement
-    // On met à jour la boutique avec id_user = nouvel utilisateur
-    if (this.shop) {
-      this.http.patch(`${environment.apiUrl}/shops/${this.shop._id}`, {
-        id_user: user.id,       // ou user._id selon ce que renvoie ton API
-        status: 'en attente'
-      }).subscribe({
-        next: (updatedShop: any) => {
-          this.shop = { ...this.shop, ...updatedShop } as Shop;
-          this.requestSent = true;
-        },
-        error: (err) => {
-          console.error('Erreur attribution propriétaire', err);
-          this.error = 'Inscription réussie mais erreur lors de l\'attribution';
-        }
-      });
+  submitVisitRequest() {
+    if (!this.shop || !this.visitForm.phone || !this.visitForm.email || !this.visitForm.message) {
+      this.error = 'Veuillez remplir tous les champs';
+      return;
     }
-    this.showRegisterPopup = false;
-  }
 
-  closePopup() {
-    this.showRegisterPopup = false;
-  }
+    const shopId = this.shop._id;
 
-  requestVisit() {
-    if (!this.shop || this.isUpdating || this.requestSent) return;
+    const payload = {
+      user: this.authService.currentUser?.id,
+      shop: shopId,
+      phone: this.visitForm.phone,
+      email: this.visitForm.email,
+      message: this.visitForm.message
+    };
 
-    this.isUpdating = true;
-
-    this.http.patch(`${environment.apiUrl}/shops/${this.shop._id}`, {
-      status: 'en attente'
-    }).subscribe({
-      next: (updatedShop: any) => {
-        this.shop = { ...this.shop, status: updatedShop.status } as Shop;
-        this.requestSent = true;
-        this.isUpdating = false;
+    this.http.post(`${environment.apiUrl}/notifications`, payload).subscribe({
+      next: () => {
+        this.http.patch(`${environment.apiUrl}/shops/${shopId}`, {
+          status: 'en attente'
+        }).subscribe({
+          next: (updatedShop: any) => {
+            this.shop = { ...this.shop, status: updatedShop.status } as Shop;
+            this.requestSent = true;
+            this.error = '';
+          },
+          error: (err) => {
+            console.error('Erreur mise à jour statut', err);
+            this.error = 'Demande envoyée mais erreur lors de la mise à jour du statut';
+          }
+        });
       },
       error: (err) => {
-        console.error('Erreur mise à jour statut boutique', err);
-        this.error = 'Impossible d’envoyer la demande de visite';
-        this.isUpdating = false;
+        this.error = 'Erreur lors de l\'envoi de la demande';
+        console.error(err);
       }
     });
   }

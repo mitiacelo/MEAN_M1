@@ -1,9 +1,4 @@
 <div class="shop-page">
-  <header class="page-header">
-    <h1>Toutes les boutiques</h1>
-    <p>Découvrez l’ensemble des espaces disponibles et déjà occupés à Plaza</p>
-  </header>
-
   @if (loading) {
     <div class="loading-container">
       <p>Chargement des boutiques...</p>
@@ -13,7 +8,6 @@
       <p>{{ errorMessage }}</p>
     </div>
   } @else {
-    <!-- 1. Boutiques inactives : disponibles en attente -->
     <section class="shops-section available">
       <h2>Salles disponibles en attente de propriétaire</h2>
       <p class="section-intro">Ces espaces sont prêts à accueillir votre projet.</p>
@@ -28,16 +22,29 @@
               <p class="superficie">{{ shop.superficie }} m²</p>
               <p class="description">{{ shop.description || 'Aucune description' }}</p>
 
-              <button class="consult-btn" [routerLink]="['/shop', shop._id]">
+              <button 
+                class="consult-btn" 
+                [routerLink]="authService.isLoggedIn ? ['/shop', shop._id] : null"
+                (click)="!authService.isLoggedIn && visitShop(shop._id)">
                 Visiter la boutique
               </button>
+
+              @if (showLoginMessage && selectedShopId === shop._id && !authService.isLoggedIn) {
+                <div class="login-required-message">
+                  <p>Vous devez être connecté pour visiter cette boutique.</p>
+                  <div class="auth-buttons-small">
+                    <button routerLink="/login">Se connecter</button>
+                    <button routerLink="/register">S'inscrire</button>
+                  </div>
+                  <button class="dismiss-btn" (click)="dismissMessage()">Fermer</button>
+                </div>
+              }
             </div>
           }
         </div>
       }
     </section>
 
-    <!-- 2. Boutiques actives : déjà ouvertes -->
     <section class="shops-section active">
       <h2>Nos boutiques</h2>
       <p class="section-intro">Découvrez les enseignes déjà installées et ouvertes au public.</p>
@@ -52,9 +59,23 @@
               <p class="superficie">{{ shop.superficie }} m²</p>
               <p class="description">{{ shop.description || 'Aucune description' }}</p>
 
-              <button class="consult-btn" [routerLink]="['/shop', shop._id]">
+              <button 
+                class="consult-btn" 
+                [routerLink]="authService.isLoggedIn ? ['/shop', shop._id] : null"
+                (click)="!authService.isLoggedIn && visitShop(shop._id)">
                 Consulter la boutique
               </button>
+
+              @if (showLoginMessage && selectedShopId === shop._id && !authService.isLoggedIn) {
+                <div class="login-required-message">
+                  <p>Vous devez être connecté pour consulter cette boutique.</p>
+                  <div class="auth-buttons-small">
+                    <button routerLink="/login">Se connecter</button>
+                    <button routerLink="/register">S'inscrire</button>
+                  </div>
+                  <button class="dismiss-btn" (click)="dismissMessage()">Fermer</button>
+                </div>
+              }
             </div>
           }
         </div>

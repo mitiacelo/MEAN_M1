@@ -12,7 +12,7 @@ export interface User {
   firstname: string;
   email: string;
   role: string;
-  id_shop?: string | null;  // ← rendu optionnel (peut être absent)
+  id_shop?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -57,8 +57,8 @@ export class AuthService {
         } else if (user?.role === 'admin') {
           this.router.navigate(['/dashboard']);
         } else {
-          // Utilisateur normal ou rôle inconnu
-          this.router.navigate(['/']);
+          
+          this.router.navigate(['/landing']);
         }
       })
     );
@@ -101,12 +101,12 @@ export class AuthService {
         }
         this.currentUserSubject.next(response.user);
 
-        // Redirection après inscription (exemple : accueil ou dashboard si manager)
+        
         const user = response.user as User;
         if (user?.role === 'manager' && user?.id_shop) {
           this.router.navigate(['/dashboard-shop']);
         } else {
-          this.router.navigate(['/']);
+          this.router.navigate(['/landing']);
         }
       })
     );
