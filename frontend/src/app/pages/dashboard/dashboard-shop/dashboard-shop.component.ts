@@ -3,160 +3,179 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ShopService, Shop } from '../../../services/shop.service';
+import { BoutiqueService, Boutique } from '../../../services/boutique.service';
+import { DomaineService, Domaine } from '../../../services/domaine.service';
 import { ProductService, Product } from '../../../services/product.service';
 import { TypeService, Type } from '../../../services/type.service';
 import { AuthService } from '../../../services/auth.service';
+import { CreateProductComponent } from '../../../components/product/create-product/create-product.component';
+import { ProductListComponent } from '../../../components/product/product-list/product-list.component';
 
 @Component({
   selector: 'app-dashboard-shop',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    CreateProductComponent,
+    ProductListComponent
+  ],
   templateUrl: './dashboard-shop.component.html',
   styleUrl: './dashboard-shop.component.css'
 })
 export class DashboardShopComponent implements OnInit {
   shop: Shop | null = null;
+  boutique: Boutique | null = null;
   products: Product[] = [];
   types: Type[] = [];
-  loadingShop = true;
-  loadingProducts = true;
-  loadingTypes = true;
+  domaines: Domaine[] = [];
+  loading = true;
   errorMessage = '';
 
-  // Formulaire d'ajout
-  newProduct: Partial<Product> = { name: '', description: '', id_type: '' };
+  showCreateBoutique = false;
+  newBoutique = {
+    name: '',
+    description: '',
+    id_domaine: ''
+  };
 
-  // Édition inline
-  editingProductId: string | null = null;
-  editingProduct: Partial<Product> = { name: '', description: '', id_type: '' };
+  isEditingBoutique = false;
+  editedBoutique: Partial<Boutique> = {};
+
+  showCreateProductForm = false;
 
   constructor(
     private shopService: ShopService,
+    private boutiqueService: BoutiqueService,
     private productService: ProductService,
     private typeService: TypeService,
+    private domaineService: DomaineService,
     public authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.loadMyShop();
-    this.loadTypes();
+    this.loadData();
+
+    this.domaineService.getAllDomaines().subscribe({
+      next: (domaines) => {
+        this.domaines = domaines;
+        console.log('DOMAINES CHARGÉS :', domaines);
+      },
+      error: (err) => console.error('ERREUR DOMAINES :', err)
+    });
   }
 
-  private loadMyShop(): void {
+  private loadData(): void {
     const user = this.authService.currentUser;
-    if (!user || !user.id_shop) {
-      this.errorMessage = 'Aucune boutique associée à votre compte.';
-      this.loadingShop = false;
+    if (!user?.id_shop) {
+      this.errorMessage = 'Aucune salle attribuée à votre compte.';
+      this.loading = false;
       return;
     }
 
     this.shopService.getShopById(user.id_shop).subscribe({
       next: (shop) => {
         this.shop = shop;
-        this.loadingShop = false;
-        this.loadProducts(shop._id);
+
+        this.boutiqueService.getMyBoutique(user.id).subscribe({
+          next: (boutique) => {
+            this.boutique = boutique;
+            this.loading = false;
+
+            if (boutique) {
+              this.productService.getProductsByShop(shop._id).subscribe({
+                next: (prods) => this.products = prods,
+                error: () => {}
+              });
+            }
+          },
+          error: () => {
+            this.boutique = null;
+            this.loading = false;
+          }
+        });
       },
-      error: (err) => {
-        this.errorMessage = 'Impossible de charger votre boutique';
-        this.loadingShop = false;
+      error: () => {
+        this.errorMessage = 'Impossible de charger votre salle';
+        this.loading = false;
       }
     });
+
+    this.typeService.getAllTypes().subscribe(t => this.types = t);
   }
 
-  private loadProducts(shopId: string): void {
-    this.productService.getProductsByShop(shopId).subscribe({
-      next: (products) => {
-        this.products = products;
-        this.loadingProducts = false;
-      },
-      error: (err) => {
-        console.error('Erreur chargement produits', err);
-        this.loadingProducts = false;
-      }
-    });
-  }
-
-  private loadTypes(): void {
-    this.typeService.getAllTypes().subscribe({
-      next: (types) => {
-        this.types = types;
-        this.loadingTypes = false;
-      },
-      error: (err) => {
-        console.error('Erreur chargement types', err);
-        this.errorMessage = 'Impossible de charger les types de produits';
-        this.loadingTypes = false;
-      }
-    });
-  }
-
-  // AJOUTER un produit
-  addProduct() {
-    if (!this.shop || !this.newProduct.name || !this.newProduct.id_type) return;
+  createBoutique() {
+    if (!this.shop || !this.newBoutique.name || !this.newBoutique.id_domaine) {
+      this.errorMessage = 'Nom et domaine obligatoires';
+      return;
+    }
 
     const payload = {
-      name: this.newProduct.name,
-      description: this.newProduct.description || '',
-      id_type: this.newProduct.id_type,
-      id_shop: this.shop._id
+      name: this.newBoutique.name,
+      description: this.newBoutique.description || '',
+      id_shop: this.shop._id,
+      id_domaine: this.newBoutique.id_domaine
     };
 
-    this.productService.createProduct(payload).subscribe({
-      next: (newProduct) => {
-        this.products.push(newProduct);
-        this.newProduct = { name: '', description: '', id_type: '' };
+    this.boutiqueService.createBoutique(payload).subscribe({
+      next: (boutique) => {
+        this.boutique = boutique;
+        this.showCreateBoutique = false;
+        this.newBoutique = { name: '', description: '', id_domaine: '' };
+        this.errorMessage = '';
       },
       error: (err) => {
-        this.errorMessage = 'Erreur création produit';
+        this.errorMessage = err.error?.message || 'Erreur création boutique';
         console.error(err);
       }
     });
   }
 
-  // COMMENCER édition
-  startEdit(product: Product) {
-    this.editingProductId = product._id;
-    this.editingProduct = {
-      name: product.name,
-      description: product.description || '',
-      id_type: product.id_type?._id || product.id_type || '' // récupère l'ID brut
+  startEditBoutique() {
+    if (!this.boutique) return;
+    this.isEditingBoutique = true;
+    this.editedBoutique = {
+      name: this.boutique.name,
+      description: this.boutique.description || '',
+      id_domaine: this.boutique.id_domaine?._id || this.boutique.id_domaine || ''
     };
   }
 
-  // ENREGISTRER édition
-  saveEdit() {
-    if (!this.editingProductId || !this.editingProduct.name || !this.editingProduct.id_type) return;
+  saveBoutiqueEdit() {
+    if (!this.boutique || !this.editedBoutique.name || !this.editedBoutique.id_domaine) return;
 
-    this.productService.updateProduct(this.editingProductId, this.editingProduct).subscribe({
+    this.boutiqueService.updateBoutique(this.boutique._id, this.editedBoutique).subscribe({
       next: (updated) => {
-        const index = this.products.findIndex(p => p._id === this.editingProductId);
-        if (index !== -1) this.products[index] = updated;
-        this.cancelEdit();
+        this.boutique = updated;
+        this.isEditingBoutique = false;
+        this.editedBoutique = {};
+        this.errorMessage = '';
       },
       error: (err) => {
-        this.errorMessage = 'Erreur mise à jour produit';
+        this.errorMessage = err.error?.message || 'Erreur modification boutique';
         console.error(err);
       }
     });
   }
 
-  cancelEdit() {
-    this.editingProductId = null;
-    this.editingProduct = { name: '', description: '', id_type: '' };
+  cancelEditBoutique() {
+    this.isEditingBoutique = false;
+    this.editedBoutique = {};
   }
 
-  deleteProduct(id: string) {
-    if (!confirm('Confirmer la suppression ?')) return;
+  onProductCreated(product: Product) {
+    this.products.push(product);
+    this.showCreateProductForm = false;
+  }
 
-    this.productService.deleteProduct(id).subscribe({
-      next: () => {
-        this.products = this.products.filter(p => p._id !== id);
-      },
-      error: (err) => {
-        this.errorMessage = 'Erreur suppression produit';
-        console.error(err);
-      }
-    });
+  onProductUpdated(updated: Product) {
+    const index = this.products.findIndex(p => p._id === updated._id);
+    if (index !== -1) this.products[index] = updated;
+  }
+
+  onProductDeleted(id: string) {
+    this.products = this.products.filter(p => p._id !== id);
   }
 
   logout() {

@@ -31,6 +31,12 @@ const shopSchema = new mongoose.Schema({
   color: {
     type: String,
     default: null
+  },
+  id_boutique: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Boutique',
+    unique: true,
+    sparse: true
   }
 }, {
   timestamps: true   // createdAt & updatedAt automatiques

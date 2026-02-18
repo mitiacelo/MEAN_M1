@@ -24,5 +24,9 @@ app.use('/shops', require('./routes/shopRoutes'));
 app.use('/products', require('./routes/productRoutes'));
 app.use('/types', require('./routes/typeRoutes'));
 app.use('/notifications', require('./routes/notificationRoutes'));
+app.use('/stock-mouvements', require('./routes/stockMouvementRoutes'));
+app.use('/price-products', require('./routes/priceProductRoutes'));
+app.use('/boutiques', require('./routes/boutiqueRoutes'));
+app.use('/domaines', require('./routes/domaineRoutes'));
 app.listen(PORT, () => console.log(`Serveur démarré sur le port
 ${PORT}`));

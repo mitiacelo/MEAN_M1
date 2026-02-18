@@ -1,49 +1,38 @@
 <div class="landing-wrapper">
-    <!-- Barre de navigation fixe en haut -->
-    <header class="top-bar">
-      <div class="logo">
-        <h1>Plaza</h1>
-      </div>
-  
-      <div class="auth-buttons">
-        @if (!authService.isLoggedIn) {
-          <button class="login-btn" routerLink="/login">Se connecter</button>
-          <button class="register-btn" routerLink="/register">S'inscrire</button>
-        } @else {
-          <span class="welcome">Bonjour {{ authService.currentUser?.firstname }}</span>
-          <button class="logout-btn" (click)="authService.logout()">Déconnexion</button>
-        }
-      </div>
-    </header>
-  
-    <!-- Contenu principal – landing -->
-    <main class="hero">
-      <div class="hero-content">
-        <h1 class="main-title">Plaza</h1>
-        <p class="main-subtitle">
-          Le cœur battant d'Antananarivo
-        </p>
-  
-        <p class="catchphrase">
-          Découvrez l’expérience shopping et lifestyle la plus moderne de la capitale.<br>
-          Plus de 120 boutiques, restaurants, cinéma, espaces de loisirs…<br>
-          <strong>Votre destination préférée commence ici.</strong>
-        </p>
-  
-        <!-- @if (!authService.isLoggedIn) {
-          <div class="cta-buttons">
-            <button class="cta-primary" routerLink="/register">Créer mon compte</button>
-            <button class="cta-secondary" routerLink="/login">J'ai déjà un compte</button>
-          </div>
-        } @else {
-          <div class="cta-buttons">
-            <button class="cta-primary" routerLink="/articles">Voir les actualités & promotions</button>
-          </div>
-        } -->
-      </div>
+  <!-- Barre de navigation fixe en haut -->
+  <header class="top-bar">
+    <div class="logo">
+      <h1>Plaza</h1>
+    </div>
 
-      <app-shop></app-shop>
+    <div class="auth-buttons">
+      @if (!authService.isLoggedIn) {
+        <button class="login-btn" routerLink="/login">Se connecter</button>
+        <button class="register-btn" routerLink="/register">S'inscrire</button>
+      } @else {
+        <span class="welcome">Bonjour {{ authService.currentUser?.firstname }}</span>
+        <button class="logout-btn" (click)="authService.logout()">Déconnexion</button>
+      }
+    </div>
+  </header>
 
+  <!-- Contenu principal -->
+  <main class="hero">
+    <div class="hero-content">
+      <h1 class="main-title">Plaza</h1>
+      <p class="main-subtitle">Le cœur battant d'Antananarivo</p>
 
-    </main>
-  </div>
+      <p class="catchphrase">
+        Découvrez l’expérience shopping et lifestyle la plus moderne de la capitale.<br>
+        Plus de 120 boutiques, restaurants, cinéma, espaces de loisirs…<br>
+        <strong>Votre destination préférée commence ici.</strong>
+      </p>
+    </div>
+
+    <!-- On garde uniquement les salles disponibles (inactives) -->
+    <app-shop></app-shop>
+
+    <!-- Nouvelle section : les boutiques déjà ouvertes -->
+    <app-boutiques-list></app-boutiques-list>
+  </main>
+</div>

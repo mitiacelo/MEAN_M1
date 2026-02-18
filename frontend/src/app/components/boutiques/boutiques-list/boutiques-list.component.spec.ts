@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RegisterPopupComponent } from './register-popup.component';
+import { BoutiquesListComponent } from './boutiques-list.component';
 
-describe('RegisterPopupComponent', () => {
-  let component: RegisterPopupComponent;
-  let fixture: ComponentFixture<RegisterPopupComponent>;
+describe('BoutiquesListComponent', () => {
+  let component: BoutiquesListComponent;
+  let fixture: ComponentFixture<BoutiquesListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RegisterPopupComponent]
+      imports: [BoutiquesListComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RegisterPopupComponent);
+    fixture = TestBed.createComponent(BoutiquesListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

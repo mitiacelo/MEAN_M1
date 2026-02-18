@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ShopComponent } from '../shop/shop.component';
+import { BoutiquesListComponent } from '../../components/boutiques/boutiques-list/boutiques-list.component';
 
 @Component({
   selector: 'app-landing',
@@ -10,7 +11,8 @@ import { ShopComponent } from '../shop/shop.component';
   imports: [
     RouterLink,
     CommonModule,
-    ShopComponent   // ← on garde ça pour afficher <app-shop> dans le HTML
+    ShopComponent,
+    BoutiquesListComponent
   ],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css'

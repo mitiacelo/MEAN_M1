@@ -22,7 +22,13 @@ const productSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Shop',
     required: [true, "Le produit doit appartenir à une boutique"]
-  }
+  },
+  quantite: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 0
+  },
 }, {
   timestamps: true
 });

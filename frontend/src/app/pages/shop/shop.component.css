@@ -3,7 +3,7 @@
     max-width: 1400px;
     margin: 0 auto;
     background: #f8fafc;
-    min-height: calc(100vh - 80px); /* si top-bar fait ~80px */
+    min-height: calc(50vh - 200px); /* si top-bar fait ~80px */
   }
   
   /* Chargement & Erreur */

@@ -39,4 +39,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/dashboard/dashboard-shop/dashboard-shop.component')
       .then(m => m.DashboardShopComponent)
   },
+  { path: 'shop/:id', 
+    loadComponent: () => import('./pages/shop/shop-details/shop-details.component')
+      .then(m => m.ShopDetailsComponent)
+  },
+  { path: 'boutique/:id',
+    loadComponent: () => import('./components/boutiques/boutiques-details/boutiques-details.component')
+      .then(m => m.BoutiqueDetailsComponent)
+   }
 ];
