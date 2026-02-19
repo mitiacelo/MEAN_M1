@@ -1,0 +1,23 @@
+<header class="top-bar">
+    <div class="logo">
+      <h1>Plaza</h1>
+    </div>
+  
+    <div class="auth-buttons">
+      @if (!authService.isLoggedIn) {
+        <button class="login-btn" routerLink="/login">Se connecter</button>
+        <button class="register-btn" routerLink="/register">S'inscrire</button>
+      } @else {
+        <span class="welcome">Bonjour {{ authService.currentUser?.firstname }}</span>
+  
+        <!-- BOUTON "MA BOUTIQUE" uniquement pour les managers -->
+        @if (authService.hasRole('manager')) {
+          <button class="my-shop-btn" routerLink="/dashboard-shop">
+            Ma boutique
+          </button>
+        }
+  
+        <button class="logout-btn" (click)="authService.logout()">Déconnexion</button>
+      }
+    </div>
+  </header>

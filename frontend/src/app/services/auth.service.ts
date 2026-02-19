@@ -115,4 +115,10 @@ export class AuthService {
   getUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/auth/users`);
   }
+
+  hasRole(role: string): boolean {
+    const user = this.currentUser;
+    if (!user || !user.role) return false;
+    return user.role === role || user.role.includes(role); // au cas où c'est un tableau
+  }
 }

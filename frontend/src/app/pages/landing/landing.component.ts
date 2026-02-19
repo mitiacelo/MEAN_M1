@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ShopComponent } from '../shop/shop.component';
 import { BoutiquesListComponent } from '../../components/boutiques/boutiques-list/boutiques-list.component';
+import { HeaderComponent } from '../../components/header/header.component';
 
 @Component({
   selector: 'app-landing',
@@ -12,7 +13,8 @@ import { BoutiquesListComponent } from '../../components/boutiques/boutiques-lis
     RouterLink,
     CommonModule,
     ShopComponent,
-    BoutiquesListComponent
+    BoutiquesListComponent,
+    HeaderComponent,
   ],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css'
