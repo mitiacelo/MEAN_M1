@@ -34,7 +34,7 @@ router.post('/register', [
       console.log('Génération token JWT');
       const token = jwt.sign(
         { id: user._id, role: user.role },
-        process.env.JWT_SECRET || 'ta_cle_secrete_tres_longue_ici',
+        process.env.JWT_SECRET,
         { expiresIn: '7d' }
       );
   
@@ -51,6 +51,7 @@ router.post('/register', [
         details: err.message || 'Erreur inconnue'
       });
     }
+    console.log('JWT_SECRET utilisé pour signer :', process.env.JWT_SECRET ? 'OUI' : 'NON');
   });
 
 // Connexion
@@ -94,6 +95,7 @@ router.post('/login', async (req, res) => {
       console.error('ERREUR DANS /login :', err);
       res.status(500).json({ message: err.message || 'Erreur serveur' });
     }
+    console.log('JWT_SECRET utilisé pour signer :', process.env.JWT_SECRET ? 'OUI' : 'NON');
   });
   // ✅ NOUVEAU : GET /auth/users → liste tous les users
 router.get('/users', async (req, res) => {

@@ -46,5 +46,9 @@ export const routes: Routes = [
   { path: 'boutique/:id',
     loadComponent: () => import('./components/boutiques/boutiques-details/boutiques-details.component')
       .then(m => m.BoutiqueDetailsComponent)
-   }
+   },
+   { path: 'cart', 
+    loadComponent: () => import('./pages/cart/cart.component')
+      .then(m => m.CartComponent)
+  },
 ];

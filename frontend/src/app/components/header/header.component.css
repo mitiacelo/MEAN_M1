@@ -57,3 +57,17 @@
   .my-shop-btn:hover {
     background: #e65c00;
   }
+
+  .my-cart-btn {
+    background: #9c27b0;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 1rem;
+  }
+  
+  .my-cart-btn:hover {
+    background: #7b1fa2;
+  }
