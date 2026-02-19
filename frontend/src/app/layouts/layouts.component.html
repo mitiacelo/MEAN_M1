@@ -1,0 +1,30 @@
+<div class="admin-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-name">Mall<span class="brand-accent">.</span></span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        Dashboard
+      </a>
+      <a routerLink="/grille" routerLinkActive="active" class="nav-item">
+        Centre commercial
+      </a>
+      <a routerLink="/notifications" routerLinkActive="active" class="nav-item nav-item--notif">
+        Notifications
+        <span class="notif-dot" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="logout()">Déconnexion</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

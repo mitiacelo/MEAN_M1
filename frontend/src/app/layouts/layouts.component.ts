@@ -1,0 +1,31 @@
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { NotificationService } from '../services/notification.service';
+
+@Component({
+  selector: 'app-admin-layout',
+  standalone: true,
+  imports: [RouterModule, CommonModule],
+  templateUrl: './layouts.component.html',
+  styleUrls: ['./layouts.component.css']
+})
+export class AdminLayoutComponent implements OnInit {
+  pendingCount = 0;
+
+  constructor(private notificationService: NotificationService) {}
+
+  ngOnInit(): void {
+    this.notificationService.getAll().subscribe({
+      next: (notifs) => {
+        this.pendingCount = notifs.filter(n => n.status === 'pending').length;
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  logout(): void {
+    // TODO: appeler AuthService.logout() puis rediriger
+    console.log('logout');
+  }
+}

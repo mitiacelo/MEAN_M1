@@ -1,0 +1,67 @@
+<div class="notif-page">
+
+  <div class="notif-header">
+    <div>
+      <h2>Notifications</h2>
+      <p class="notif-subtitle" *ngIf="pendingCount > 0">{{ pendingCount }} demande{{ pendingCount > 1 ? 's' : '' }} en attente</p>
+      <p class="notif-subtitle" *ngIf="pendingCount === 0">Aucune demande en attente</p>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters">
+    <button class="filter-btn" [class.active]="filter === 'all'" (click)="setFilter('all')">
+      Toutes <span class="count">{{ notifications.length }}</span>
+    </button>
+    <button class="filter-btn" [class.active]="filter === 'pending'" (click)="setFilter('pending')">
+      En attente <span class="count pending" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+    </button>
+    <button class="filter-btn" [class.active]="filter === 'processed'" (click)="setFilter('processed')">
+      Traitées
+    </button>
+    <button class="filter-btn" [class.active]="filter === 'rejected'" (click)="setFilter('rejected')">
+      Refusées
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" *ngIf="loading">Chargement…</div>
+
+  <!-- Vide -->
+  <div class="empty" *ngIf="!loading && filtered.length === 0">
+    Aucune notification pour ce filtre.
+  </div>
+
+  <!-- Liste -->
+  <div class="notif-list" *ngIf="!loading">
+    <div class="notif-card" *ngFor="let notif of filtered" [class]="'notif-card--' + notif.status">
+
+      <div class="notif-card-top">
+        <div class="notif-meta">
+          <span class="notif-shop">{{ getShopName(notif) }}</span>
+          <span class="notif-date">{{ formatDate(notif.createdAt) }}</span>
+        </div>
+        <span class="badge" [class]="'badge--' + notif.status">
+          {{ notif.status === 'pending' ? 'En attente' : notif.status === 'processed' ? 'Traitée' : 'Refusée' }}
+        </span>
+      </div>
+
+      <p class="notif-message">"{{ notif.message }}"</p>
+
+      <div class="notif-contact">
+        <span>{{ getUserName(notif) }}</span>
+        <span class="sep">·</span>
+        <span>{{ notif.email }}</span>
+        <span class="sep">·</span>
+        <span>{{ notif.phone }}</span>
+      </div>
+
+      <div class="notif-actions" *ngIf="notif.status === 'pending'">
+        <button class="btn-accept" (click)="accept(notif)">Accepter</button>
+        <button class="btn-reject" (click)="reject(notif)">Refuser</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
