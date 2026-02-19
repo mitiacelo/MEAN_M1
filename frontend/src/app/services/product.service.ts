@@ -9,6 +9,8 @@ export interface Product {
   description?: string;
   id_type: any;
   id_category: any;
+  quantite: number;
+  prix_actuel?: number;
   id_shop: any;
   createdAt: string;
   updatedAt: string;

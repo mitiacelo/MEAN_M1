@@ -2,13 +2,83 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Product = require('../models/Product');
-
-// Charge tous les modèles référencés dans les populate
-const Type     = require('../models/Type');
+const Type = require('../models/Type');
 const Category = require('../models/Category');
-const Domaine  = require('../models/Domaine');
+const Domaine = require('../models/Domaine');
+const Shop = require('../models/Shop');
+const StockMouvement = require('../models/StockMouvement');
+const PriceProduct = require('../models/PriceProduct');
 
-// GET /api/products/shop/:shopId → tous les produits d'une boutique
+// POST /api/products → Créer produit + stock initial + prix initial
+router.post('/', async (req, res) => {
+  console.log('POST /products - Body reçu :', req.body);
+
+  try {
+    const {
+      name,
+      description,
+      id_type,
+      id_shop,
+      quantite = 0,
+      prix
+    } = req.body;
+
+    if (!name || !id_type || !id_shop) {
+      return res.status(400).json({ message: 'Nom, type et boutique obligatoires' });
+    }
+
+    if (quantite < 0) {
+      return res.status(400).json({ message: 'Quantité ne peut pas être négative' });
+    }
+
+    if (prix == null || prix < 0) {
+      return res.status(400).json({ message: 'Prix initial obligatoire et positif' });
+    }
+
+    const product = new Product({
+      name,
+      description: description || '',
+      id_type,
+      id_shop,
+      quantite: Number(quantite)
+    });
+
+    await product.save();
+    console.log('Produit créé → _id:', product._id);
+
+    const mouvement = new StockMouvement({
+      id_produit: product._id,
+      type: 'entree',
+      quantite: Number(quantite),
+      stock_apres: Number(quantite)
+    });
+
+    await mouvement.save();
+
+    const priceEntry = new PriceProduct({
+      id_product: product._id,
+      prix: Number(prix)
+    });
+
+    await priceEntry.save();
+
+    // Populate léger pour la réponse
+    const populated = await Product.findById(product._id)
+      .populate('id_type', 'name');
+
+    res.status(201).json({
+      message: 'Produit créé avec succès',
+      product: populated,
+      mouvementInitial: mouvement,
+      prixInitial: priceEntry
+    });
+  } catch (err) {
+    console.error('Erreur création produit :', err.message);
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// GET /api/products/shop/:shopId → tous les produits d'une boutique (avec prix actuel)
 router.get('/shop/:shopId', async (req, res) => {
   const shopId = req.params.shopId;
 
@@ -36,7 +106,16 @@ router.get('/shop/:shopId', async (req, res) => {
 
     console.log(`→ ${products.length} produit(s) trouvé(s)`);
 
-    res.json(products);
+    // Ajouter prix actuel à chaque produit
+    const productsWithPrice = await Promise.all(products.map(async (product) => {
+      const lastPrice = await PriceProduct.findOne({ id_product: product._id }).sort({ createdAt: -1 });
+      return {
+        ...product.toObject(),
+        prix_actuel: lastPrice ? lastPrice.prix : null
+      };
+    }));
+
+    res.json(productsWithPrice);
   } catch (err) {
     console.error('ERREUR dans GET /products/shop/:shopId :');
     console.error(err.stack || err.message);
@@ -47,7 +126,7 @@ router.get('/shop/:shopId', async (req, res) => {
   }
 });
 
-// GET /api/products/:id → détail d'un produit
+// GET /api/products/:id → détail d'un produit (avec prix actuel, historique prix et stock)
 router.get('/:id', async (req, res) => {
   const productId = req.params.id;
 
@@ -76,8 +155,23 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Produit non trouvé' });
     }
 
+    // Prix actuel = dernier PriceProduct
+    const lastPrice = await PriceProduct.findOne({ id_product: productId }).sort({ createdAt: -1 });
+    const prixActuel = lastPrice ? lastPrice.prix : null;
+
+    // Historique prix (tous les prix)
+    const prixHistorique = await PriceProduct.find({ id_product: productId }).sort({ createdAt: -1 });
+
+    // Historique stock (tous les mouvements)
+    const stockHistorique = await StockMouvement.find({ id_produit: productId }).sort({ createdAt: -1 });
+
     console.log('→ Produit trouvé et populé');
-    res.json(product);
+    res.json({
+      ...product.toObject(),
+      prix_actuel: prixActuel,
+      prix_historique: prixHistorique,
+      stock_historique: stockHistorique
+    });
   } catch (err) {
     console.error('ERREUR dans GET /products/:id :');
     console.error(err.stack || err.message);
@@ -88,21 +182,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/products → créer un produit (protégé plus tard si besoin)
-router.post('/', async (req, res) => {
-  console.log('POST /products - Body reçu :', req.body);
-
-  try {
-    const product = new Product(req.body);
-    await product.save();
-    res.status(201).json(product);
-  } catch (err) {
-    console.error('Erreur création produit :', err.message);
-    res.status(400).json({ message: err.message });
-  }
-});
-
-// PUT /api/products/:id → mise à jour complète d'un produit
+// PUT /api/products/:id → mise à jour complète (peut inclure quantite si besoin)
 router.put('/:id', async (req, res) => {
   const productId = req.params.id;
 

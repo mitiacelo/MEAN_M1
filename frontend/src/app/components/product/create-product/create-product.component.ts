@@ -4,6 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { ProductService, Product } from '../../../services/product.service';
 import { TypeService, Type } from '../../../services/type.service';
 
+// Interface dédiée au formulaire (quantite et prix obligatoires)
+interface ProductForm {
+  name: string;
+  description?: string;
+  id_type: string;
+  id_category?: string;
+  quantite: number;
+  prix: number;
+}
+
 @Component({
   selector: 'app-create-product',
   standalone: true,
@@ -17,7 +27,14 @@ export class CreateProductComponent {
   @Output() cancel = new EventEmitter<void>();
 
   types: Type[] = [];
-  product: Partial<Product> = { name: '', description: '', id_type: '' };
+  product: ProductForm = {
+    name: '',
+    description: '',
+    id_type: '',
+    id_category: '',
+    quantite: 0,
+    prix: 0
+  };
   error = '';
 
   constructor(
@@ -35,8 +52,8 @@ export class CreateProductComponent {
   }
 
   submit() {
-    if (!this.product.name || !this.product.id_type) {
-      this.error = 'Nom et type obligatoires';
+    if (!this.product.name || !this.product.id_type || this.product.quantite == null || this.product.prix == null) {
+      this.error = 'Tous les champs obligatoires doivent être remplis';
       return;
     }
 
@@ -44,7 +61,10 @@ export class CreateProductComponent {
       name: this.product.name,
       description: this.product.description || '',
       id_type: this.product.id_type,
-      id_shop: this.shopId
+      id_category: this.product.id_category || 'default_category_id', // adapte selon ton cas
+      id_shop: this.shopId,
+      quantite: Number(this.product.quantite),
+      prix: Number(this.product.prix)
     };
 
     this.productService.createProduct(payload).subscribe({
@@ -52,12 +72,22 @@ export class CreateProductComponent {
         this.productCreated.emit(newProduct);
         this.resetForm();
       },
-      error: (err) => this.error = 'Erreur création'
+      error: (err) => {
+        this.error = err.error?.message || 'Erreur création produit';
+        console.error(err);
+      }
     });
   }
 
   resetForm() {
-    this.product = { name: '', description: '', id_type: '' };
+    this.product = {
+      name: '',
+      description: '',
+      id_type: '',
+      id_category: '',
+      quantite: 0,
+      prix: 0
+    };
     this.error = '';
   }
 
