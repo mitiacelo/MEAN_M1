@@ -1,0 +1,57 @@
+<div class="product-list">
+  @if (products.length === 0) {
+    <p>Aucun produit ajouté pour le moment.</p>
+  } @else {
+    @for (product of products; track product._id) {
+      <div class="product-item">
+        @if (editingProductId !== product._id) {
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.description || 'Pas de description' }}</p>
+          <p>Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
+          <p>Stock actuel : <strong>{{ product.quantite }} unités</strong></p>
+          <p>Prix actuel : <strong>{{ product.prix_actuel || 'Non défini' }} Ar</strong></p>
+
+          <div class="actions">
+            <button class="update-btn" (click)="startEdit(product)">Modifier</button>
+            <button class="delete-btn" (click)="deleteProduct(product._id)">Supprimer</button>
+          </div>
+        } @else {
+          <h3>
+            <input type="text" [(ngModel)]="editingProduct.name" required placeholder="Nom du produit" />
+          </h3>
+
+          <p>
+            <textarea [(ngModel)]="editingProduct.description" placeholder="Description..."></textarea>
+          </p>
+
+          <div class="form-group">
+            <label>Type :</label>
+            <select [(ngModel)]="editingProduct.id_type" required>
+              <option value="" disabled>Sélectionner</option>
+              @for (type of types; track type._id) {
+                <option [value]="type._id">{{ type.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Stock actuel :</label>
+            <input type="number" [(ngModel)]="editingProduct.quantite" min="0" />
+          </div>
+
+          <div class="form-group">
+            <label>Prix actuel (Ar) :</label>
+            <input type="number" [(ngModel)]="editingProduct.prix_actuel" min="0" step="0.01" />
+          </div>
+
+          <div class="actions">
+            <button class="save-btn" (click)="saveEdit()" [disabled]="!editingProduct.name || !editingProduct.id_type">
+              Enregistrer
+            </button>
+            <button class="cancel-btn" (click)="cancelEdit()">Annuler</button>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

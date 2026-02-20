@@ -1,0 +1,107 @@
+<div class="shop-details-container">
+  @if (loading) {
+    <p class="loading">Chargement de la boutique...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else if (shop) {
+    <header class="shop-header">
+      <h1>{{ shop.name }}</h1>
+      <p class="superficie">{{ shop.superficie }} m²</p>
+      <p class="description">{{ shop.description || 'Aucune description disponible' }}</p>
+      <p class="status">
+        Statut : 
+        <span [ngClass]="{
+          'status-active': shop.status === 'actif',
+          'status-inactive': shop.status === 'inactif',
+          'status-pending': shop.status === 'en attente'
+        }">
+          {{ shop.status | titlecase }}
+        </span>
+      </p>
+    </header>
+
+    @if (shop.status === 'actif') {
+      <section class="products-section">
+        <h2>Produits disponibles</h2>
+        @if (products.length === 0) {
+          <p class="empty">Aucun produit disponible dans cette boutique pour le moment.</p>
+        } @else {
+          <div class="products-grid">
+            @for (product of products; track product._id) {
+              <div class="product-card">
+                <h3>{{ product.name }}</h3>
+                <p class="description">{{ product.description || 'Pas de description' }}</p>
+                <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
+                <button class="view-btn">Voir le produit</button>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    } @else if (shop.status === 'inactif') {
+      <section class="visit-request-section">
+        <h2>Cette boutique est disponible</h2>
+        <p class="visit-text">
+          Vous souhaitez visiter cet espace en personne et discuter d’une possible location ?
+        </p>
+
+        @if (requestSent || hasRequested) {
+          <div class="confirmation-box">
+            <h3>Votre demande a été envoyée !</h3>
+            <p>Le propriétaire a été informé. Vous recevrez une réponse rapidement.</p>
+          </div>
+        } @else {
+          <form (ngSubmit)="submitVisitRequest()" class="visit-form">
+            <div class="form-group">
+              <label for="phone">Numéro de téléphone</label>
+              <input
+                id="phone"
+                type="tel"
+                [(ngModel)]="visitForm.phone"
+                name="phone"
+                required
+                placeholder="Ex: 034 12 345 67"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                [(ngModel)]="visitForm.email"
+                name="email"
+                required
+                disabled
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="message">Votre message / demande</label>
+              <textarea
+                id="message"
+                [(ngModel)]="visitForm.message"
+                name="message"
+                required
+                rows="5"
+                placeholder="Décrivez votre projet, vos disponibilités, etc."
+              ></textarea>
+            </div>
+
+            <button type="submit" class="request-visit-btn">
+              Envoyer la demande de rendez-vous
+            </button>
+          </form>
+        }
+      </section>
+    } @else if (shop.status === 'en attente') {
+      <section class="pending-section">
+        <h2>Demande en cours de traitement</h2>
+        <p>Une demande de visite a déjà été envoyée pour cette boutique.</p>
+        <p>Le propriétaire va vous contacter sous peu.</p>
+      </section>
+    }
+
+    <button class="back-btn" routerLink="/landing">Retour à l'accueil</button>
+  }
+</div>

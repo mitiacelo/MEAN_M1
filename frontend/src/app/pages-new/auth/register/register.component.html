@@ -1,0 +1,67 @@
+<div class="auth-container">
+    <div class="auth-card">
+      <h2>Inscription</h2>
+  
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+  
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+        <div class="form-group">
+          <label for="name">Nom</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            [(ngModel)]="user.name"
+            required
+            minlength="2"
+          />
+        </div>
+  
+        <div class="form-group">
+          <label for="firstname">Prénom</label>
+          <input
+            type="text"
+            id="firstname"
+            name="firstname"
+            [(ngModel)]="user.firstname"
+            required
+            minlength="2"
+          />
+        </div>
+  
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="user.email"
+            required
+            email
+          />
+        </div>
+  
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            [(ngModel)]="user.password"
+            required
+            minlength="6"
+          />
+        </div>
+  
+        <button type="submit" [disabled]="registerForm.invalid || isLoading">
+          {{ isLoading ? 'Inscription en cours...' : 'S\'inscrire' }}
+        </button>
+      </form>
+  
+      <p class="login-link">
+        Déjà un compte ? <a routerLink="/login">Se connecter</a>
+      </p>
+    </div>
+  </div>

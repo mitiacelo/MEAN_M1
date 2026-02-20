@@ -1,0 +1,45 @@
+<div class="cart-container">
+    <h1>Mon Panier</h1>
+  
+    @if (loading) {
+      <p>Chargement du panier...</p>
+    } @else if (error) {
+      <p class="error">{{ error }}</p>
+    } @else if (!cart || itemCount === 0) {
+      <p class="empty">Votre panier est vide.</p>
+      <button routerLink="/landing">Continuer vos achats</button>
+    } @else {
+      <div class="cart-items">
+        @for (item of cart.items; track item.product._id) {
+          <div class="cart-item">
+            <div class="item-info">
+              <h3>{{ item.product.name }}</h3>
+              <p>Type : {{ item.product.id_type?.name || 'Non spécifié' }}</p>
+              <p>Prix unitaire : {{ item.priceAtAddition || item.product.prix_actuel || 0 }} Ar</p>
+            </div>
+  
+            <div class="quantity">
+              <button (click)="updateQuantity(item, -1)" [disabled]="item.quantity <= 1">-</button>
+              <span>{{ item.quantity }}</span>
+              <button (click)="updateQuantity(item, 1)">+</button>
+            </div>
+  
+            <div class="item-total">
+              {{ (item.priceAtAddition || item.product.prix_actuel || 0) * item.quantity }} Ar
+            </div>
+  
+            <button class="remove-btn" (click)="removeItem(item.product._id)">
+              Supprimer
+            </button>
+          </div>
+        }
+      </div>
+  
+      <div class="cart-summary">
+        <h2>Total : {{ totalPrice }} Ar</h2>
+        <button class="checkout-btn" [disabled]="totalPrice === 0">
+          Passer commande
+        </button>
+      </div>
+    }
+  </div>

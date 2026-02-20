@@ -4,15 +4,15 @@ export const routes: Routes = [
   { path: '', redirectTo: 'grille', pathMatch: 'full' },
   {
     path: 'landing',
-    loadComponent: () => import('./pages/landing/landing.component').then(m => m.LandingComponent)
+    loadComponent: () => import('./pages-new/home-page/landing/landing.component').then(m => m.LandingComponent)
   },
   {
     path: 'login',
-    loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent)
+    loadComponent: () => import('./pages-new/auth/login/login.component').then(m => m.LoginComponent)
   },
   {
     path: 'register',
-    loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent)
+    loadComponent: () => import('./pages-new/auth/register/register.component').then(m => m.RegisterComponent)
   },
 
   // ✅ Toutes les routes admin/gestionnaire dans le layout avec sidebar
@@ -36,25 +36,29 @@ export const routes: Routes = [
         path: 'articles',
         loadComponent: () => import('./components/article-list/article-list.component').then(m => m.ArticleListComponent)
       },
+
+      // Shop -> Salle
       {
-        path: 'shop',
-        loadComponent: () => import('./pages/shop/shop.component').then(m => m.ShopComponent)
+        path: 'salle',
+        loadComponent: () => import('./pages-new/boutique-centre/admin-boutique/salle/salle.component').then(m => m.SalleComponent)
       },
       {
-        path: 'shop/:id',
-        loadComponent: () => import('./pages/shop/shop-details/shop-details.component').then(m => m.ShopDetailsComponent)
+        path: 'salle/:id',
+        loadComponent: () => import('./pages-new/boutique-centre/admin-boutique/salle/salle-details/salle-details.component').then(m => m.SalleDetailsComponent)
       },
+
+      // Shop Edit de Fanou avant, devrait etre shop-edit -> salle-edit
       {
         path: 'shop/:id/admin',
         loadComponent: () => import('./pages/shop/shop-edit/shop-edit.component').then(m => m.ShopEditComponent)
       },
       {
         path: 'dashboard-shop',
-        loadComponent: () => import('./pages/dashboard/dashboard-shop/dashboard-shop.component').then(m => m.DashboardShopComponent)
+        loadComponent: () => import('./pages-new/boutique-centre/admin-boutique/dashboard-shop/dashboard-shop.component').then(m => m.DashboardShopComponent)
       },
       {
         path: 'boutique/:id',
-        loadComponent: () => import('./components/boutiques/boutiques-details/boutiques-details.component').then(m => m.BoutiqueDetailsComponent)
+        loadComponent: () => import('./pages-new/boutique-centre/admin-boutique/boutiques/boutiques-details/boutiques-details.component').then(m => m.BoutiqueDetailsComponent)
       },
       {
         path: 'cart',

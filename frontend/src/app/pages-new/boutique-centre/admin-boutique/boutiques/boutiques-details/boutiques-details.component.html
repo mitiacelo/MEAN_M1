@@ -1,0 +1,78 @@
+<div class="boutique-details-container">
+  <app-header></app-header>
+  @if (loading) {
+    <p class="loading">Chargement de la boutique...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else if (boutique) {
+    <header class="boutique-header">
+      <h1>{{ boutique.name }}</h1>
+      <p class="domaine">{{ boutique.id_domaine?.name || 'Domaine non défini' }}</p>
+      <p class="description">{{ boutique.description || 'Aucune description disponible' }}</p>
+      <p class="salle">
+        Située dans la salle : {{ boutique.id_shop?.name }} ({{ boutique.id_shop?.superficie }} m²)
+      </p>
+    </header>
+
+    <section class="products-section">
+      <h2>Produits disponibles</h2>
+
+      @if (products.length === 0) {
+        <p class="empty">Aucun produit disponible pour le moment.</p>
+      } @else {
+        <div class="products-grid">
+          @for (product of products; track product._id) {
+            <div class="product-card">
+              <h3>{{ product.name }}</h3>
+              <p class="description">{{ product.description || 'Pas de description' }}</p>
+              <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
+
+              <!-- Prix actuel -->
+              <p class="prix">
+                Prix : 
+                <strong>
+                  {{ product.prix_actuel ? (product.prix_actuel | currency:'Ar':'symbol':'1.0-0') : 'Non défini' }}
+                </strong>
+              </p>
+
+              <!-- Stock (optionnel : tu peux l'ajouter si tu le souhaites) -->
+              <p class="stock">
+                Stock : {{ product.quantite }} unités
+              </p>
+
+              <!-- Bouton Ajouter au panier -->
+              <button 
+                class="add-to-cart-btn" 
+                (click)="addToCart(product)"
+                [disabled]="product.quantite <= 0">
+                Ajouter au panier
+              </button>
+
+              @if (cartHasItems && authService.isLoggedIn) {
+                <button class="view-cart-btn" routerLink="/cart">
+                  Voir le panier →
+                </button>
+              }
+              
+              @if (showLoginMessageForCart) {
+                <div class="login-required-message">
+                  <p>Vous devez être connecté pour ajouter des produits au panier.</p>
+                  <div class="auth-buttons-small">
+                    <button routerLink="/login">Se connecter</button>
+                    <button routerLink="/register">S'inscrire</button>
+                  </div>
+                  <button class="dismiss-btn" (click)="showLoginMessageForCart = false">Fermer</button>
+                </div>
+              }
+              <button class="view-btn" [routerLink]="['/product', product._id]">
+                Voir le produit
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <button class="back-btn" routerLink="/landing">Retour à l'accueil</button>
+  }
+</div>

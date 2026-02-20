@@ -1,0 +1,27 @@
+<section class="boutiques-section">
+    <h2>Nos boutiques ouvertes</h2>
+    <p class="section-intro">Découvrez les enseignes déjà installées et prêtes à vous accueillir.</p>
+  
+    @if (loading) {
+      <p class="loading">Chargement des boutiques...</p>
+    } @else if (error) {
+      <p class="error">{{ error }}</p>
+    } @else if (boutiques.length === 0) {
+      <p class="empty">Aucune boutique ouverte pour le moment.</p>
+    } @else {
+      <div class="boutiques-grid">
+        @for (boutique of boutiques; track boutique._id) {
+          <div class="boutique-card">
+            <h3>{{ boutique.name }}</h3>
+            <p class="domaine">{{ boutique.id_domaine?.name || 'Domaine non défini' }}</p>
+            <p class="description">{{ boutique.description || 'Aucune description' }}</p>
+            <p class="salle">Salle : {{ boutique.id_shop?.name }} ({{ boutique.id_shop?.superficie }} m²)</p>
+  
+            <button class="consult-btn" [routerLink]="['/boutique', boutique._id]">
+              Découvrir la boutique
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </section>

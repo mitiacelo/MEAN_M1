@@ -1,0 +1,23 @@
+<div class="landing-wrapper">
+  <app-header></app-header>
+
+  <!-- Contenu principal -->
+  <main class="hero">
+    <div class="hero-content">
+      <h1 class="main-title">Plaza</h1>
+      <p class="main-subtitle">Le cœur battant d'Antananarivo</p>
+
+      <p class="catchphrase">
+        Découvrez l’expérience shopping et lifestyle la plus moderne de la capitale.<br>
+        Plus de 120 boutiques, restaurants, cinéma, espaces de loisirs…<br>
+        <strong>Votre destination préférée commence ici.</strong>
+      </p>
+    </div>
+
+    <!-- On garde uniquement les salles disponibles (inactives) -->
+    <app-salle></app-salle>
+
+    <!-- Nouvelle section : les boutiques déjà ouvertes -->
+    <app-boutiques-list></app-boutiques-list>
+  </main>
+</div>

@@ -1,0 +1,48 @@
+<div class="shop-page">
+  @if (loading) {
+    <div class="loading-container">
+      <p>Chargement des salles disponibles...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="error-container">
+      <p>{{ errorMessage }}</p>
+    </div>
+  } @else {
+    <section class="shops-section available">
+      <h2>Salles disponibles en attente de propriétaire</h2>
+      <p class="section-intro">Ces espaces sont prêts à accueillir votre projet.</p>
+
+      @if (availableShops.length === 0) {
+        <p class="empty">Aucune salle disponible pour le moment.</p>
+      } @else {
+        <div class="shops-grid">
+          @for (shop of availableShops; track shop._id) {
+            <div class="shop-card">
+              <h3>{{ shop.name }}</h3>
+              <p class="superficie">{{ shop.superficie }} m²</p>
+              <p class="description">{{ shop.description || 'Aucune description' }}</p>
+
+              <button 
+                class="consult-btn" 
+                [routerLink]="authService.isLoggedIn ? ['/salle', shop._id] : null"
+                (click)="!authService.isLoggedIn && visitShop(shop._id)">
+                Visiter la salle
+              </button>
+
+              @if (showLoginMessage && selectedShopId === shop._id && !authService.isLoggedIn) {
+                <div class="login-required-message">
+                  <p>Vous devez être connecté pour visiter cette salle.</p>
+                  <div class="auth-buttons-small">
+                    <button routerLink="/login">Se connecter</button>
+                    <button routerLink="/register">S'inscrire</button>
+                  </div>
+                  <button class="dismiss-btn" (click)="dismissMessage()">Fermer</button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>
