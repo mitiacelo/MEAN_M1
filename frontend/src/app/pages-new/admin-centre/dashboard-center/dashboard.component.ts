@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BlockService } from '../../services/block.service';
-import { GrilleService } from '../../services/grille.service';
-import { ShopService } from '../../services/shop.service';
+import { BlockService } from '../../../services/block.service';
+import { GrilleService } from '../../../services/grille.service';
+import { ShopService } from '../../../services/shop.service';
 
 @Component({
   selector: 'app-dashboard',
