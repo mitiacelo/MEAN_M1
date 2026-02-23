@@ -37,7 +37,9 @@
   
       <div class="cart-summary">
         <h2>Total : {{ totalPrice }} Ar</h2>
-        <button class="checkout-btn" [disabled]="totalPrice === 0">
+        <button class="checkout-btn" 
+                [disabled]="totalPrice === 0 || loading"
+                (click)="checkout()">
           Passer commande
         </button>
       </div>

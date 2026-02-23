@@ -63,7 +63,19 @@ export const routes: Routes = [
       {
         path: 'cart',
         loadComponent: () => import('./pages-new/boutique-centre/customer-page/cart/cart.component').then(m => m.CartComponent)
-      }
+      },
+      {
+        path: 'orders',
+        loadComponent: () => import('./pages-new/boutique-centre/customer-page/orders/orders.component').then(m => m.OrdersComponent)
+      },
+      {
+        path: 'order-confirm/:id',
+        loadComponent: () => import('./pages-new/boutique-centre/customer-page/order-confirm/order-confirm.component').then(m => m.OrderConfirmComponent)
+      },
+      {
+        path: 'invoice/:id',
+        loadComponent: () => import('./pages-new/boutique-centre/customer-page/invoice/invoice.component').then(m => m.InvoiceComponent)
+      },
     ]
   }
 ];

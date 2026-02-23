@@ -1,34 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/auth'); // ← importe-le ici
+const authMiddleware = require('../middleware/auth');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const PriceProduct = require('../models/PriceProduct');
 
 // POST /api/cart → nécessite connexion
+// POST /api/cart
 router.post('/', authMiddleware, async (req, res) => {
   const { productId, quantity = 1 } = req.body;
 
-  console.log('POST /cart - Body reçu :', req.body);
-
-  if (!productId) {
-    return res.status(400).json({ message: 'ID produit requis' });
-  }
+  if (!productId) return res.status(400).json({ message: 'ID produit requis' });
 
   try {
+    // Récupérer le produit
     const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({ message: 'Produit non trouvé' });
-    }
+    if (!product) return res.status(404).json({ message: 'Produit non trouvé' });
 
-    if (product.quantite < quantity) {
-      return res.status(400).json({ message: 'Stock insuffisant' });
-    }
+    if (product.quantite < quantity) return res.status(400).json({ message: 'Stock insuffisant' });
 
-    const userId = req.user.id; // ← maintenant défini par middleware
+    // Récupérer le DERNIER prix du produit (le plus récent)
+    const lastPrice = await PriceProduct.findOne({ id_product: productId })
+      .sort({ createdAt: -1 }) // le plus récent d'abord
+      .select('prix');
 
-    let cart = await Cart.findOne({ user: userId });
+    const currentPrice = lastPrice ? lastPrice.prix : 0;
+
+    // Créer ou mettre à jour le panier
+    let cart = await Cart.findOne({ user: req.user.id });
     if (!cart) {
-      cart = new Cart({ user: userId, items: [] });
+      cart = new Cart({ user: req.user.id, items: [] });
     }
 
     const existingItem = cart.items.find(item => item.product.toString() === productId);
@@ -38,14 +39,19 @@ router.post('/', authMiddleware, async (req, res) => {
       cart.items.push({
         product: productId,
         quantity,
-        priceAtAddition: product.prix_actuel || 0
+        priceAtAddition: currentPrice  // ← ICI : on stocke le prix réel
       });
     }
 
     await cart.save();
 
+    // Retourner le panier mis à jour avec populate
     const updatedCart = await Cart.findById(cart._id)
-      .populate('items.product', 'name quantite prix_actuel');
+      .populate({
+        path: 'items.product',
+        select: 'name description quantite prix_actuel id_type',
+        populate: { path: 'id_type', select: 'name' }
+      });
 
     res.status(201).json(updatedCart);
   } catch (err) {

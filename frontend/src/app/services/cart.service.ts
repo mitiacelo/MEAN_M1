@@ -44,4 +44,8 @@ export class CartService {
   updateCartItem(productId: string, quantity: number): Observable<Cart> {
     return this.http.put<Cart>(`${environment.apiUrl}/cart/${productId}`, { quantity });
   }
+
+  createOrder(): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/orders`, {});
+  }
 }

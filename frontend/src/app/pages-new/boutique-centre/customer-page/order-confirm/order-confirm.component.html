@@ -1,0 +1,90 @@
+<div class="confirm-page">
+    <div class="container">
+      <h1>Confirmation de votre commandee</h1>
+  
+      <!-- Résumé de la commande -->
+      <div class="order-summary">
+        <h2>Résumé de votre achat</h2>
+  
+        <div class="summary-items">
+          @for (item of order?.items; track item.product._id) {
+            <div class="summary-row">
+              <div class="product-info">
+                <span class="product-name">{{ item.product.name }}</span>
+                <span class="quantity">× {{ item.quantity }}</span>
+              </div>
+              <div class="price">
+                {{ item.priceAtPurchase | number:'1.0-0' }} Ar
+              </div>
+            </div>
+          }
+        </div>
+  
+        <div class="summary-totals">
+          <div class="total-row">
+            <span>Sous-total produits</span>
+            <span>{{ totalPrice | number:'1.0-0' }} Ar</span>
+          </div>
+          <div class="total-row delivery">
+            <span>Frais de livraison</span>
+            <span>5 000 Ar</span>
+          </div>
+          <div class="total-row grand-total">
+            <strong>À payer</strong>
+            <strong class="grand">{{ totalPrice + 5000 | number:'1.0-0' }} Ar</strong>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Formulaire livraison -->
+      <div class="delivery-form">
+        <h2>Adresse de livraison</h2>
+  
+        <form [formGroup]="deliveryForm" (ngSubmit)="submitDelivery()">
+          <div class="form-group">
+            <label>Ville *</label>
+            <input formControlName="city" placeholder="Antananarivo, Toamasina...">
+            @if (deliveryForm.get('city')?.invalid && deliveryForm.get('city')?.touched) {
+              <small class="error-message">La ville est requise</small>
+            }
+          </div>
+  
+          <div class="form-group">
+            <label>Quartier / District *</label>
+            <input formControlName="district" placeholder="Ambohijatovo, Tanjombato...">
+            @if (deliveryForm.get('district')?.invalid && deliveryForm.get('district')?.touched) {
+              <small class="error-message">Le district est requis</small>
+            }
+          </div>
+  
+          <div class="form-group">
+            <label>Adresse détaillée *</label>
+            <textarea formControlName="address" rows="3" placeholder="Lot IIY 45 Bis, Immeuble X, 2e étage..."></textarea>
+            @if (deliveryForm.get('address')?.invalid && deliveryForm.get('address')?.touched) {
+              <small class="error-message">L'adresse est requise</small>
+            }
+          </div>
+  
+          <div class="form-group">
+            <label>Téléphone (10 chiffres) *</label>
+            <input formControlName="phone" type="tel" placeholder="034 12 345 67">
+            @if (deliveryForm.get('phone')?.invalid && deliveryForm.get('phone')?.touched) {
+              <small class="error-message">
+                @if (deliveryForm.get('phone')?.errors?.['required']) {Téléphone requis}
+                @if (deliveryForm.get('phone')?.errors?.['pattern']) {Format invalide (10 chiffres)}
+              </small>
+            }
+          </div>
+  
+          <button 
+            type="submit" 
+            class="submit-btn"
+            [disabled]="deliveryForm.invalid || loading || totalPrice === 0"
+            [class.loading]="loading">
+            @if (loading) {Traitement en cours...}
+            @else {Valider et payer {{ (totalPrice + 5000) | number:'1.0-0' }} Ar}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>

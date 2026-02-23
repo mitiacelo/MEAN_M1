@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router ,RouterLink,RouterModule } from '@angular/router';
 import { CartService, Cart, CartItem } from '../../../../services/cart.service';
 import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink,RouterModule],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
@@ -18,7 +18,8 @@ export class CartComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -81,5 +82,21 @@ export class CartComponent implements OnInit {
 
   get itemCount(): number {
     return this.cart?.items?.length || 0;
+  }
+
+  checkout() {
+    if (!this.cart || this.totalPrice === 0) return;
+
+    this.cartService.createOrder().subscribe({
+      next: (response) => {
+        alert('Commande passée avec succès !');
+        this.cart = null;
+        this.loadCart();
+        this.router.navigate(['/orders']);
+      },
+      error: (err) => {
+        alert('Erreur lors de la commande : ' + (err.error?.message || 'Erreur'));
+      }
+    });
   }
 }

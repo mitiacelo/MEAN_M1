@@ -18,11 +18,12 @@
         }
 
         <!-- Bouton Mon panier (utilisateurs normaux) -->
-      @if (authService.hasRole('user')) {
-        <button class="my-cart-btn" routerLink="/cart">
-          Mon panier
-        </button>
-      }
+        @if (authService.isLoggedIn) {
+          <button routerLink="/orders">Mes commandes</button>
+          @if (authService.hasRole('user')) {
+            <button routerLink="/cart">Mon panier</button>
+          }
+        }
   
         <button class="logout-btn" (click)="authService.logout()">Déconnexion</button>
       }

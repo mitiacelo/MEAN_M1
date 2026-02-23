@@ -1,0 +1,78 @@
+<div class="invoice-page" id="invoice">
+    <div class="invoice-container">
+      <div class="header">
+        <h1>FACTURE</h1>
+        <div class="company-info">
+          <p><strong>Plaza Shop</strong></p>
+          <p>Antananarivo - Madagascar</p>
+          <p>Date : {{ purchase?.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+      </div>
+  
+      @if (purchase) {
+        <div class="client-info">
+          <h3>Client</h3>
+          <p><strong>Nom :</strong> {{ authService.currentUser?.name || 'N/A' }}</p>
+          <p><strong>Email :</strong> {{ authService.currentUser?.email || 'N/A' }}</p>
+          <p><strong>Téléphone :</strong> {{ purchase.deliveryAddress.phone || 'N/A' }}</p>
+          <p><strong>Adresse de livraison :</strong></p>
+          <p>
+            {{ purchase.deliveryAddress.address }}, 
+            {{ purchase.deliveryAddress.district }}, 
+            {{ purchase.deliveryAddress.city }}
+          </p>
+        </div>
+  
+        <div class="items-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Prix unitaire</th>
+                <th>Sous-total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of purchase.items; track item.product._id) {
+                <tr>
+                  <td>{{ item.product.name }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ item.priceAtPurchase | number:'1.0-0' }} Ar</td>
+                  <td>{{ (item.priceAtPurchase * item.quantity) | number:'1.0-0' }} Ar</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+  
+        <div class="totals">
+          <div class="total-line">
+            <span>Sous-total produits</span>
+            <span>{{ purchase.totalProducts | number:'1.0-0' }} Ar</span>
+          </div>
+          <div class="total-line">
+            <span>Frais de livraison</span>
+            <span>5 000 Ar</span>
+          </div>
+          <div class="total-line grand">
+            <strong>Total payé</strong>
+            <strong>{{ purchase.grandTotal | number:'1.0-0' }} Ar</strong>
+          </div>
+        </div>
+  
+        <div class="status">
+          <p><strong>Statut :</strong> {{ purchase.status === 'paid' ? 'Payé' : 'Confirmé' }}</p>
+        </div>
+      } @else if (loading) {
+        <p>Chargement de la facture...</p>
+      } @else if (error) {
+        <p class="error">{{ error }}</p>
+      }
+  
+      <div class="actions">
+        <button class="print-btn" (click)="printInvoice()">Imprimer la facture</button>
+        <button class="back-btn" routerLink="/orders">Retour à mes commandes</button>
+      </div>
+    </div>
+  </div>
