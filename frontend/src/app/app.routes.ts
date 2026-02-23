@@ -18,19 +18,19 @@ export const routes: Routes = [
   // ✅ Toutes les routes admin/gestionnaire dans le layout avec sidebar
   {
     path: '',
-    loadComponent: () => import('./layouts/layouts.component').then(m => m.AdminLayoutComponent),
+    loadComponent: () => import('./components-new/layouts/header/header-admin/header-admin.component').then(m => m.AdminLayoutComponent),
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
+        loadComponent: () => import('./pages-new/admin-centre/dashboard-center/dashboard.component').then(m => m.DashboardComponent)
       },
       {
         path: 'grille',
-        loadComponent: () => import('./components/grille/grille.component').then(m => m.GrilleComponent)
+        loadComponent: () => import('./pages-new/admin-centre/store/grille.component').then(m => m.GrilleComponent)
       },
       {
         path: 'notifications',
-        loadComponent: () => import('./components/notifications/notifications.component').then(m => m.NotificationsComponent)
+        loadComponent: () => import('./pages-new/admin-centre/notifications/notifications.component').then(m => m.NotificationsComponent)
       },
       {
         path: 'articles',

@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NotificationService } from '../services/notification.service';
+import { NotificationService } from '../../../../services/notification.service';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
   imports: [RouterModule, CommonModule],
-  templateUrl: './layouts.component.html',
-  styleUrls: ['./layouts.component.css']
+  templateUrl: './header-admin.component.html',
+  styleUrls: ['./header-admin.component.css']
 })
 export class AdminLayoutComponent implements OnInit {
   pendingCount = 0;
