@@ -48,8 +48,6 @@ export class OrderConfirmComponent implements OnInit {
       this.loadOrderTotal();
     }
   }
-
-  
   
   loadOrderTotal() {
     this.orderService.getOrder(this.orderId).subscribe({

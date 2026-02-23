@@ -109,3 +109,39 @@
     background: #95a5a6;
     color: white;
   }
+  .download-btn {
+    background: #e67e22;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0.5rem;
+  }
+  
+  .download-btn:hover:not(:disabled) {
+    background: #d35400;
+  }
+  
+  .download-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  @media print {
+    .actions {
+      display: none;  /* Cache les boutons Imprimer / Télécharger / Retour lors de l'impression */
+    }
+  
+    .invoice-page {
+      background: white;
+      padding: 0;
+    }
+  
+    .invoice-container {
+      box-shadow: none;
+      border-radius: 0;
+    }
+  }
