@@ -62,7 +62,7 @@ export const routes: Routes = [
       },
       {
         path: 'cart',
-        loadComponent: () => import('./pages/cart/cart.component').then(m => m.CartComponent)
+        loadComponent: () => import('./pages-new/boutique-centre/customer-page/cart/cart.component').then(m => m.CartComponent)
       }
     ]
   }
