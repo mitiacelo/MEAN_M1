@@ -1,0 +1,81 @@
+.suivi-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    margin-bottom: 2rem;
+    color: #2c3e50;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  
+  .stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #27ae60;
+  }
+  
+  .data-section {
+    margin-bottom: 3rem;
+  }
+  
+  h2 {
+    margin-bottom: 1rem;
+    color: #34495e;
+  }
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+  
+  .amount {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  .status-pending { color: #f39c12; font-weight: 500; }
+  .status-confirmed { color: #2980b9; font-weight: 500; }
+  .status-shipped { color: #8e44ad; font-weight: 500; }
+  .status-delivered { color: #27ae60; font-weight: 500; }
+  .status-cancelled { color: #c0392b; font-weight: 500; }
+  .status-active { color: #27ae60; font-weight: 500; }
+  .status-abandoned { color: #e74c3c; font-weight: 500; }
+  
+  .error-message {
+    color: #c0392b;
+    font-weight: 500;
+    padding: 1rem;
+    background: #fde8e8;
+    border-radius: 6px;
+  }

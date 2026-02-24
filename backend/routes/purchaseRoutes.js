@@ -22,16 +22,17 @@ router.get('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Optionnel : GET /api/purchases → Liste toutes les factures de l'utilisateur
+// GET /api/purchases → liste toutes les factures (ou filtrées par boutique)
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const purchases = await Purchase.find({ user: req.user.id })
+    const shopId = req.query.shopId; // si tu veux filtrer par boutique du manager
+    const filter = shopId ? { 'items.product.id_shop': shopId } : {};
+    const purchases = await Purchase.find(filter)
+      .populate('user', 'name email phone')
       .populate('items.product', 'name prix_actuel')
       .sort({ createdAt: -1 });
-
     res.json(purchases);
   } catch (err) {
-    console.error('Erreur GET /purchases :', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });

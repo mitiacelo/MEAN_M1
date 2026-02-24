@@ -3,24 +3,25 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PurchaseService } from '../../../../services/purchase.service';
 import { AuthService } from '../../../../services/auth.service';
+import { Purchase, PurchaseItem } from '../../../../services/purchase.service';
 
-export interface PurchaseItem {
-  product: { _id: string; name: string; prix_actuel?: number };
-  quantity: number;
-  priceAtPurchase: number;
-}
+// export interface PurchaseItem {
+//   product: { _id: string; name: string; prix_actuel?: number };
+//   quantity: number;
+//   priceAtPurchase: number;
+// }
 
-export interface Purchase {
-  _id: string;
-  user: { name: string; email: string; phone?: string };
-  items: PurchaseItem[];
-  totalProducts: number;
-  deliveryFee: number;
-  grandTotal: number;
-  deliveryAddress: { city: string; district: string; address: string; phone: string };
-  status: string;
-  createdAt: string;
-}
+// export interface Purchase {
+//   _id: string;
+//   user: { name: string; email: string; phone?: string };
+//   items: PurchaseItem[];
+//   totalProducts: number;
+//   deliveryFee: number;
+//   grandTotal: number;
+//   deliveryAddress: { city: string; district: string; address: string; phone: string };
+//   status: string;
+//   createdAt: string;
+// }
 
 @Component({
   selector: 'app-invoice',

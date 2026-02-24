@@ -22,12 +22,12 @@ export const routes: Routes = [
   },
 
   // Routes shop standalone (pas dans le layout admin)
-  {
-    path: 'dashboard-shop',
-    loadComponent: () =>
-      import('./pages-new/boutique-centre/admin-boutique/dashboard-shop/dashboard-shop.component')
-        .then(m => m.DashboardShopComponent)
-  },
+  // {
+  //   path: 'dashboard-shop',
+  //   loadComponent: () =>
+  //     import('./pages-new/boutique-centre/admin-boutique/dashboard-shop/dashboard-shop.component')
+  //       .then(m => m.DashboardShopComponent)
+  // },
   {
     path: 'salle',
     loadComponent: () =>
@@ -64,6 +64,31 @@ export const routes: Routes = [
       }
     ]
   },
+
+  // Routes boutique manager → EN PREMIER pour gagner contre le path: ''
+{
+  path: '',
+  loadComponent: () =>
+    import('./components-new/layouts/sidebar-shop/sidebar-shop.component')
+      .then(m => m.SidebarShopComponent),
+  children: [
+    {
+      path: 'dashboard-shop',
+      loadComponent: () =>
+        import('./pages-new/boutique-centre/admin-boutique/dashboard-shop/dashboard-shop.component')
+          .then(m => m.DashboardShopComponent)
+    },
+    {
+      path: 'suivi-donnees',
+      loadComponent: () =>
+        import('./pages-new/boutique-centre/admin-boutique/suivi-donnees/suivi-donnees.component')
+          .then(m => m.SuiviDonneesComponent)
+    },
+
+    // Redirection par défaut
+    { path: '', redirectTo: 'dashboard-shop', pathMatch: 'full' }
+  ]
+},
 
   // Routes boutique / customer qui ne passent pas par le layout admin
   {

@@ -1,0 +1,131 @@
+<div class="suivi-container">
+    <h1>Suivi des données de la boutique</h1>
+  
+    @if (loading) {
+      <div class="loading">Chargement des données...</div>
+    } @else if (error) {
+      <div class="error-message">{{ error }}</div>
+    } @else {
+      <!-- Stats rapides -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Ventes totales</h3>
+          <div class="stat-value">{{ stats.totalSales | number:'1.0-0' }} Ar</div>
+        </div>
+  
+        <div class="stat-card">
+          <h3>Clients actifs</h3>
+          <div class="stat-value">{{ stats.activeClients }}</div>
+        </div>
+  
+        <div class="stat-card">
+          <h3>Commandes en attente</h3>
+          <div class="stat-value">{{ stats.pendingOrders }}</div>
+        </div>
+      </div>
+  
+      <!-- Clients ayant acheté -->
+      <section class="data-section">
+        <h2>Clients ayant acheté</h2>
+        @if (clients.length === 0) {
+          <p>Aucun client n'a encore acheté dans votre boutique.</p>
+        } @else {
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Total dépensé</th>
+                <th>Dernier achat</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (client of clients; track client.id) {
+                <tr>
+                  <td>{{ client.name }}</td>
+                  <td>{{ client.email }}</td>
+                  <td class="amount">{{ client.totalSpent | number:'1.0-0' }} Ar</td>
+                  <td>{{ client.lastPurchase | date:'dd/MM/yyyy' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
+  
+      <!-- Paniers -->
+      <section class="data-section">
+        <h2>Paniers (en cours / abandonnés)</h2>
+        @if (carts.length === 0) {
+          <p>Aucun panier trouvé.</p>
+        } @else {
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Articles</th>
+                <th>Total panier</th>
+                <th>État</th>
+                <th>Dernière mise à jour</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (cart of carts; track cart.id) {
+                <tr>
+                  <td>{{ cart.user.name || 'Anonyme' }}</td>
+                  <td>{{ cart.itemCount }}</td>
+                  <td class="amount">{{ cart.total | number:'1.0-0' }} Ar</td>
+                  <td [ngClass]="{
+                    'status-active': cart.status === 'active',
+                    'status-abandoned': cart.status === 'abandoned'
+                  }">
+                    {{ cart.status === 'active' ? 'En cours' : 'Abandonné' }}
+                  </td>
+                  <td>{{ cart.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
+  
+      <!-- Commandes récentes -->
+      <section class="data-section">
+        <h2>Commandes récentes</h2>
+        @if (orders.length === 0) {
+          <p>Aucune commande récente.</p>
+        } @else {
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Client</th>
+                <th>Total</th>
+                <th>Statut</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of orders; track order.id) {
+                <tr>
+                  <td>{{ order.id.slice(-8) }}</td>
+                  <td>{{ order.user.name || 'N/A' }}</td>
+                  <td class="amount">{{ order.total | number:'1.0-0' }} Ar</td>
+                  <td [ngClass]="{
+                    'status-pending': order.status === 'pending',
+                    'status-confirmed': order.status === 'confirmed',
+                    'status-shipped': order.status === 'shipped',
+                    'status-delivered': order.status === 'delivered',
+                    'status-cancelled': order.status === 'cancelled'
+                  }">
+                    {{ order.status | titlecase }}
+                  </td>
+                  <td>{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
+    }
+  </div>

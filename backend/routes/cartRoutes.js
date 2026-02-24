@@ -108,4 +108,16 @@ router.put('/:productId', authMiddleware, async (req, res) => {
     }
   });
 
+  // GET /api/carts → liste tous les paniers (ou filtrés)
+router.get('/', authMiddleware, async (req, res) => {
+  try {
+    const carts = await Cart.find()
+      .populate('user', 'name firstname email')
+      .populate('items.product', 'name prix_actuel');
+    res.json(carts);
+  } catch (err) {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
 module.exports = router;

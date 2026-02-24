@@ -48,4 +48,8 @@ export class CartService {
   createOrder(): Observable<any> {
     return this.http.post(`${environment.apiUrl}/orders`, {});
   }
+
+  getAllCarts(): Observable<Cart[]> {
+    return this.http.get<Cart[]>(`${environment.apiUrl}/carts`);
+  }
 }
