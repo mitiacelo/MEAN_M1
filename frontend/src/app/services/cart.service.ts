@@ -50,6 +50,6 @@ export class CartService {
   }
 
   getAllCarts(): Observable<Cart[]> {
-    return this.http.get<Cart[]>(`${environment.apiUrl}/carts`);
+    return this.http.get<Cart[]>(`${environment.apiUrl}/cart/carts`);
   }
 }
