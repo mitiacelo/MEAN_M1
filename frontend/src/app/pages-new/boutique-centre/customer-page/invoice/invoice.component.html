@@ -1,4 +1,4 @@
-<div class="invoice-page" id="invoice">
+<div class="invoice-page" id="invoice" #invoice>
   <div class="invoice-container">
     <div class="header">
       <h1>FACTURE</h1>
@@ -71,8 +71,21 @@
     }
 
     <div class="actions">
-      <button class="print-btn" (click)="printInvoice()">Imprimer la facture</button>
-      <button class="back-btn" routerLink="/orders">Retour à mes commandes</button>
+      <button 
+        class="print-btn" 
+        (click)="generatePdf()" 
+        [disabled]="generatingPdf || loading || !purchase">
+        {{ generatingPdf ? 'Génération en cours...' : 'Télécharger PDF' }}
+      </button>
+    
+      <button 
+        class="print-btn" 
+        (click)="printInvoice()" 
+        [disabled]="loading || !purchase">
+        Imprimer (navigateur)
+      </button>
+    
+      <button class="back-btn" routerLink="/orders">Retour</button>
     </div>
   </div>
 </div>

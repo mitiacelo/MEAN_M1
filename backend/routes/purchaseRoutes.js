@@ -25,14 +25,17 @@ router.get('/:id', authMiddleware, async (req, res) => {
 // GET /api/purchases → liste toutes les factures (ou filtrées par boutique)
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const shopId = req.query.shopId; // si tu veux filtrer par boutique du manager
-    const filter = shopId ? { 'items.product.id_shop': shopId } : {};
-    const purchases = await Purchase.find(filter)
+    // const shopId = req.user.id_shop;
+    // if (!shopId) return res.status(403).json({ message: 'Accès réservé' });
+
+    const purchases = await Purchase.find()
       .populate('user', 'name email phone')
       .populate('items.product', 'name prix_actuel')
       .sort({ createdAt: -1 });
+
     res.json(purchases);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });

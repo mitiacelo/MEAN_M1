@@ -104,20 +104,23 @@ router.get('/', authMiddleware, async (req, res) => {
 // GET /api/carts → liste TOUS les paniers (pour manager boutique)
 router.get('/carts', authMiddleware, async (req, res) => {
   try {
-    const shopId = req.user.id_shop;
+    // const shopId = req.user.id_shop;
+    // if (!shopId) {
+    //   return res.status(403).json({ message: 'Accès réservé aux managers de boutique' });
+    // }
 
-    if (!shopId) {
-      return res.status(403).json({ message: 'Accès réservé aux managers de boutique' });
-    }
-
-    const carts = await Cart.find({
-      'items.product.id_shop': shopId
-    })
+    // Option 1 : tout afficher (test)
+    const carts = await Cart.find()
       .populate('user', 'name firstname email')
       .populate('items.product', 'name prix_actuel')
       .sort({ updatedAt: -1 });
 
     res.json(carts);
+
+    // Option 2 : filtrer par boutique si id_shop existe (plus tard)
+    // const carts = await Cart.find({
+    //   'items.product.id_shop': shopId
+    // }) ...
   } catch (err) {
     console.error('Erreur GET /carts :', err);
     res.status(500).json({ message: 'Erreur serveur' });

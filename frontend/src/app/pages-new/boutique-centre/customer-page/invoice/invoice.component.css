@@ -130,6 +130,41 @@
     cursor: not-allowed;
   }
 
+  .print-btn:disabled,
+.back-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actions button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.print-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+
+.print-btn:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.back-btn {
+  background: #7f8c8d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+
+.back-btn:hover:not(:disabled) {
+  background: #95a5a6;
+}
+
   @media print {
     .actions {
       display: none;  /* Cache les boutons Imprimer / Télécharger / Retour lors de l'impression */
