@@ -1,85 +1,211 @@
 .shop-edit {
-    max-width: 600px;
-    margin: 30px auto;
-    padding: 20px;
-  }
-  
-  .edit-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-  }
-  
-  .edit-header h2 {
-    flex: 1;
-    margin: 0;
-    font-size: 18px;
-    color: #333;
-  }
-  
-  .edit-section {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 25px;
-    padding: 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    background: #fafafa;
-  }
-  
-  .edit-section h3 {
-    margin: 0 0 5px 0;
-    font-size: 14px;
-    color: #555;
-    text-transform: uppercase;
-  }
-  
-  .edit-section label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #666;
-  }
-  
-  .edit-section input,
-  .edit-section select,
-  .edit-section textarea {
-    padding: 8px 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 13px;
-    background: white;
-    resize: vertical;
-  }
-  
-  .user-actuel {
-    font-size: 13px;
-    color: #333;
-    margin: 0;
-  }
-  
-  .shop-status {
-    padding: 3px 10px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  
-  .status-inactif { background-color: #f0f0f0; color: #666; }
-  .status-actif { background-color: #d4edda; color: #155724; }
-  
-  button {
-    padding: 8px 14px;
-    background-color: #495057;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    align-self: flex-start;
-  }
-  
-  button:hover:not(:disabled) { background-color: #343a40; }
-  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  max-width: 640px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.edit-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.edit-header h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.edit-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 18px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.edit-section h3 {
+  margin: 0 0 5px 0;
+  font-size: 13px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.edit-section label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+}
+
+.edit-section input,
+.edit-section select,
+.edit-section textarea {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+  resize: vertical;
+}
+
+.user-actuel {
+  font-size: 13px;
+  color: #333;
+  margin: 0;
+}
+
+.info-msg {
+  font-size: 13px;
+  color: #c07a3a;
+  background: #fef9f5;
+  border: 1px solid #f5dfc7;
+  border-radius: 7px;
+  padding: 10px 14px;
+  margin: 0;
+}
+
+/* ── Statuts boutique ── */
+.shop-status {
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-inactif { background-color: #f0f0f0; color: #666; }
+.status-actif { background-color: #d4edda; color: #155724; }
+
+/* ── Résumé contrat ── */
+.contrat-resume {
+  background: #fff;
+  border: 1px solid #e8e3de;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contrat-statut {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  align-self: flex-start;
+}
+
+.statut-brouillon    { background: #f0f0f0; color: #666; }
+.statut-signé_admin  { background: #fff3cd; color: #856404; }
+.statut-signé_client { background: #d4edda; color: #155724; }
+.statut-actif        { background: #d4edda; color: #155724; }
+.statut-résilié      { background: #fde8e8; color: #a33a3a; }
+
+.contrat-infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: #555;
+}
+
+.contrat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* ── Formulaire contrat ── */
+.contrat-form {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contrat-form h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group.full {
+  grid-column: span 2;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Boutons ── */
+button {
+  padding: 8px 14px;
+  background-color: #495057;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 0.15s;
+}
+
+button:hover:not(:disabled) { background-color: #343a40; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-accent {
+  background-color: #c07a3a;
+}
+.btn-accent:hover:not(:disabled) { background-color: #a8672f; }
+
+.btn-secondary {
+  background-color: #e9ecef;
+  color: #495057;
+}
+.btn-secondary:hover:not(:disabled) { background-color: #dee2e6; }
+
+.btn-danger {
+  background-color: #dc3545;
+}
+.btn-danger:hover:not(:disabled) { background-color: #c82333; }

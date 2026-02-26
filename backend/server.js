@@ -31,5 +31,6 @@ app.use('/domaines', require('./routes/domaineRoutes'));
 app.use('/cart', require('./routes/cartRoutes'));
 app.use('/orders', require('./routes/orderRoutes'));
 app.use('/purchases', require('./routes/purchaseRoutes'));
+app.use('/contracts', require('./routes/contractRoutes'));
 app.listen(PORT, () => console.log(`Serveur démarré sur le port
 ${PORT}`));

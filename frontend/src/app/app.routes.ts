@@ -127,5 +127,16 @@ export const routes: Routes = [
     path: 'invoice/:id',
     loadComponent: () =>
       import('./pages-new/boutique-centre/customer-page/invoice/invoice.component').then(m => m.InvoiceComponent)
+  },
+  {
+    path: 'mon-contrat',
+
+    loadComponent: () =>
+      import('./pages-new/admin-centre/contract/contract.component').then(m => m.MonContratComponent)
+  },
+  {
+    path: 'contrat/signer/:token',
+    loadComponent: () =>
+      import('./pages-new/admin-centre/contract/contract.component').then(m => m.MonContratComponent)
   }
 ];

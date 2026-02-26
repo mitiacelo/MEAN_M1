@@ -1,0 +1,99 @@
+<div class="contrat-page">
+
+    <h2>Mon contrat de bail</h2>
+  
+    <div class="loading" *ngIf="loading">Chargement...</div>
+  
+    <div class="alert success" *ngIf="successMsg">{{ successMsg }}</div>
+    <div class="alert error" *ngIf="error">{{ error }}</div>
+  
+    <!-- ── Mode token (lien email) ── -->
+    @if (tokenMode && !loading) {
+      <div class="token-card">
+        <h3>Signature de contrat</h3>
+        @if (!successMsg && !error) {
+          <p>Vous avez été invité à signer un contrat de bail. Veuillez le lire attentivement avant d'accepter.</p>
+          <div class="token-actions">
+            <button class="btn-accent" (click)="signerDepuisToken()" [disabled]="signing">
+              {{ signing ? 'Signature en cours...' : '✍️ Accepter et signer le contrat' }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+  
+    <!-- ── Mode app (espace client connecté) ── -->
+    @if (!tokenMode && !loading) {
+  
+      <div class="empty" *ngIf="contracts.length === 0">
+        Aucun contrat trouvé pour votre compte.
+      </div>
+  
+      @for (contract of contracts; track contract._id) {
+        <div class="contrat-card" [class]="'card-' + contract.statut">
+  
+          <div class="contrat-card-header">
+            <div>
+              <h3>{{ contract.shop?.name || 'Boutique' }}</h3>
+              <p class="shop-meta">{{ contract.shop?.superficie }} m² — {{ contract.shop?.description }}</p>
+            </div>
+            <span class="badge" [class]="'badge-' + contract.statut">
+              {{ statutLabel(contract.statut) }}
+            </span>
+          </div>
+  
+          <div class="contrat-details">
+            <div class="detail-item">
+              <span class="detail-label">Loyer</span>
+              <span class="detail-value">{{ contract.loyer }} Ar / mois</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Charges</span>
+              <span class="detail-value">{{ contract.charges }} Ar / mois</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Total mensuel</span>
+              <span class="detail-value"><strong>{{ contract.loyer + contract.charges }} Ar</strong></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Dépôt de garantie</span>
+              <span class="detail-value">{{ contract.depot }} Ar</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Début</span>
+              <span class="detail-value">{{ formatDate(contract.dateDebut) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Fin</span>
+              <span class="detail-value">{{ formatDate(contract.dateFin) }}</span>
+            </div>
+          </div>
+  
+          @if (contract.clauses) {
+            <div class="clauses">
+              <p class="detail-label">Clauses particulières</p>
+              <p class="clauses-text">{{ contract.clauses }}</p>
+            </div>
+          }
+  
+          <div class="contrat-card-actions">
+            <button class="btn-secondary" (click)="voirPDF(contract)">📄 Voir le contrat PDF</button>
+  
+            @if (contract.statut === 'signé_admin') {
+              <button class="btn-accent" (click)="signerDepuisApp(contract)" [disabled]="signing">
+                {{ signing ? 'Signature...' : '✍️ Signer le contrat' }}
+              </button>
+            }
+          </div>
+  
+          @if (contract.statut === 'signé_admin') {
+            <div class="attente-msg">
+              ⚠️ Ce contrat attend votre signature. Lisez-le attentivement puis signez-le pour activer votre accès manager.
+            </div>
+          }
+  
+        </div>
+      }
+    }
+  
+  </div>

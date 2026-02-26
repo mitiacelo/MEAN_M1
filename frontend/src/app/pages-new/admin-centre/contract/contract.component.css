@@ -1,0 +1,173 @@
+.contrat-page {
+    max-width: 680px;
+    margin: 30px auto;
+    padding: 20px;
+  }
+  
+  .contrat-page h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2d2d2d;
+    margin-bottom: 20px;
+  }
+  
+  .loading, .empty {
+    text-align: center;
+    color: #bbb;
+    padding: 40px 0;
+    font-size: 13px;
+  }
+  
+  .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .alert.success { background: #d4edda; color: #3a7a52; }
+  .alert.error   { background: #fde8e8; color: #a33a3a; }
+  
+  /* ── Token card ── */
+  .token-card {
+    background: #fff;
+    border: 1px solid #e8e3de;
+    border-radius: 12px;
+    padding: 28px;
+    text-align: center;
+  }
+  .token-card h3 { font-size: 18px; color: #2d2d2d; margin-bottom: 12px; }
+  .token-card p  { font-size: 13px; color: #666; margin-bottom: 20px; }
+  .token-actions { display: flex; justify-content: center; }
+  
+  /* ── Contrat card ── */
+  .contrat-card {
+    background: #fff;
+    border: 1px solid #e8e3de;
+    border-left: 4px solid #e0dbd6;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  
+  .card-brouillon    { border-left-color: #ccc; }
+  .card-signé_admin  { border-left-color: #f0c080; }
+  .card-actif        { border-left-color: #a8d5a2; }
+  .card-résilié      { border-left-color: #e8b4b4; opacity: 0.7; }
+  
+  .contrat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+  
+  .contrat-card-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d2d2d;
+    margin: 0 0 4px;
+  }
+  
+  .shop-meta {
+    font-size: 12px;
+    color: #aaa;
+    margin: 0;
+  }
+  
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    flex-shrink: 0;
+  }
+  .badge-brouillon    { background: #f0f0f0; color: #666; }
+  .badge-signé_admin  { background: #fff3cd; color: #856404; }
+  .badge-actif        { background: #d4edda; color: #155724; }
+  .badge-résilié      { background: #fde8e8; color: #a33a3a; }
+  
+  /* ── Détails ── */
+  .contrat-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    background: #faf8f6;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .detail-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #bbb;
+    letter-spacing: 0.4px;
+  }
+  
+  .detail-value {
+    font-size: 13px;
+    color: #3d3d3d;
+  }
+  
+  /* ── Clauses ── */
+  .clauses {
+    background: #faf8f6;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+  }
+  
+  .clauses-text {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    margin: 6px 0 0;
+  }
+  
+  /* ── Actions ── */
+  .contrat-card-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .attente-msg {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #856404;
+    background: #fff9ee;
+    border: 1px solid #f0d080;
+    border-radius: 7px;
+    padding: 10px 14px;
+  }
+  
+  /* ── Boutons ── */
+  button {
+    padding: 9px 16px;
+    background: #495057;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button:hover:not(:disabled) { background: #343a40; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  
+  .btn-accent    { background: #c07a3a; }
+  .btn-accent:hover:not(:disabled) { background: #a8672f; }
+  
+  .btn-secondary { background: #e9ecef; color: #495057; }
+  .btn-secondary:hover:not(:disabled) { background: #dee2e6; }

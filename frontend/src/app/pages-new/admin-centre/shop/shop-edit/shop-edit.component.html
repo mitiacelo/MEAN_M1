@@ -1,53 +1,145 @@
 <div class="shop-edit">
 
-    @if (loading) {
-      <p>Chargement...</p>
-    } @else if (error) {
-      <p>{{ error }}</p>
-    } @else {
-  
-      <div class="edit-header">
-        <button (click)="retourDashboard()">← Dashboard</button>
-        <h2>{{ shop.name }} — Admin</h2>
-        <span class="shop-status" [class]="'status-' + shop.status">{{ shop.status }}</span>
-      </div>
-  
-      <!-- Infos générales -->
-      <div class="edit-section">
-        <h3>Informations</h3>
-  
-        <label>Nom</label>
-        <input [(ngModel)]="editNom" type="text" />
-  
-        <label>Description</label>
-        <textarea [(ngModel)]="editDescription" rows="3"></textarea>
-  
-        <label>Superficie (m²)</label>
-        <input [(ngModel)]="editSuperficie" type="number" />
-  
-        <button (click)="sauvegarderInfos()">Sauvegarder</button>
-      </div>
-  
-      <!-- Locataire -->
-      <div class="edit-section">
-        <h3>Locataire</h3>
-  
-        @if (shop.id_user) {
-          <p class="user-actuel">Assigné à : <strong>{{ getUserNom() }}</strong></p>
-          <button (click)="desassignerUser()">Retirer le locataire</button>
-        } @else {
-          <p class="user-actuel">Aucun locataire assigné</p>
-          <select [(ngModel)]="editUserId">
-            <option value="">-- Choisir un locataire --</option>
-            @for (user of users; track user._id) {
-              <option [value]="user._id">
-                {{ user.firstname }} {{ user.name }} — {{ user.email }}
-              </option>
-            }
-          </select>
-          <button (click)="assignerUser()" [disabled]="!editUserId">Assigner</button>
+  @if (loading) {
+    <p>Chargement...</p>
+  } @else if (error) {
+    <p>{{ error }}</p>
+  } @else {
+
+    <div class="edit-header">
+      <button (click)="retourDashboard()">← Dashboard</button>
+      <h2>{{ shop.name }} — Admin</h2>
+      <span class="shop-status" [class]="'status-' + shop.status">{{ shop.status }}</span>
+    </div>
+
+    <!-- ── Infos générales ── -->
+    <div class="edit-section">
+      <h3>Informations</h3>
+      <label>Nom</label>
+      <input [(ngModel)]="editNom" type="text" />
+      <label>Description</label>
+      <textarea [(ngModel)]="editDescription" rows="3"></textarea>
+      <label>Superficie (m²)</label>
+      <input [(ngModel)]="editSuperficie" type="number" />
+      <button (click)="sauvegarderInfos()">Sauvegarder</button>
+    </div>
+
+    <!-- ── Locataire ── -->
+    <div class="edit-section">
+      <h3>Locataire</h3>
+
+      @if (shop.id_user) {
+        <p class="user-actuel">Assigné à : <strong>{{ getUserNom() }}</strong></p>
+        @if (!contract || contract.statut === 'brouillon') {
+          <button class="btn-danger" (click)="desassignerUser()">Retirer le locataire</button>
         }
-      </div>
-  
-    }
-  </div>
+      } @else {
+        <p class="user-actuel">Aucun locataire assigné</p>
+        <select [(ngModel)]="editUserId">
+          <option value="">-- Choisir un locataire --</option>
+          @for (user of users; track user._id) {
+            <option [value]="user._id">
+              {{ user.firstname }} {{ user.name }} — {{ user.email }}
+            </option>
+          }
+        </select>
+        <button (click)="assignerUser()" [disabled]="!editUserId">Assigner</button>
+      }
+    </div>
+
+    <!-- ── Contrat de bail ── -->
+    <div class="edit-section">
+      <h3>Contrat de bail</h3>
+
+      @if (!shop.id_user && !editUserId) {
+        <p class="info-msg">⚠️ Assignez d'abord un locataire pour créer un contrat.</p>
+
+      } @else if (!contract) {
+        <p class="user-actuel">Aucun contrat créé pour cette boutique.</p>
+        <button (click)="ouvrirFormulaireContrat()">+ Créer un contrat</button>
+
+      } @else {
+        <!-- Résumé contrat existant -->
+        <div class="contrat-resume">
+          <div class="contrat-statut" [class]="'statut-' + contract.statut">
+            {{ statutContratLabel(contract.statut) }}
+          </div>
+          <div class="contrat-infos">
+            <span>Loyer : <strong>{{ contract.loyer }} Ar</strong></span>
+            <span>Charges : <strong>{{ contract.charges }} Ar</strong></span>
+            <span>Début : <strong>{{ contract.dateDebut | date:'dd/MM/yyyy' }}</strong></span>
+            <span>Fin : <strong>{{ contract.dateFin | date:'dd/MM/yyyy' }}</strong></span>
+          </div>
+        </div>
+
+        <div class="contrat-actions">
+          <!-- Voir PDF toujours disponible -->
+          <button class="btn-secondary" (click)="voirPDF()">📄 Voir le PDF</button>
+
+          <!-- Modifier uniquement si brouillon -->
+          @if (contract.statut === 'brouillon') {
+            <button (click)="ouvrirFormulaireContrat()">✏️ Modifier</button>
+            <button class="btn-accent" (click)="signerContratAdmin()" [disabled]="signingAdmin">
+              {{ signingAdmin ? 'Envoi...' : '✍️ Signer & Envoyer au client' }}
+            </button>
+          }
+
+          <!-- Résilier si actif -->
+          @if (contract.statut === 'actif') {
+            <button class="btn-danger" (click)="resilierContrat()" [disabled]="resiliating">
+              {{ resiliating ? 'En cours...' : '🔴 Résilier le contrat' }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Formulaire contrat -->
+      @if (showContratForm) {
+        <div class="contrat-form">
+          <h4>{{ contract ? 'Modifier le contrat' : 'Nouveau contrat' }}</h4>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Loyer mensuel (Ar)</label>
+              <input type="number" [(ngModel)]="contratForm.loyer" />
+            </div>
+            <div class="form-group">
+              <label>Charges mensuelles (Ar)</label>
+              <input type="number" [(ngModel)]="contratForm.charges" />
+            </div>
+            <div class="form-group">
+              <label>Dépôt de garantie (Ar)</label>
+              <input type="number" [(ngModel)]="contratForm.depot" />
+            </div>
+            <div class="form-group">
+              <label>Durée du contrat</label>
+              <input type="text" [(ngModel)]="contratForm.dureeContrat" placeholder="ex: 12 mois" />
+            </div>
+            <div class="form-group">
+              <label>Date de début</label>
+              <input type="date" [(ngModel)]="contratForm.dateDebut" />
+            </div>
+            <div class="form-group">
+              <label>Date de fin</label>
+              <input type="date" [(ngModel)]="contratForm.dateFin" />
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label>Clauses particulières</label>
+            <textarea [(ngModel)]="contratForm.clauses" rows="5"
+              placeholder="Ajoutez ici toutes clauses spécifiques au contrat..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-accent" (click)="sauvegarderContrat()" [disabled]="savingContrat">
+              {{ savingContrat ? 'Sauvegarde...' : '💾 Sauvegarder le contrat' }}
+            </button>
+            <button class="btn-secondary" (click)="showContratForm = false">Annuler</button>
+          </div>
+        </div>
+      }
+    </div>
+
+  }
+</div>
