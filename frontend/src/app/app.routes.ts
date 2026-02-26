@@ -99,7 +99,7 @@ export const routes: Routes = [
   {
     path: 'shop/:id/admin',
     loadComponent: () =>
-      import('./pages/shop/shop-edit/shop-edit.component').then(m => m.ShopEditComponent)
+      import('./pages-new/admin-centre/shop/shop-edit/shop-edit.component').then(m => m.ShopEditComponent)
   },
   {
     path: 'boutique/:id',
