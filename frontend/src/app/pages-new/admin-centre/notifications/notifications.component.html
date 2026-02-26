@@ -1,10 +1,13 @@
 <div class="notif-page">
 
+  <!-- Header -->
   <div class="notif-header">
     <div>
-      <h2>Notifications</h2>
-      <p class="notif-subtitle" *ngIf="pendingCount > 0">{{ pendingCount }} demande{{ pendingCount > 1 ? 's' : '' }} en attente</p>
-      <p class="notif-subtitle" *ngIf="pendingCount === 0">Aucune demande en attente</p>
+      <h2>Demandes de location</h2>
+      <p class="notif-subtitle" *ngIf="nouveauCount > 0">
+        {{ nouveauCount }} nouvelle{{ nouveauCount > 1 ? 's' : '' }} demande{{ nouveauCount > 1 ? 's' : '' }}
+      </p>
+      <p class="notif-subtitle" *ngIf="nouveauCount === 0">Aucune nouvelle demande</p>
     </div>
   </div>
 
@@ -13,14 +16,14 @@
     <button class="filter-btn" [class.active]="filter === 'all'" (click)="setFilter('all')">
       Toutes <span class="count">{{ notifications.length }}</span>
     </button>
-    <button class="filter-btn" [class.active]="filter === 'pending'" (click)="setFilter('pending')">
-      En attente <span class="count pending" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+    <button class="filter-btn" [class.active]="filter === 'nouveau'" (click)="setFilter('nouveau')">
+      Nouvelles <span class="count new" *ngIf="nouveauCount > 0">{{ nouveauCount }}</span>
     </button>
-    <button class="filter-btn" [class.active]="filter === 'processed'" (click)="setFilter('processed')">
-      Traitées
+    <button class="filter-btn" [class.active]="filter === 'contacté'" (click)="setFilter('contacté')">
+      Contactées
     </button>
-    <button class="filter-btn" [class.active]="filter === 'rejected'" (click)="setFilter('rejected')">
-      Refusées
+    <button class="filter-btn" [class.active]="filter === 'archivé'" (click)="setFilter('archivé')">
+      Archivées
     </button>
   </div>
 
@@ -29,20 +32,24 @@
 
   <!-- Vide -->
   <div class="empty" *ngIf="!loading && filtered.length === 0">
-    Aucune notification pour ce filtre.
+    Aucune demande pour ce filtre.
   </div>
 
   <!-- Liste -->
   <div class="notif-list" *ngIf="!loading">
-    <div class="notif-card" *ngFor="let notif of filtered" [class]="'notif-card--' + notif.status">
-
+    <div
+      class="notif-card"
+      *ngFor="let notif of filtered"
+      [class]="'notif-card--' + notif.status"
+      (click)="openNotification(notif)"
+    >
       <div class="notif-card-top">
         <div class="notif-meta">
           <span class="notif-shop">{{ getShopName(notif) }}</span>
           <span class="notif-date">{{ formatDate(notif.createdAt) }}</span>
         </div>
         <span class="badge" [class]="'badge--' + notif.status">
-          {{ notif.status === 'pending' ? 'En attente' : notif.status === 'processed' ? 'Traitée' : 'Refusée' }}
+          {{ statusLabel(notif.status) }}
         </span>
       </div>
 
@@ -54,14 +61,139 @@
         <span>{{ notif.email }}</span>
         <span class="sep">·</span>
         <span>{{ notif.phone }}</span>
+        <ng-container *ngIf="notif.emailsSent && notif.emailsSent.length > 0">
+          <span class="sep">·</span>
+          <span class="emails-count">
+            {{ notif.emailsSent.length }} email{{ notif.emailsSent.length > 1 ? 's' : '' }} envoyé{{ notif.emailsSent.length > 1 ? 's' : '' }}
+          </span>
+        </ng-container>
       </div>
-
-      <div class="notif-actions" *ngIf="notif.status === 'pending'">
-        <button class="btn-accept" (click)="accept(notif)">Accepter</button>
-        <button class="btn-reject" (click)="reject(notif)">Refuser</button>
-      </div>
-
     </div>
   </div>
 
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODALE
+════════════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <!-- Header modale -->
+    <div class="modal-header">
+      <div>
+        <h3>{{ getShopName(selectedNotification!) }}</h3>
+        <span class="badge" [class]="'badge--' + selectedNotification!.status">
+          {{ statusLabel(selectedNotification!.status) }}
+        </span>
+      </div>
+      <button class="modal-close" (click)="closeModal()">✕</button>
+    </div>
+
+    <!-- Onglets -->
+    <div class="modal-tabs">
+      <button [class.active]="activeTab === 'detail'" (click)="activeTab = 'detail'">Demande</button>
+      <button [class.active]="activeTab === 'email'" (click)="activeTab = 'email'">Envoyer un email</button>
+      <button [class.active]="activeTab === 'history'" (click)="activeTab = 'history'">
+        Historique
+        <span class="count" *ngIf="selectedNotification!.emailsSent && selectedNotification!.emailsSent.length > 0">
+          {{ selectedNotification!.emailsSent.length }}
+        </span>
+      </button>
+    </div>
+
+    <!-- ── Onglet : Détail ── -->
+    <div class="modal-body" *ngIf="activeTab === 'detail'">
+      <div class="detail-section">
+        <p class="detail-label">Demandeur</p>
+        <p class="detail-value">{{ getUserName(selectedNotification!) }}</p>
+      </div>
+      <div class="detail-section">
+        <p class="detail-label">Email</p>
+        <p class="detail-value">{{ selectedNotification!.email }}</p>
+      </div>
+      <div class="detail-section">
+        <p class="detail-label">Téléphone</p>
+        <p class="detail-value">{{ selectedNotification!.phone }}</p>
+      </div>
+      <div class="detail-section">
+        <p class="detail-label">Date de la demande</p>
+        <p class="detail-value">{{ formatDate(selectedNotification!.createdAt) }}</p>
+      </div>
+      <div class="detail-section full">
+        <p class="detail-label">Message</p>
+        <p class="detail-message">{{ selectedNotification!.message }}</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-email" (click)="activeTab = 'email'">
+          ✉ Répondre par email
+        </button>
+        <button
+          class="btn-archive"
+          *ngIf="selectedNotification!.status !== 'archivé'"
+          (click)="archive(selectedNotification!)"
+        >
+          Archiver
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Onglet : Email ── -->
+    <div class="modal-body" *ngIf="activeTab === 'email'">
+
+      <div class="email-to">
+        <span class="detail-label">À :</span>
+        <span class="email-address">{{ selectedNotification!.email }}</span>
+      </div>
+
+      <div class="form-group">
+        <label>Objet</label>
+        <input type="text" [(ngModel)]="emailSubject" class="form-input" placeholder="Objet de l'email" />
+      </div>
+
+      <div class="form-group">
+        <label>Message</label>
+        <textarea
+          [(ngModel)]="emailBody"
+          class="form-textarea"
+          rows="10"
+          placeholder="Corps de votre message…"
+        ></textarea>
+      </div>
+
+      <div class="email-signature">
+        <span class="detail-label">Signature</span>
+        <span class="sig-preview">{{ adminName }} — {{ adminEmail }} — Freshapp</span>
+      </div>
+
+      <div class="alert alert-success" *ngIf="emailSuccess">{{ emailSuccess }}</div>
+      <div class="alert alert-error" *ngIf="emailError">{{ emailError }}</div>
+
+      <div class="modal-actions">
+        <button class="btn-send" (click)="sendEmail()" [disabled]="sendingEmail">
+          {{ sendingEmail ? 'Envoi en cours…' : '✉ Envoyer' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Onglet : Historique ── -->
+    <div class="modal-body" *ngIf="activeTab === 'history'">
+
+      <div class="empty-history" *ngIf="!selectedNotification!.emailsSent || selectedNotification!.emailsSent.length === 0">
+        Aucun email envoyé pour cette demande.
+      </div>
+
+      <div class="email-item" *ngFor="let mail of selectedNotification!.emailsSent">
+        <div class="email-item-header">
+          <span class="email-item-subject">{{ mail.subject }}</span>
+          <span class="email-item-date">{{ formatDate(mail.sentAt) }}</span>
+        </div>
+        <p class="email-item-by">Par : {{ mail.sentBy }}</p>
+        <pre class="email-item-body">{{ mail.body }}</pre>
+      </div>
+
+    </div>
+
+  </div>
 </div>

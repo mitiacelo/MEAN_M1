@@ -1,5 +1,12 @@
 const mongoose = require('mongoose');
 
+const emailSentSchema = new mongoose.Schema({
+  subject: String,
+  body: String,
+  sentAt: { type: Date, default: Date.now },
+  sentBy: { type: String } // nom + email de l'admin
+});
+
 const notificationSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -25,9 +32,10 @@ const notificationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'processed', 'rejected'],
-    default: 'pending'
+    enum: ['nouveau', 'contacté', 'archivé'],
+    default: 'nouveau'
   },
+  emailsSent: [emailSentSchema],
   createdAt: {
     type: Date,
     default: Date.now

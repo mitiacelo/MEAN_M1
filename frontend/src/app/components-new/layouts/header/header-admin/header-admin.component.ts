@@ -18,7 +18,7 @@ export class AdminLayoutComponent implements OnInit {
   ngOnInit(): void {
     this.notificationService.getAll().subscribe({
       next: (notifs) => {
-        this.pendingCount = notifs.filter(n => n.status === 'pending').length;
+        this.pendingCount = notifs.filter(n => n.status === 'nouveau').length;
       },
       error: (err) => console.error(err)
     });

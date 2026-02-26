@@ -1,7 +1,14 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+
+export interface EmailSent {
+  subject: string;
+  body: string;
+  sentAt: string;
+  sentBy: string;
+}
 
 export interface Notification {
   _id: string;
@@ -10,7 +17,8 @@ export interface Notification {
   phone: string;
   email: string;
   message: string;
-  status: 'pending' | 'processed' | 'rejected';
+  status: 'nouveau' | 'contacté' | 'archivé';
+  emailsSent: EmailSent[];
   createdAt: string;
 }
 
@@ -24,7 +32,7 @@ export class NotificationService {
     return this.http.get<Notification[]>(this.apiUrl);
   }
 
-  updateStatus(id: string, status: 'pending' | 'processed' | 'rejected'): Observable<Notification> {
+  updateStatus(id: string, status: 'nouveau' | 'contacté' | 'archivé'): Observable<Notification> {
     return this.http.patch<Notification>(`${this.apiUrl}/${id}/status`, { status });
   }
 
