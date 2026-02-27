@@ -77,7 +77,7 @@ export class InvoiceComponent implements OnInit {
       console.warn('Aucune div avec class="invoice-container" trouvée');
       alert('Structure de la facture incorrecte (classe invoice-container manquante)');
       this.generatingPdf = false;
-      return;
+      return; 
     }
   
     console.log('Contenu à capturer trouvé, dimensions :', contentToCapture.scrollWidth, contentToCapture.scrollHeight);

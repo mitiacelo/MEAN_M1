@@ -115,4 +115,21 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
+router.get('/user/:userId', async (req, res) => {
+  try {
+    const shops = await Shop.find({ id_user: req.params.userId })
+      .sort({ createdAt: -1 })
+      .select('name superficie status id_user');
+
+    if (!shops || shops.length === 0) {
+      return res.status(200).json([]); // tableau vide si aucune salle
+    }
+
+    res.json(shops);
+  } catch (err) {
+    console.error('Erreur GET /shops/user/:userId :', err);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
 module.exports = router;

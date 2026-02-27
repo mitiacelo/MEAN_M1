@@ -113,4 +113,24 @@ router.post('/', async (req, res) => {
     }
   });
 
+  // GET /api/boutiques/user/:userId - Toutes les boutiques d'un utilisateur
+router.get('/user/:userId', async (req, res) => {
+  try {
+    // Trouve les shops (salles) de l'utilisateur
+    const shops = await Shop.find({ id_user: req.params.userId }).select('_id');
+    const shopIds = shops.map(s => s._id);
+
+    // Trouve toutes les boutiques liées à ces shops
+    const boutiques = await Boutique.find({ id_shop: { $in: shopIds } })
+      .populate('id_shop', 'name superficie status')
+      .populate('id_domaine', 'name')
+      .sort({ createdAt: -1 });
+
+    res.json(boutiques);
+  } catch (err) {
+    console.error('Erreur GET /boutiques/user/:userId :', err);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
 module.exports = router;

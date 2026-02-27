@@ -1,6 +1,6 @@
 <div class="dashboard-shop-container">
   <header class="dashboard-header">
-    <h1>Tableau de bord - {{ boutique?.name || shop?.name || 'Ma boutique' }}</h1>
+    <h1>Tableau de bord - Mes salles et boutiques</h1>
     <p>Bienvenue, {{ authService.currentUser?.firstname }} !</p>
 
     <div class="actions">
@@ -13,32 +13,61 @@
     <p class="loading">Chargement en cours...</p>
   } @else if (errorMessage) {
     <p class="error">{{ errorMessage }}</p>
-  } @else if (shop) {
-    <div class="shop-info">
-      <h2>Salle : {{ shop.name }}</h2>
-      <p>Superficie : {{ shop.superficie }} m²</p>
-      <p>Statut : {{ shop.status }}</p>
+  } @else {
+    @if (shops.length === 0) {
+      <p class="info">Vous n'avez pas encore de salle attribuée.</p>
+    } @else {
+      <div class="shops-list">
+        <h2>Vos salles</h2>
+        @for (shop of shops; track shop._id) {
+          <div class="shop-card" [class.active]="selectedShop?._id === shop._id">
+            <h3>{{ shop.name }}</h3>
+            <p>Superficie : {{ shop.superficie }} m²</p>
+            <p>Statut : {{ shop.status }}</p>
 
-      @if (boutique) {
-        @if (!isEditingBoutique) {
-          <h3>Boutique : {{ boutique.name }}</h3>
-          <p>Domaine : {{ boutique.id_domaine?.name || 'Non défini' }}</p>
-          <p>{{ boutique.description || 'Aucune description' }}</p>
-          <button class="btn secondary" (click)="startEditBoutique()">Modifier la boutique</button>
-        } @else {
-          <div class="edit-form">
-            <h3>Modifier la boutique</h3>
+            <!-- Boutique de cette salle -->
+            @let boutique = boutiquesMap[shop._id];
+            @if (boutique) {
+              <div class="boutique-info">
+                <h4>Boutique : {{ boutique.name }}</h4>
+                <p>Domaine : {{ boutique.id_domaine?.name || 'Non défini' }}</p>
+                <p>{{ boutique.description || 'Aucune description' }}</p>
+
+                <button class="btn primary" (click)="selectShop(shop)">
+                  Gérer les produits
+                </button>
+                <button class="btn secondary" (click)="startEditBoutique()">
+                  Modifier boutique
+                </button>
+              </div>
+            } @else if (shop.status === 'actif') {
+              <button class="btn create" (click)="showCreateBoutique = true; selectedShop = shop">
+                Créer une boutique dans cette salle
+              </button>
+            } @else {
+              <p class="info">Salle non active – impossible de créer une boutique pour l'instant.</p>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Formulaire création boutique -->
+      @if (showCreateBoutique && selectedShop) {
+        <div class="create-form">
+          <h3>Créer une boutique dans {{ selectedShop.name }}</h3>
+
+          <form (ngSubmit)="createBoutique()">
             <div class="form-group">
               <label>Nom :</label>
-              <input [(ngModel)]="editedBoutique.name" required />
+              <input [(ngModel)]="newBoutique.name" required />
             </div>
             <div class="form-group">
               <label>Description :</label>
-              <textarea [(ngModel)]="editedBoutique.description"></textarea>
+              <textarea [(ngModel)]="newBoutique.description"></textarea>
             </div>
             <div class="form-group">
               <label>Domaine :</label>
-              <select [(ngModel)]="editedBoutique.id_domaine" required>
+              <select [(ngModel)]="newBoutique.id_domaine" required>
                 <option value="" disabled>Sélectionner</option>
                 @for (dom of domaines; track dom._id) {
                   <option [value]="dom._id">{{ dom.name }}</option>
@@ -46,87 +75,73 @@
               </select>
             </div>
             <div class="form-buttons">
-              <button class="save-btn" (click)="saveBoutiqueEdit()" [disabled]="!editedBoutique.name || !editedBoutique.id_domaine">
-                Enregistrer
+              <button type="submit" [disabled]="!newBoutique.name || !newBoutique.id_domaine">
+                Créer
               </button>
-              <button class="cancel-btn" (click)="cancelEditBoutique()">Annuler</button>
+              <button type="button" (click)="showCreateBoutique = false">Annuler</button>
             </div>
-          </div>
-        }
-      } @else if (shop.status === 'actif') {
-        <div class="create-boutique-section">
-          <h3>Créez votre boutique dans cette salle</h3>
-          <p>Donnez un nom, une description et choisissez le domaine d'activité.</p>
-          <button class="btn primary" (click)="showCreateBoutique = true">
-            Créer ma boutique
-          </button>
+          </form>
         </div>
+      }
 
-        @if (showCreateBoutique) {
-          <div class="create-form">
-            <h3>Création de votre boutique</h3>
-
-            <form (ngSubmit)="createBoutique()">
-              <div class="form-group">
-                <label>Nom de la boutique :</label>
-                <input [(ngModel)]="newBoutique.name" name="name" required placeholder="Ex: TechTrendz" />
-              </div>
-
-              <div class="form-group">
-                <label>Description :</label>
-                <textarea [(ngModel)]="newBoutique.description" name="description" placeholder="Décrivez votre activité..."></textarea>
-              </div>
-
-              <div class="form-group">
-                <label>Domaine d'activité :</label>
-                <select [(ngModel)]="newBoutique.id_domaine" name="id_domaine" required>
-                  <option value="" disabled>Sélectionner un domaine</option>
-                  @for (dom of domaines; track dom._id) {
-                    <option [value]="dom._id">{{ dom.name }}</option>
-                  }
-                </select>
-              </div>
-
-              <div class="form-buttons">
-                <button type="submit" [disabled]="!newBoutique.name || !newBoutique.id_domaine">
-                  Créer ma boutique
-                </button>
-                <button type="button" (click)="showCreateBoutique = false">Annuler</button>
-              </div>
-            </form>
+      <!-- Édition boutique -->
+      @if (isEditingBoutique && selectedBoutique) {
+        <div class="edit-form">
+          <h3>Modifier la boutique</h3>
+          <div class="form-group">
+            <label>Nom :</label>
+            <input [(ngModel)]="editedBoutique.name" required />
           </div>
-        }
-      } @else {
-        <p class="info">Cette salle n'est pas encore active. Vous pourrez créer votre boutique une fois validée.</p>
+          <div class="form-group">
+            <label>Description :</label>
+            <textarea [(ngModel)]="editedBoutique.description"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Domaine :</label>
+            <select [(ngModel)]="editedBoutique.id_domaine" required>
+              <option value="" disabled>Sélectionner</option>
+              @for (dom of domaines; track dom._id) {
+                <option [value]="dom._id">{{ dom.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-buttons">
+            <button class="save-btn" (click)="saveBoutiqueEdit()" [disabled]="!editedBoutique.name || !editedBoutique.id_domaine">
+              Enregistrer
+            </button>
+            <button class="cancel-btn" (click)="cancelEditBoutique()">Annuler</button>
+          </div>
+        </div>
       }
-    </div>
 
-    <!-- Gestion produits (seulement si boutique existe) -->
-    @if (boutique) {
-      <div class="actions">
-        <button class="btn primary" (click)="showCreateProductForm = !showCreateProductForm">
-          {{ showCreateProductForm ? 'Fermer le formulaire' : 'Ajouter un produit' }}
-        </button>
-      </div>
+      <!-- Produits de la boutique sélectionnée -->
+      @if (selectedBoutique) {
+        <div class="products-section">
+          <h2>Produits de {{ selectedBoutique.name }}</h2>
+          <div class="actions">
+            <button class="btn primary" (click)="showCreateProductForm = !showCreateProductForm">
+              {{ showCreateProductForm ? 'Fermer le formulaire' : 'Ajouter un produit' }}
+            </button>
+          </div>
 
-      @if (showCreateProductForm) {
-        <app-create-product
-          [shopId]="shop._id"
-          (productCreated)="onProductCreated($event)"
-          (cancel)="showCreateProductForm = false">
-        </app-create-product>
+          @if (showCreateProductForm) {
+            <app-create-product
+              [shopId]="selectedShop!._id"
+              (productCreated)="onProductCreated($event)"
+              (cancel)="showCreateProductForm = false">
+            </app-create-product>
+          }
+
+          <app-product-list
+            [products]="products"
+            [types]="types"
+            (productUpdated)="onProductUpdated($event)"
+            (productDeleted)="onProductDeleted($event)">
+          </app-product-list>
+        </div>
+      } @else if (shops.length > 0) {
+        <p class="info">Sélectionnez une salle pour voir ou créer sa boutique.</p>
       }
-
-      <app-product-list
-        [products]="products"
-        [types]="types"
-        (productUpdated)="onProductUpdated($event)"
-        (productDeleted)="onProductDeleted($event)">
-      </app-product-list>
-    } @else {
-      <p class="info">Créez votre boutique pour commencer à gérer vos produits.</p>
     }
-  } @else {
-    <p>Vous n'avez pas encore de salle attribuée.</p>
   }
 </div>

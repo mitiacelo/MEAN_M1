@@ -75,5 +75,19 @@ getAllBoutiques(): Observable<Boutique[]> {
     );
   }
 
+  getBoutiquesByUser(userId: string): Observable<Boutique[]> {
+    if (!userId) {
+      return throwError(() => new Error('ID utilisateur manquant'));
+    }
+  
+    return this.http.get<Boutique[]>(`${environment.apiUrl}/boutiques/user/${userId}`).pipe(
+      catchError(err => {
+        console.error('Erreur getBoutiquesByUser', err);
+        if (err.status === 404) return []; // Retourne tableau vide si pas de boutique
+        return throwError(() => err);
+      })
+    );
+  }
+
 
 }

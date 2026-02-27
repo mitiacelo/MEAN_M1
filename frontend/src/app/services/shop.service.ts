@@ -55,4 +55,8 @@ export class ShopService {
 
     return this.http.get<Shop>(`${environment.apiUrl}/shops/${user.id_shop}`);
   };
+
+  getShopsByUser(userId: string): Observable<Shop[]> {
+    return this.http.get<Shop[]>(`${environment.apiUrl}/shops/user/${userId}`);
+  }
 }
