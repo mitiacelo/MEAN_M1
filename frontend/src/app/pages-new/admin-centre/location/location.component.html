@@ -1,0 +1,163 @@
+<div class="location-page">
+
+    <!-- ── Header ── -->
+    <div class="page-header">
+      <div>
+        <h2>Gestion des loyers</h2>
+        <p class="subtitle">{{ moisCourantLabel() }}</p>
+      </div>
+      <button class="btn-refresh" (click)="charger()">↻ Actualiser</button>
+    </div>
+  
+    <div class="loading" *ngIf="loading">Chargement…</div>
+  
+    <ng-container *ngIf="!loading">
+  
+      <!-- ── Cartes stats ── -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-value">{{ totalLocataires }}</span>
+          <span class="stat-label">Locataires actifs</span>
+        </div>
+        <div class="stat-card retard">
+          <span class="stat-value">{{ totalEnRetard }}</span>
+          <span class="stat-label">En retard</span>
+        </div>
+        <div class="stat-card attente">
+          <span class="stat-value">{{ totalEnAttente }}</span>
+          <span class="stat-label">En attente</span>
+        </div>
+        <div class="stat-card paye">
+          <span class="stat-value">{{ totalPayes }}</span>
+          <span class="stat-label">Payés</span>
+        </div>
+        <div class="stat-card montant">
+          <span class="stat-value">{{ totalEncaisse | number }} Ar</span>
+          <span class="stat-label">Encaissé / {{ totalAttendu | number }} Ar</span>
+        </div>
+      </div>
+  
+      <!-- ── Vide ── -->
+      <div class="empty" *ngIf="entries.length === 0">
+        Aucun locataire avec un contrat actif.
+      </div>
+  
+      <!-- ── Liste locataires ── -->
+      <div class="loyer-list">
+        <div
+          class="loyer-card"
+          *ngFor="let entry of entries"
+          [class]="'card-' + entry.loyerMois.statut"
+        >
+          <div class="card-left">
+            <div class="statut-dot" [class]="'dot-' + entry.loyerMois.statut"></div>
+            <div class="card-info">
+              <div class="locataire-nom">
+                {{ entry.contract.user.firstname }} {{ entry.contract.user.name }}
+              </div>
+              <div class="shop-nom">{{ entry.contract.shop.name }}</div>
+              <div class="locataire-email">{{ entry.contract.user.email }}</div>
+            </div>
+          </div>
+  
+          <div class="card-center">
+            <div class="montant">{{ entry.loyerMois.montant | number }} Ar</div>
+            <div class="montant-detail">
+              Loyer {{ entry.loyerMois.loyer | number }} + Charges {{ entry.loyerMois.charges | number }}
+            </div>
+            <div class="date-paiement" *ngIf="entry.loyerMois.datePaiement">
+              Payé le {{ formatDate(entry.loyerMois.datePaiement) }}
+            </div>
+            <div class="note" *ngIf="entry.loyerMois.note">
+              📝 {{ entry.loyerMois.note }}
+            </div>
+          </div>
+  
+          <div class="card-right">
+            <span class="badge" [class]="'badge-' + entry.loyerMois.statut">
+              {{ statutLabel(entry.loyerMois.statut) }}
+            </span>
+  
+            <!-- Actions selon statut -->
+            <div class="card-actions">
+  
+              <!-- Confirmer paiement (en_attente ou en_retard) -->
+              <ng-container *ngIf="entry.loyerMois.statut !== 'payé'">
+                <ng-container *ngIf="confirmingId === entry.loyerMois._id; else btnConfirmer">
+                  <input
+                    class="note-input"
+                    [(ngModel)]="noteInput"
+                    placeholder="Note (optionnel)"
+                  />
+                  <button class="btn-valider" (click)="confirmerPaiement(entry)">✓ Valider</button>
+                  <button class="btn-cancel" (click)="annulerConfirmation()">✕</button>
+                </ng-container>
+                <ng-template #btnConfirmer>
+                  <button class="btn-payer" (click)="ouvrirConfirmation(entry)">
+                    ✓ Confirmer paiement
+                  </button>
+                </ng-template>
+              </ng-container>
+  
+              <!-- Annuler paiement si payé -->
+              <button
+                class="btn-annuler"
+                *ngIf="entry.loyerMois.statut === 'payé'"
+                (click)="annulerPaiement(entry)"
+              >
+                Annuler
+              </button>
+  
+              <!-- Voir historique -->
+              <button class="btn-historique" (click)="voirHistorique(entry)">
+                Historique
+              </button>
+  
+            </div>
+          </div>
+  
+        </div>
+      </div>
+  
+    </ng-container>
+  
+  </div>
+  
+  <!-- ═══════════════════════════════════
+       MODALE HISTORIQUE
+  ════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="showHistorique" (click)="fermerHistorique()">
+    <div class="modal" (click)="$event.stopPropagation()">
+  
+      <div class="modal-header">
+        <div>
+          <h3>Historique — {{ selectedEntry?.contract?.shop?.name }}</h3>
+          <p class="modal-subtitle">
+            {{ selectedEntry?.contract?.user?.firstname }} {{ selectedEntry?.contract?.user?.name }}
+          </p>
+        </div>
+        <button class="modal-close" (click)="fermerHistorique()">✕</button>
+      </div>
+  
+      <div class="modal-body">
+        <div class="loading" *ngIf="loadingHistorique">Chargement…</div>
+  
+        <div class="empty" *ngIf="!loadingHistorique && historique.length === 0">
+          Aucun historique disponible.
+        </div>
+  
+        <div class="historique-list" *ngIf="!loadingHistorique">
+          <div class="historique-item" *ngFor="let h of historique" [class]="'hitem-' + h.statut">
+            <div class="hitem-mois">{{ nomMois(h.mois, h.annee) }}</div>
+            <div class="hitem-montant">{{ h.montant | number }} Ar</div>
+            <span class="badge" [class]="'badge-' + h.statut">{{ statutLabel(h.statut) }}</span>
+            <div class="hitem-date" *ngIf="h.datePaiement">
+              Payé le {{ formatDate(h.datePaiement) }}
+            </div>
+            <div class="hitem-note" *ngIf="h.note">{{ h.note }}</div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>

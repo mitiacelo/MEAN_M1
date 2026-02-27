@@ -61,6 +61,12 @@ export const routes: Routes = [
         path: 'notifications',
         loadComponent: () =>
           import('./pages-new/admin-centre/notifications/notifications.component').then(m => m.NotificationsComponent)
+      },
+      {
+        path: 'location',
+        loadComponent: () =>
+          import('./pages-new/admin-centre/location/location.component')
+            .then(m => m.LocationComponent)
       }
     ]
   },
