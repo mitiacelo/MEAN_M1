@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { ProductService, Product } from '../../../../../services/product.service';
 import { TypeService, Type } from '../../../../../services/type.service';
 
-// Interface dédiée au formulaire (quantite et prix obligatoires)
 interface ProductForm {
   name: string;
   description?: string;
@@ -22,7 +21,7 @@ interface ProductForm {
   styleUrl: './create-product.component.css'
 })
 export class CreateProductComponent {
-  @Input() shopId!: string;
+  @Input() boutiqueId!: string;  // ← Changé : boutiqueId au lieu de shopId
   @Output() productCreated = new EventEmitter<Product>();
   @Output() cancel = new EventEmitter<void>();
 
@@ -47,7 +46,7 @@ export class CreateProductComponent {
   private loadTypes() {
     this.typeService.getAllTypes().subscribe({
       next: (types) => this.types = types,
-      error: (err) => console.error('Erreur types', err)
+      error: (err) => console.error('Erreur chargement types', err)
     });
   }
 
@@ -57,24 +56,32 @@ export class CreateProductComponent {
       return;
     }
 
+    if (!this.boutiqueId) {
+      this.error = 'Aucune boutique sélectionnée';
+      return;
+    }
+
     const payload = {
       name: this.product.name,
       description: this.product.description || '',
       id_type: this.product.id_type,
-      id_category: this.product.id_category || 'default_category_id', // adapte selon ton cas
-      id_shop: this.shopId,
+      id_category: this.product.id_category || null, // ou supprime si non utilisé
+      id_boutique: this.boutiqueId,  // ← CHANGEMENT IMPORTANT
       quantite: Number(this.product.quantite),
       prix: Number(this.product.prix)
     };
 
+    console.log('Payload envoyé au backend :', payload);
+
     this.productService.createProduct(payload).subscribe({
       next: (newProduct) => {
+        console.log('Produit créé avec succès :', newProduct);
         this.productCreated.emit(newProduct);
         this.resetForm();
       },
       error: (err) => {
-        this.error = err.error?.message || 'Erreur création produit';
-        console.error(err);
+        console.error('Erreur création produit :', err);
+        this.error = err.error?.message || 'Erreur lors de la création du produit';
       }
     });
   }

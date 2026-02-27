@@ -90,3 +90,25 @@
   .register-link a:hover {
     text-decoration: underline;
   }
+
+  .error-message {
+    background: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .field-error {
+    color: #c62828;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    display: block;
+  }
+  
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }

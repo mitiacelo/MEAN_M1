@@ -9,90 +9,69 @@ const Shop = require('../models/Shop');
 const StockMouvement = require('../models/StockMouvement');
 const PriceProduct = require('../models/PriceProduct');
 
-// POST /api/products → Créer produit + stock initial + prix initial
+// POST /api/products → Créer un produit + stock initial + prix initial
 router.post('/', async (req, res) => {
-  console.log('POST /products - Body reçu :', req.body);
-
   try {
     const {
       name,
       description,
       id_type,
-      id_shop,
+      id_boutique,
       quantite = 0,
       prix
     } = req.body;
 
-    if (!name || !id_type || !id_shop) {
+    if (!name || !id_type || !id_boutique) {
       return res.status(400).json({ message: 'Nom, type et boutique obligatoires' });
-    }
-
-    if (quantite < 0) {
-      return res.status(400).json({ message: 'Quantité ne peut pas être négative' });
-    }
-
-    if (prix == null || prix < 0) {
-      return res.status(400).json({ message: 'Prix initial obligatoire et positif' });
     }
 
     const product = new Product({
       name,
       description: description || '',
       id_type,
-      id_shop,
+      id_boutique,
       quantite: Number(quantite)
     });
 
     await product.save();
-    console.log('Produit créé → _id:', product._id);
 
-    const mouvement = new StockMouvement({
-      id_produit: product._id,
-      type: 'entree',
-      quantite: Number(quantite),
-      stock_apres: Number(quantite)
-    });
+    // Stock initial
+    if (quantite > 0) {
+      await new StockMouvement({
+        id_produit: product._id,
+        type: 'entree',
+        quantite: Number(quantite),
+        stock_apres: Number(quantite)
+      }).save();
+    }
 
-    await mouvement.save();
-
-    const priceEntry = new PriceProduct({
+    // Prix initial
+    await new PriceProduct({
       id_product: product._id,
       prix: Number(prix)
-    });
+    }).save();
 
-    await priceEntry.save();
-
-    // Populate léger pour la réponse
-    const populated = await Product.findById(product._id)
-      .populate('id_type', 'name');
-
-    res.status(201).json({
-      message: 'Produit créé avec succès',
-      product: populated,
-      mouvementInitial: mouvement,
-      prixInitial: priceEntry
-    });
+    const populated = await Product.findById(product._id).populate('id_type', 'name');
+    res.status(201).json(populated);
   } catch (err) {
     console.error('Erreur création produit :', err.message);
     res.status(400).json({ message: err.message });
   }
 });
 
-// GET /api/products/shop/:shopId → tous les produits d'une boutique (avec prix actuel)
-router.get('/shop/:shopId', async (req, res) => {
-  const shopId = req.params.shopId;
+// GET /api/products/boutique/:boutiqueId → tous les produits d'une boutique (avec prix actuel)
+router.get('/boutique/:boutiqueId', async (req, res) => {
+  const boutiqueId = req.params.boutiqueId;
 
-  console.log(`[GET] /products/shop/${shopId} - Requête reçue`);
+  console.log(`[GET] /products/boutique/${boutiqueId} - Requête reçue`);
 
-  if (!mongoose.Types.ObjectId.isValid(shopId)) {
+  if (!mongoose.Types.ObjectId.isValid(boutiqueId)) {
     console.log('→ ID boutique invalide');
     return res.status(400).json({ message: 'ID de boutique invalide' });
   }
 
   try {
-    console.log('→ Recherche des produits...');
-
-    const products = await Product.find({ id_shop: shopId })
+    const products = await Product.find({ id_boutique: boutiqueId })
       .populate({
         path: 'id_type',
         select: 'name id_category',
@@ -102,11 +81,11 @@ router.get('/shop/:shopId', async (req, res) => {
           populate: { path: 'id_domaine', select: 'name' }
         }
       })
-      .populate('id_shop', 'name description superficie status');
+      .populate('id_boutique', 'name description');
 
-    console.log(`→ ${products.length} produit(s) trouvé(s)`);
+    console.log(`→ ${products.length} produit(s) trouvé(s) pour boutique ${boutiqueId}`);
 
-    // Ajouter prix actuel à chaque produit
+    // Ajouter le prix actuel à chaque produit
     const productsWithPrice = await Promise.all(products.map(async (product) => {
       const lastPrice = await PriceProduct.findOne({ id_product: product._id }).sort({ createdAt: -1 });
       return {
@@ -117,12 +96,8 @@ router.get('/shop/:shopId', async (req, res) => {
 
     res.json(productsWithPrice);
   } catch (err) {
-    console.error('ERREUR dans GET /products/shop/:shopId :');
-    console.error(err.stack || err.message);
-    res.status(500).json({
-      message: 'Erreur serveur lors de la récupération des produits',
-      details: err.message || 'Erreur inconnue'
-    });
+    console.error('ERREUR GET /products/boutique/:boutiqueId :', err);
+    res.status(500).json({ message: 'Erreur serveur', details: err.message });
   }
 });
 
@@ -148,7 +123,7 @@ router.get('/:id', async (req, res) => {
           populate: { path: 'id_domaine', select: 'name' }
         }
       })
-      .populate('id_shop', 'name description');
+      .populate('id_boutique', 'name description');  // ← corrigé : id_boutique au lieu de id_shop
 
     if (!product) {
       console.log('→ Produit non trouvé');
@@ -159,10 +134,10 @@ router.get('/:id', async (req, res) => {
     const lastPrice = await PriceProduct.findOne({ id_product: productId }).sort({ createdAt: -1 });
     const prixActuel = lastPrice ? lastPrice.prix : null;
 
-    // Historique prix (tous les prix)
+    // Historique prix
     const prixHistorique = await PriceProduct.find({ id_product: productId }).sort({ createdAt: -1 });
 
-    // Historique stock (tous les mouvements)
+    // Historique stock
     const stockHistorique = await StockMouvement.find({ id_produit: productId }).sort({ createdAt: -1 });
 
     console.log('→ Produit trouvé et populé');
@@ -173,16 +148,12 @@ router.get('/:id', async (req, res) => {
       stock_historique: stockHistorique
     });
   } catch (err) {
-    console.error('ERREUR dans GET /products/:id :');
-    console.error(err.stack || err.message);
-    res.status(500).json({
-      message: 'Erreur serveur',
-      details: err.message
-    });
+    console.error('ERREUR GET /products/:id :', err);
+    res.status(500).json({ message: 'Erreur serveur', details: err.message });
   }
 });
 
-// PUT /api/products/:id → mise à jour complète (peut inclure quantite si besoin)
+// PUT /api/products/:id → mise à jour complète
 router.put('/:id', async (req, res) => {
   const productId = req.params.id;
 
@@ -231,6 +202,85 @@ router.delete('/:id', async (req, res) => {
   } catch (err) {
     console.error('Erreur suppression produit :', err.message);
     res.status(500).json({ message: err.message });
+  }
+});
+
+// POST /api/products/import → Créer plusieurs produits en une fois
+router.post('/import', async (req, res) => {
+  try {
+    const productsData = req.body;
+
+    console.log('=== IMPORT BULK REÇU ===');
+    console.log('Content-Type:', req.headers['content-type']);
+    console.log('Nombre de produits reçus:', productsData?.length || 'undefined');
+
+    if (!Array.isArray(productsData) || productsData.length === 0) {
+      return res.status(400).json({ message: 'Aucun produit valide envoyé' });
+    }
+
+    const createdProducts = [];
+    const errors = [];
+
+    for (let i = 0; i < productsData.length; i++) {
+      const data = productsData[i];
+
+      const {
+        name,
+        description = '',
+        id_type,
+        id_boutique,
+        quantite = 0,
+        prix
+      } = data;
+
+      if (!name || !id_type || !id_boutique || prix == null) {
+        errors.push(`Produit ${i + 1} ignoré : champs obligatoires manquants`);
+        continue;
+      }
+
+      try {
+        const product = new Product({
+          name,
+          description,
+          id_type,
+          id_boutique,
+          quantite: Number(quantite)
+        });
+
+        await product.save();
+
+        if (Number(quantite) > 0) {
+          await new StockMouvement({
+            id_produit: product._id,
+            type: 'entree',
+            quantite: Number(quantite),
+            stock_apres: Number(quantite)
+          }).save();
+        }
+
+        await new PriceProduct({
+          id_product: product._id,
+          prix: Number(prix)
+        }).save();
+
+        createdProducts.push(product);
+      } catch (err) {
+        errors.push(`Produit ${i + 1} : ${err.message}`);
+      }
+    }
+
+    if (createdProducts.length === 0) {
+      return res.status(400).json({ message: 'Aucun produit créé', errors });
+    }
+
+    res.status(201).json({
+      message: `${createdProducts.length} produit(s) créé(s)`,
+      products: createdProducts,
+      errors: errors.length > 0 ? errors : undefined
+    });
+  } catch (err) {
+    console.error('ERREUR IMPORT :', err);
+    res.status(500).json({ message: 'Erreur serveur', details: err.message });
   }
 });
 

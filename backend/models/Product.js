@@ -18,10 +18,10 @@ const productSchema = new mongoose.Schema({
     ref: 'Type',
     required: [true, "Le type de produit est obligatoire"]
   },
-  id_shop: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Shop',
-    required: [true, "Le produit doit appartenir à une boutique"]
+  id_boutique: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Boutique', 
+    required: true 
   },
   quantite: {
     type: Number,

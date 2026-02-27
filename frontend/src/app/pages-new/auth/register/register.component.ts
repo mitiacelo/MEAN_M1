@@ -9,7 +9,7 @@ import { AuthService } from '../../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'   // tu peux réutiliser le même css que login
+  styleUrl: './register.component.css'
 })
 export class RegisterComponent {
   user = {
@@ -19,8 +19,9 @@ export class RegisterComponent {
     password: ''
   };
 
-  error: string = '';
+  errorMessage: string = '';
   isLoading = false;
+  showPassword = false;
 
   constructor(
     private authService: AuthService,
@@ -28,24 +29,39 @@ export class RegisterComponent {
   ) {}
 
   onSubmit() {
-    this.error = '';
+    this.errorMessage = '';
     this.isLoading = true;
 
     this.authService.register(this.user).subscribe({
-      next: (response) => {
+      next: () => {
         this.isLoading = false;
-        // Option 1 : connexion automatique après inscription
+        // Connexion automatique après inscription réussie
         this.authService.login(this.user.email, this.user.password).subscribe({
-          next: () => this.router.navigate(['/landing']),
-          error: () => this.error = 'Inscription réussie mais erreur lors de la connexion automatique'
+          next: () => {
+            // Redirection gérée dans AuthService (dashboard-shop ou landing)
+          },
+          error: () => {
+            this.errorMessage = 'Inscription réussie, mais impossible de vous connecter automatiquement. Veuillez vous connecter manuellement.';
+          }
         });
-        
-        // Option 2 (plus simple) : rediriger vers login
-        // this.router.navigate(['/login']);
       },
       error: (err) => {
         this.isLoading = false;
-        this.error = err.error?.message || 'Une erreur est survenue lors de l\'inscription';
+
+        // Messages d'erreur personnalisés selon la réponse backend
+        const backendMsg = err.error?.message?.toLowerCase() || '';
+
+        if (backendMsg.includes('email déjà')) {
+          this.errorMessage = 'Cet email est déjà utilisé par un autre compte.';
+        } else if (backendMsg.includes('mot de passe') || backendMsg.includes('longueur')) {
+          this.errorMessage = 'Le mot de passe doit contenir au moins 6 caractères.';
+        } else if (backendMsg.includes('email invalide') || backendMsg.includes('format')) {
+          this.errorMessage = 'Adresse email invalide.';
+        } else if (backendMsg.includes('requis') || backendMsg.includes('obligatoire')) {
+          this.errorMessage = 'Tous les champs marqués sont obligatoires.';
+        } else {
+          this.errorMessage = err.error?.message || 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.';
+        }
       }
     });
   }

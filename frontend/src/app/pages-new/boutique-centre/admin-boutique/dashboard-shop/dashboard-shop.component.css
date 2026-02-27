@@ -206,6 +206,22 @@
   .product-form textarea {
     min-height: 100px;
   }
+
+  .error-message {
+    background: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 16px 0;
+  }
+  
+  .success-message {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 16px 0;
+  }
   
   .btn.edit { background: #3b82f6; color: white; }
   .btn.delete { background: #ef4444; color: white; }

@@ -118,20 +118,40 @@
       @if (selectedBoutique) {
         <div class="products-section">
           <h2>Produits de {{ selectedBoutique.name }}</h2>
+        
           <div class="actions">
             <button class="btn primary" (click)="showCreateProductForm = !showCreateProductForm">
               {{ showCreateProductForm ? 'Fermer le formulaire' : 'Ajouter un produit' }}
             </button>
+        
+            <button class="btn secondary" (click)="fileInput.click()" [disabled]="importLoading">
+              {{ importLoading ? 'Import en cours...' : 'Importer depuis CSV / Excel' }}
+            </button>
+        
+            <input
+              type="file"
+              #fileInput
+              accept=".csv,.xlsx"
+              (change)="onFileSelected($event)"
+              style="display: none;"
+            />
           </div>
-
+        
+          @if (importError) {
+            <div class="error-message">{{ importError }}</div>
+          }
+          @if (importSuccess) {
+            <div class="success-message">{{ importSuccess }}</div>
+          }
+        
           @if (showCreateProductForm) {
             <app-create-product
-              [shopId]="selectedShop!._id"
+            [boutiqueId]="selectedBoutique!._id"
               (productCreated)="onProductCreated($event)"
               (cancel)="showCreateProductForm = false">
             </app-create-product>
           }
-
+        
           <app-product-list
             [products]="products"
             [types]="types"
