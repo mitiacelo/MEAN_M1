@@ -85,9 +85,9 @@ export class SalleDetailsComponent implements OnInit {
   }
 
   private loadProducts(shopId: string) {
-    this.productService.getProductsByShop(shopId).subscribe({
-      next: (products) => this.products = products,
-      error: (err) => console.error('Erreur chargement produits', err)
+    this.productService.getProductsByBoutique(shopId).subscribe({
+      next: (products: Product[]) => this.products = products,
+      error: (err: any) => console.error('Erreur chargement produits salle', err)
     });
   }
 

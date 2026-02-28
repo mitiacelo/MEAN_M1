@@ -44,9 +44,14 @@ export class BoutiqueDetailsComponent implements OnInit {
         this.loading = false;
 
         if (boutique.id_shop?._id) {
-          this.productService.getProductsByShop(boutique.id_shop._id).subscribe({
-            next: (prods: Product[]) => this.products = prods,
-            error: () => {}
+          this.productService.getProductsByBoutique(boutique._id).subscribe({
+            next: (products: Product[]) => {
+              this.products = products;
+              console.log(`Produits chargés pour boutique ${boutique.name} : ${products.length}`);
+            },
+            error: (err: any) => {
+              console.error('Erreur chargement produits boutique', err);
+            }
           });
         }
       },
