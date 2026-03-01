@@ -1,8 +1,9 @@
-// maintenance.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MaintenanceService, MaintenanceTicket, MaintenanceStats } from '../../../services/maintenance.service';
+import { AuthService } from '../../../services/auth.service';
+import { MaintenanceService, MaintenanceStats, MaintenanceTicket } from '../../../services/maintenance.service';
+import { ShopService } from '../../../services/shop.service';
 
 @Component({
   selector: 'app-maintenance',
@@ -32,19 +33,25 @@ export class MaintenanceComponent implements OnInit {
   // Modale création
   showCreate = false;
   creating = false;
+  shops: any[] = [];       // liste des salles pour le dropdown
   newTicket = {
     shopId: '',
-    shopName: '',
-    userId: '',
     titre: '',
     description: '',
     categorie: 'autre',
     priorite: 'normal'
   };
 
-  constructor(private maintenanceService: MaintenanceService) {}
+  constructor(
+    private maintenanceService: MaintenanceService,
+    private authService: AuthService,
+    private shopService: ShopService
+  ) {}
 
-  ngOnInit(): void { this.charger(); }
+  ngOnInit(): void {
+    this.charger();
+    this.chargerShops();
+  }
 
   charger(): void {
     this.loading = true;
@@ -57,15 +64,19 @@ export class MaintenanceComponent implements OnInit {
     });
   }
 
+  chargerShops(): void {
+    this.shopService.getAllShops().subscribe({
+      next: (shops) => { this.shops = shops; }
+    });
+  }
+
   // ── Filtres ──────────────────────────────────────────
   get filteredTickets(): MaintenanceTicket[] {
     let list = this.tickets;
-
     if (this.activeFilter === 'ouvert')   list = list.filter(t => t.statut === 'ouvert');
     if (this.activeFilter === 'en_cours') list = list.filter(t => t.statut === 'en_cours');
     if (this.activeFilter === 'résolu')   list = list.filter(t => t.statut === 'résolu');
     if (this.activeFilter === 'urgent')   list = list.filter(t => t.priorite === 'urgent' && t.statut !== 'résolu');
-
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
       list = list.filter(t =>
@@ -78,10 +89,10 @@ export class MaintenanceComponent implements OnInit {
     return list;
   }
 
-  get countOuverts():  number { return this.tickets.filter(t => t.statut === 'ouvert').length; }
-  get countEnCours():  number { return this.tickets.filter(t => t.statut === 'en_cours').length; }
-  get countUrgents():  number { return this.tickets.filter(t => t.priorite === 'urgent' && t.statut !== 'résolu').length; }
-  get countResolus():  number { return this.tickets.filter(t => t.statut === 'résolu').length; }
+  get countOuverts(): number { return this.tickets.filter(t => t.statut === 'ouvert').length; }
+  get countEnCours(): number { return this.tickets.filter(t => t.statut === 'en_cours').length; }
+  get countUrgents(): number { return this.tickets.filter(t => t.priorite === 'urgent' && t.statut !== 'résolu').length; }
+  get countResolus(): number { return this.tickets.filter(t => t.statut === 'résolu').length; }
 
   // ── Drawer ───────────────────────────────────────────
   ouvrirDetail(ticket: MaintenanceTicket): void {
@@ -89,16 +100,10 @@ export class MaintenanceComponent implements OnInit {
     this.editingStatut = false;
     this.newStatut = ticket.statut;
     this.noteResolution = ticket.noteResolution || '';
-    this.dateIntervention = ticket.dateIntervention
-      ? ticket.dateIntervention.substring(0, 10)
-      : '';
+    this.dateIntervention = ticket.dateIntervention ? ticket.dateIntervention.substring(0, 10) : '';
   }
 
-  fermerDetail(): void {
-    this.selectedTicket = null;
-    this.editingStatut = false;
-  }
-
+  fermerDetail(): void { this.selectedTicket = null; this.editingStatut = false; }
   ouvrirEditionStatut(): void { this.editingStatut = true; }
 
   sauvegarderStatut(): void {
@@ -111,13 +116,11 @@ export class MaintenanceComponent implements OnInit {
       this.dateIntervention || undefined
     ).subscribe({
       next: (updated) => {
-        // Mettre à jour dans la liste
         const idx = this.tickets.findIndex(t => t._id === updated._id);
         if (idx !== -1) this.tickets[idx] = updated;
         this.selectedTicket = updated;
         this.editingStatut = false;
         this.savingStatut = false;
-        // Refresh stats
         this.maintenanceService.getStats().subscribe(s => this.stats = s);
       },
       error: () => { this.savingStatut = false; }
@@ -137,28 +140,48 @@ export class MaintenanceComponent implements OnInit {
 
   // ── Création ─────────────────────────────────────────
   ouvrirCreation(): void {
-    this.newTicket = { shopId: '', shopName: '', userId: '', titre: '', description: '', categorie: 'autre', priorite: 'normal' };
+    this.newTicket = { shopId: '', titre: '', description: '', categorie: 'autre', priorite: 'normal' };
     this.showCreate = true;
   }
 
   creerTicket(): void {
-    if (!this.newTicket.titre || !this.newTicket.shopId) return;
+    console.log('🔧 creerTicket appelé', this.newTicket);
+
+    if (!this.newTicket.titre || !this.newTicket.shopId) {
+      console.warn('❌ Validation échouée — titre:', this.newTicket.titre, '| shopId:', this.newTicket.shopId);
+      return;
+    }
+
+    const user = this.authService.currentUser;
+    console.log('👤 User connecté:', user);
+    if (!user) {
+      console.warn('❌ Aucun user connecté');
+      return;
+    }
+
     this.creating = true;
-    this.maintenanceService.create({
+    const payload = {
       shopId: this.newTicket.shopId,
-      userId: this.newTicket.userId,
+      userId: user.id,
       titre: this.newTicket.titre,
       description: this.newTicket.description,
       categorie: this.newTicket.categorie,
       priorite: this.newTicket.priorite
-    }).subscribe({
+    };
+    console.log('📤 Payload envoyé:', payload);
+
+    this.maintenanceService.create(payload).subscribe({
       next: (ticket) => {
+        console.log('✅ Ticket créé:', ticket);
         this.tickets.unshift(ticket);
         this.showCreate = false;
         this.creating = false;
         this.maintenanceService.getStats().subscribe(s => this.stats = s);
       },
-      error: () => { this.creating = false; }
+      error: (err) => {
+        console.error('❌ Erreur création:', err);
+        this.creating = false;
+      }
     });
   }
 
@@ -175,13 +198,8 @@ export class MaintenanceComponent implements OnInit {
 
   categorieIcon(cat: string): string {
     const map: Record<string, string> = {
-      'électricité': '⚡',
-      'plomberie': '🔧',
-      'structure': '🧱',
-      'climatisation': '❄️',
-      'sécurité': '🔒',
-      'nettoyage': '🧹',
-      'autre': '📋'
+      'électricité': '⚡', 'plomberie': '🔧', 'structure': '🧱',
+      'climatisation': '❄️', 'sécurité': '🔒', 'nettoyage': '🧹', 'autre': '📋'
     };
     return map[cat] ?? '📋';
   }

@@ -31,6 +31,16 @@ export interface DashboardEntry {
   loyerMois: LoyerMois;
 }
 
+export interface StatMensuelle {
+  label: string;       // ex: "janv. 25"
+  mois: number;
+  annee: number;
+  encaisse: number;    // montant total payé
+  nbPaye: number;
+  nbEnRetard: number;
+  nbEnAttente: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class LoyerService {
   private apiUrl = `${environment.apiUrl}/loyers`;
@@ -43,6 +53,10 @@ export class LoyerService {
 
   getHistorique(contractId: string): Observable<LoyerMois[]> {
     return this.http.get<LoyerMois[]>(`${this.apiUrl}/historique/${contractId}`);
+  }
+
+  getStatsMensuelles(): Observable<StatMensuelle[]> {
+    return this.http.get<StatMensuelle[]>(`${this.apiUrl}/stats-mensuelles`);
   }
 
   confirmerPaiement(loyerId: string, note?: string): Observable<LoyerMois> {

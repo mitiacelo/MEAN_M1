@@ -109,5 +109,46 @@ router.patch('/:id/annuler-paiement', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+// GET /loyers/stats-mensuelles → encaissements + impayés des 6 derniers mois
+router.get('/stats-mensuelles', async (req, res) => {
+  try {
+    const now = new Date();
+    const mois = [];
+
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      mois.push({ mois: d.getMonth() + 1, annee: d.getFullYear() });
+    }
+
+    const stats = await Promise.all(mois.map(async ({ mois: m, annee: a }) => {
+      const [paye, enRetard, enAttente] = await Promise.all([
+        Loyer.aggregate([
+          { $match: { mois: m, annee: a, statut: 'payé' } },
+          { $group: { _id: null, total: { $sum: '$montant' }, count: { $sum: 1 } } }
+        ]),
+        Loyer.countDocuments({ mois: m, annee: a, statut: 'en_retard' }),
+        Loyer.countDocuments({ mois: m, annee: a, statut: 'en_attente' })
+      ]);
+
+      const label = new Date(a, m - 1, 1)
+        .toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
+
+      return {
+        label,
+        mois: m,
+        annee: a,
+        encaisse: paye[0]?.total ?? 0,
+        nbPaye: paye[0]?.count ?? 0,
+        nbEnRetard: enRetard,
+        nbEnAttente: enAttente
+      };
+    }));
+
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 module.exports = router;
