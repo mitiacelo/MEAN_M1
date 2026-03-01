@@ -90,6 +90,12 @@ export const routes: Routes = [
         import('./pages-new/boutique-centre/admin-boutique/suivi-donnees/suivi-donnees.component')
           .then(m => m.SuiviDonneesComponent)
     },
+    {
+      path: 'salle-manager/:id',
+      loadComponent: () =>
+      import('./pages-new/boutique-centre/admin-boutique/salle/salle-manager/salle-manager.component')
+        .then(m => m.SalleManagerComponent)
+    },
 
     // Redirection par défaut
     { path: '', redirectTo: 'dashboard-shop', pathMatch: 'full' }

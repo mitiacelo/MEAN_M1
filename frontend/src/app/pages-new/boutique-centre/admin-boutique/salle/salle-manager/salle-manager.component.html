@@ -1,0 +1,137 @@
+<div class="salle-manager">
+    @if (loading) {
+      <p class="loading">Chargement de la salle...</p>
+    } @else if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    } @else if (selectedShop) {
+      <div class="salle-header">
+        <h1>{{ selectedShop.name }}</h1>
+        <div class="salle-info">
+          <p>Superficie : <strong>{{ selectedShop.superficie }} m²</strong></p>
+          <p>Statut : <strong [ngClass]="selectedShop.status">{{ selectedShop.status }}</strong></p>
+        </div>
+      </div>
+  
+      <!-- Boutique -->
+      @if (selectedBoutique) {
+        <div class="boutique-card">
+          <h2>Boutique : {{ selectedBoutique.name }}</h2>
+          <p>Domaine : {{ selectedBoutique.id_domaine?.name || 'Non défini' }}</p>
+          <p>{{ selectedBoutique.description || 'Aucune description' }}</p>
+  
+          <div class="actions">
+            <button class="btn primary" routerLink="/dashboard-shop">Gérer les produits</button>
+            <button class="btn secondary" (click)="startEditBoutique()">Modifier infos boutique</button>
+          </div>
+        </div>
+      } @else if (selectedShop.status === 'actif') {
+        <div class="no-boutique">
+          <h3>Aucune boutique dans cette salle</h3>
+          <p>Créez-en une pour commencer à gérer vos produits.</p>
+          <button class="btn create" (click)="showCreateBoutique = true">
+            Créer ma boutique
+          </button>
+        </div>
+      } @else {
+        <p class="info">Salle non active → impossible de créer une boutique pour l'instant.</p>
+      }
+  
+      <!-- Formulaire création boutique -->
+      @if (showCreateBoutique) {
+        <div class="create-form">
+          <h3>Créer une boutique dans {{ selectedShop.name }}</h3>
+          <form (ngSubmit)="createBoutique()">
+            <div class="form-group">
+              <label>Nom :</label>
+              <input [(ngModel)]="newBoutique.name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label>Description :</label>
+              <textarea [(ngModel)]="newBoutique.description" name="description"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Domaine :</label>
+              <select [(ngModel)]="newBoutique.id_domaine" name="id_domaine" required>
+                <option value="" disabled>Sélectionner</option>
+                @for (dom of domaines; track dom._id) {
+                  <option [value]="dom._id">{{ dom.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-buttons">
+              <button type="submit" [disabled]="!newBoutique.name || !newBoutique.id_domaine">
+                Créer
+              </button>
+              <button type="button" (click)="showCreateBoutique = false">Annuler</button>
+            </div>
+          </form>
+        </div>
+      }
+  
+      <!-- Formulaire édition boutique -->
+      @if (isEditingBoutique && selectedBoutique) {
+        <div class="edit-form">
+          <h3>Modifier la boutique</h3>
+          <div class="form-group">
+            <label>Nom :</label>
+            <input [(ngModel)]="editedBoutique.name" name="editName" required />
+          </div>
+          <div class="form-group">
+            <label>Description :</label>
+            <textarea [(ngModel)]="editedBoutique.description" name="editDesc"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Domaine :</label>
+            <select [(ngModel)]="editedBoutique.id_domaine" name="editDomaine" required>
+              <option value="" disabled>Sélectionner</option>
+              @for (dom of domaines; track dom._id) {
+                <option [value]="dom._id">{{ dom.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-buttons">
+            <button class="save-btn" (click)="saveBoutiqueEdit()" [disabled]="!editedBoutique.name || !editedBoutique.id_domaine">
+              Enregistrer
+            </button>
+            <button class="cancel-btn" (click)="cancelEditBoutique()">Annuler</button>
+          </div>
+        </div>
+      }
+  
+      <!-- Gestion produits (si boutique existe) -->
+      @if (selectedBoutique) {
+        <div class="products-section">
+          <h2>Produits de {{ selectedBoutique.name }}</h2>
+  
+          <div class="actions">
+            <button class="btn primary" (click)="showCreateProductForm = !showCreateProductForm">
+              {{ showCreateProductForm ? 'Fermer' : 'Ajouter un produit' }}
+            </button>
+  
+            <button class="btn secondary" (click)="fileInput.click()" [disabled]="importLoading">
+              {{ importLoading ? 'Import en cours...' : 'Importer CSV / Excel' }}
+            </button>
+  
+            <input type="file" #fileInput accept=".csv,.xlsx" (change)="onFileSelected($event)" style="display: none;" />
+          </div>
+  
+          @if (showCreateProductForm) {
+            <app-create-product
+              [boutiqueId]="selectedBoutique._id"
+              (productCreated)="onProductCreated($event)"
+              (cancel)="showCreateProductForm = false">
+            </app-create-product>
+          }
+  
+          <app-product-list
+          [products]="products"
+            [types]="types"
+            (productUpdated)="onProductUpdated($event)"
+            (productDeleted)="onProductDeleted($event)">
+          </app-product-list>
+        </div>
+      }
+    } @else {
+      <p class="info">Aucune salle sélectionnée.</p>
+    }
+  </div>

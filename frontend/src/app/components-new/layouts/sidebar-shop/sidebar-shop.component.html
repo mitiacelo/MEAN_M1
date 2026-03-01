@@ -1,28 +1,52 @@
 <div class="shop-layout">
-    <!-- Sidebar fixe à gauche -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <h2>Ma Boutiqueee</h2>
-        <p>Bonjour {{ authService.currentUser?.firstname || 'Manager' }}</p>
+  <!-- Sidebar fixe à gauche -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Ma Boutique</h2>
+      <p>Bonjour {{ authService.currentUser?.firstname || 'Manager' }}</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard-shop" routerLinkActive="active" class="nav-item">
+        Dashboard
+      </a>
+
+      <!-- Nouvelle section : Mes Salles -->
+      <div class="sidebar-section">
+        <h3>Mes Salles</h3>
+
+        @if (shops.length === 0) {
+          <p class="sidebar-empty">Aucune salle attribuée</p>
+        } @else {
+          @for (shop of shops; track shop._id) {
+            <a 
+              [routerLink]="['/salle-manager', shop._id]"
+              routerLinkActive="active"
+              class="nav-item shop-item"
+            >
+              {{ shop.name }}
+              <span class="shop-status" [ngClass]="shop.status">
+                {{ shop.status === 'actif' ? 'Actif' : 'Inactif' }}
+              </span>
+            </a>
+          }
+        }
       </div>
-  
-      <nav class="sidebar-nav">
-        <a routerLink="/dashboard-shop" routerLinkActive="active" class="nav-item">
-          Dashboard
-        </a>
-        <a routerLink="/suivi-donnees" routerLinkActive="active" class="nav-item">
-            Suivis-donnéess
-          </a>
-      </nav>
-  
-      <div class="sidebar-footer">
-        <button class="logout-btn" (click)="authService.logout()">
-          Déconnexion
-        </button>
-      </div>
-    </aside>
-  
-    <main class="main-content">
-        <router-outlet></router-outlet>
-    </main>
-  </div>
+
+      <a routerLink="/suivi-donnees" routerLinkActive="active" class="nav-item">
+        Suivi des données
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="authService.logout()">
+        Déconnexion
+      </button>
+    </div>
+  </aside>
+
+  <!-- Contenu principal -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
