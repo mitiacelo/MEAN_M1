@@ -16,8 +16,17 @@
     <!-- ══ KPIs ══ -->
     <div class="kpi-row">
 
+      <!-- Locaux -->
       <div class="kpi-card kpi-card--green" (click)="allerGrille()">
-        <div class="kpi-top"><span class="kpi-icon">🏬</span><span class="kpi-label">Locaux</span></div>
+        <div class="kpi-top">
+          <div class="kpi-icon">
+            <!-- store / building filled -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#16A34A" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7.5L3.5 3h17L22 7.5H2zm1 1.5v10a1 1 0 001 1h16a1 1 0 001-1V9H3zm5 3h8v2H8v-2z"/>
+            </svg>
+          </div>
+          <span class="kpi-label">Locaux</span>
+        </div>
         <div class="kpi-value">{{ totalLocaux }}</div>
         <div class="kpi-sub">
           <span class="sub-green">{{ locauxOccupes }} occupés</span>
@@ -30,8 +39,17 @@
         </div>
       </div>
 
+      <!-- Loyers -->
       <div class="kpi-card kpi-card--blue" (click)="allerLocation()">
-        <div class="kpi-top"><span class="kpi-icon">💰</span><span class="kpi-label">Loyers ce mois</span></div>
+        <div class="kpi-top">
+          <div class="kpi-icon">
+            <!-- payments / wallet filled -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#2E2E54" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 7H3a1 1 0 00-1 1v10a2 2 0 002 2h16a2 2 0 002-2V8a1 1 0 00-1-1zm-1 11H4V9h16v9zM3 5h18V4a1 1 0 00-1-1H4a1 1 0 00-1 1v1zm13 7h2v2h-2v-2z"/>
+            </svg>
+          </div>
+          <span class="kpi-label">Loyers ce mois</span>
+        </div>
         <div class="kpi-value">{{ formatMontant(encaisseMonth) }}</div>
         <div class="kpi-sub"><span class="sub-muted">sur {{ formatMontant(attenduMonth) }}</span></div>
         <div class="kpi-bar-row">
@@ -39,33 +57,96 @@
           <span class="kpi-pct">{{ tauxEncaissement }}%</span>
         </div>
         <div class="kpi-alert kpi-alert--orange" *ngIf="loyersImpayes > 0">
-          ⚠ {{ loyersImpayes }} impayé{{ loyersImpayes > 1 ? 's' : '' }}
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="#FE8804"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+          {{ loyersImpayes }} impayé{{ loyersImpayes > 1 ? 's' : '' }}
         </div>
       </div>
 
+      <!-- Maintenance -->
       <div class="kpi-card kpi-card--orange" (click)="allerMaintenance()">
-        <div class="kpi-top"><span class="kpi-icon">🔧</span><span class="kpi-label">Maintenance</span></div>
+        <div class="kpi-top">
+          <div class="kpi-icon">
+            <!-- build / wrench filled -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#FE8804" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.78 15.3L19.78 21.3C20.57 22.09 21.85 22.09 22.64 21.3C23.43 20.51 23.43 19.23 22.64 18.44L16.64 12.44C17.19 11.04 16.88 9.39 15.71 8.22C14.43 6.94 12.57 6.68 11.02 7.42L13.47 9.88L9.88 13.47L7.42 11.02C6.68 12.57 6.94 14.43 8.22 15.71C9.39 16.88 11.04 17.19 12.44 16.64L13.78 15.3Z"/>
+            </svg>
+          </div>
+          <span class="kpi-label">Maintenance</span>
+        </div>
         <div class="kpi-value">{{ maintenanceOuverts }}</div>
         <div class="kpi-sub"><span class="sub-muted">tickets ouverts</span></div>
         <div class="kpi-alert kpi-alert--red" *ngIf="maintenanceUrgents > 0">
-          🔴 {{ maintenanceUrgents }} urgent{{ maintenanceUrgents > 1 ? 's' : '' }}
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="#EF4444"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          {{ maintenanceUrgents }} urgent{{ maintenanceUrgents > 1 ? 's' : '' }}
         </div>
-        <div class="kpi-ok" *ngIf="maintenanceUrgents === 0 && maintenanceOuverts === 0">✓ Tout est en ordre</div>
+        <div class="kpi-ok" *ngIf="maintenanceUrgents === 0 && maintenanceOuverts === 0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#16A34A"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
+          Tout est en ordre
+        </div>
       </div>
 
+      <!-- Notifications -->
       <div class="kpi-card kpi-card--purple" (click)="allerNotifications()">
-        <div class="kpi-top"><span class="kpi-icon">🔔</span><span class="kpi-label">Notifications</span></div>
+        <div class="kpi-top">
+          <div class="kpi-icon">
+            <!-- bell filled -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#CA8A04" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+          </div>
+          <span class="kpi-label">Notifications</span>
+        </div>
         <div class="kpi-value">{{ notifNouveaux }}</div>
         <div class="kpi-sub"><span class="sub-muted">non lues</span></div>
-        <div class="kpi-ok" *ngIf="notifNouveaux === 0">✓ À jour</div>
+        <div class="kpi-ok" *ngIf="notifNouveaux === 0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#16A34A"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
+          À jour
+        </div>
       </div>
 
     </div>
-
+   <!-- ══ PLAN DU CENTRE ══ -->
+   <div class="grille-row">
+    <div class="section-card section-card--grille">
+      <div class="section-header">
+        <h3>Plan du centre</h3>
+        <button class="btn-link" (click)="allerGrille()">Gérer la grille →</button>
+      </div>
+      <div class="grille-wrap">
+        <table class="grille-table"
+          [style.--colonnes]="colonnes"
+          [style.--lignes]="lignes">
+          <thead>
+            <tr>
+              <th></th>
+              <th *ngFor="let num of getNumeros()">{{ num }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let lettre of getLettres()">
+              <td class="lettre-col">{{ lettre }}</td>
+              <td *ngFor="let num of getNumeros()"
+                class="block-cell"
+                [class.assigned]="isAssigned(lettre, num)"
+                [style.background-color]="getBlockColor(lettre, num)">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="shops-legend">
+        <div class="legend-item" *ngFor="let shop of shops.slice(0, 10)">
+          <span class="legend-dot" [style.background]="getShopColor(shop._id)"></span>
+          <span class="legend-name">{{ shop.name }}</span>
+          <span class="legend-st" [class]="'lst-' + shop.status">{{ shop.status }}</span>
+        </div>
+        <div class="legend-more" *ngIf="shops.length > 10">+{{ shops.length - 10 }} autres</div>
+      </div>
+    </div>
+  </div>
     <!-- ══ GRAPHIQUES ══ -->
     <div class="charts-row">
 
-      <!-- Graphique 1 : Encaissements 6 mois -->
       <div class="chart-card chart-card--wide">
         <div class="chart-header">
           <div>
@@ -79,7 +160,6 @@
         </div>
       </div>
 
-      <!-- Graphique 2 : Occupation -->
       <div class="chart-card">
         <div class="chart-header">
           <div>
@@ -98,10 +178,10 @@
 
     </div>
 
-    <!-- ══ GRAPHIQUE INCIDENTS + ACTIVITÉ ══ -->
+    <!-- ══ BOTTOM ROW ══ -->
     <div class="bottom-row">
 
-      <!-- Graphique 3 : Incidents par catégorie -->
+      <!-- Incidents par catégorie -->
       <div class="chart-card" *ngIf="maintenanceParCategorie.length > 0">
         <div class="chart-header">
           <div>
@@ -114,9 +194,12 @@
           <canvas #chartIncidents></canvas>
         </div>
       </div>
+
       <div class="chart-card chart-placeholder" *ngIf="maintenanceParCategorie.length === 0">
         <div class="placeholder-content">
-          <span class="placeholder-icon">✓</span>
+          <svg class="placeholder-icon" width="40" height="40" viewBox="0 0 24 24" fill="#22C55E">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/>
+          </svg>
           <p>Aucun incident en cours</p>
         </div>
       </div>
@@ -127,7 +210,10 @@
           <h3>Loyers à traiter</h3>
           <button class="btn-link" (click)="allerLocation()">Voir tout →</button>
         </div>
-        <div class="activity-ok" *ngIf="loyersRecents.length === 0">✓ Tous les loyers sont à jour</div>
+        <div class="activity-ok" *ngIf="loyersRecents.length === 0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#16A34A"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
+          Tous les loyers sont à jour
+        </div>
         <div class="loyer-row" *ngFor="let entry of loyersRecents">
           <div class="loyer-left">
             <div class="loyer-dot" [class]="'ldot-' + entry.loyerMois.statut"></div>
@@ -151,9 +237,16 @@
           <h3>Incidents urgents</h3>
           <button class="btn-link" (click)="allerMaintenance()">Voir tout →</button>
         </div>
-        <div class="activity-ok" *ngIf="ticketsUrgents.length === 0">✓ Aucun incident urgent</div>
+        <div class="activity-ok" *ngIf="ticketsUrgents.length === 0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#16A34A"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
+          Aucun incident urgent
+        </div>
         <div class="ticket-row" *ngFor="let t of ticketsUrgents">
-          <div class="ticket-icon">{{ categorieIcon(t.categorie) }}</div>
+          <div class="ticket-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FE8804">
+              <path d="M13.78 15.3L19.78 21.3C20.57 22.09 21.85 22.09 22.64 21.3C23.43 20.51 23.43 19.23 22.64 18.44L16.64 12.44C17.19 11.04 16.88 9.39 15.71 8.22C14.43 6.94 12.57 6.68 11.02 7.42L13.47 9.88L9.88 13.47L7.42 11.02C6.68 12.57 6.94 14.43 8.22 15.71C9.39 16.88 11.04 17.19 12.44 16.64L13.78 15.3Z"/>
+            </svg>
+          </div>
           <div class="ticket-info">
             <div class="ticket-titre">{{ t.titre }}</div>
             <div class="ticket-shop">{{ t.shop.name }}</div>
@@ -164,47 +257,7 @@
 
     </div>
 
-    <!-- ══ GRILLE APERÇU + LISTE SHOPS ══ -->
-    <div class="grille-row">
-
-      <div class="section-card section-card--grille">
-        <div class="section-header">
-          <h3>Plan du centre</h3>
-          <button class="btn-link" (click)="allerGrille()">Gérer la grille →</button>
-        </div>
-        <div class="grille-wrap">
-          <table class="grille-table"
-            [style.--colonnes]="colonnes"
-            [style.--lignes]="lignes">
-            <thead>
-              <tr>
-                <th></th>
-                <th *ngFor="let num of getNumeros()">{{ num }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let lettre of getLettres()">
-                <td class="lettre-col">{{ lettre }}</td>
-                <td *ngFor="let num of getNumeros()"
-                  class="block-cell"
-                  [class.assigned]="isAssigned(lettre, num)"
-                  [style.background-color]="getBlockColor(lettre, num)">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="shops-legend">
-          <div class="legend-item" *ngFor="let shop of shops.slice(0, 10)">
-            <span class="legend-dot" [style.background]="getShopColor(shop._id)"></span>
-            <span class="legend-name">{{ shop.name }}</span>
-            <span class="legend-st" [class]="'lst-' + shop.status">{{ shop.status }}</span>
-          </div>
-          <div class="legend-more" *ngIf="shops.length > 10">+{{ shops.length - 10 }} autres</div>
-        </div>
-      </div>
-
-    </div>
+ 
 
   </ng-container>
 </div>
