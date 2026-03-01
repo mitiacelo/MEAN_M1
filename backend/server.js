@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connecté Atlas✅"))
   .catch(err => console.error("Erreur de connexion MongoDB :", err));
 
- // Routes
+// Routes
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 app.use('/articles', require('./routes/articleRoutes'));
@@ -33,5 +33,6 @@ app.use('/orders', require('./routes/orderRoutes'));
 app.use('/purchases', require('./routes/purchaseRoutes'));
 app.use('/contracts', require('./routes/contractRoutes'));
 app.use('/loyers', require('./routes/loyerRoutes'));
-app.listen(PORT, () => console.log(`Serveur démarré sur le port
-${PORT}`));
+app.use('/maintenance', require('./routes/maintenance')); 
+
+app.listen(PORT, () => console.log(`Serveur démarré sur le port ${PORT}`));

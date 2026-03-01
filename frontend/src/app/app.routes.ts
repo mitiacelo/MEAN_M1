@@ -21,13 +21,6 @@ export const routes: Routes = [
       import('./pages-new/auth/register/register.component').then(m => m.RegisterComponent)
   },
 
-  // Routes shop standalone (pas dans le layout admin)
-  // {
-  //   path: 'dashboard-shop',
-  //   loadComponent: () =>
-  //     import('./pages-new/boutique-centre/admin-boutique/dashboard-shop/dashboard-shop.component')
-  //       .then(m => m.DashboardShopComponent)
-  // },
   {
     path: 'salle',
     loadComponent: () =>
@@ -67,42 +60,46 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages-new/admin-centre/location/location.component')
             .then(m => m.LocationComponent)
+      },
+      {
+        path: 'maintenance',                                          // ← AJOUT
+        loadComponent: () =>
+          import('./pages-new/admin-centre/maintenance/maintenance.component')
+            .then(m => m.MaintenanceComponent)
       }
     ]
   },
 
-  // Routes boutique manager → EN PREMIER pour gagner contre le path: ''
-{
-  path: '',
-  loadComponent: () =>
-    import('./components-new/layouts/sidebar-shop/sidebar-shop.component')
-      .then(m => m.SidebarShopComponent),
-  children: [
-    {
-      path: 'dashboard-shop',
-      loadComponent: () =>
-        import('./pages-new/boutique-centre/admin-boutique/dashboard-shop/dashboard-shop.component')
-          .then(m => m.DashboardShopComponent)
-    },
-    {
-      path: 'suivi-donnees',
-      loadComponent: () =>
-        import('./pages-new/boutique-centre/admin-boutique/suivi-donnees/suivi-donnees.component')
-          .then(m => m.SuiviDonneesComponent)
-    },
-    {
-      path: 'salle-manager/:id',
-      loadComponent: () =>
-      import('./pages-new/boutique-centre/admin-boutique/salle/salle-manager/salle-manager.component')
-        .then(m => m.SalleManagerComponent)
-    },
+  // Routes boutique manager
+  {
+    path: '',
+    loadComponent: () =>
+      import('./components-new/layouts/sidebar-shop/sidebar-shop.component')
+        .then(m => m.SidebarShopComponent),
+    children: [
+      {
+        path: 'dashboard-shop',
+        loadComponent: () =>
+          import('./pages-new/boutique-centre/admin-boutique/dashboard-shop/dashboard-shop.component')
+            .then(m => m.DashboardShopComponent)
+      },
+      {
+        path: 'suivi-donnees',
+        loadComponent: () =>
+          import('./pages-new/boutique-centre/admin-boutique/suivi-donnees/suivi-donnees.component')
+            .then(m => m.SuiviDonneesComponent)
+      },
+      {
+        path: 'salle-manager/:id',
+        loadComponent: () =>
+          import('./pages-new/boutique-centre/admin-boutique/salle/salle-manager/salle-manager.component')
+            .then(m => m.SalleManagerComponent)
+      },
+      { path: '', redirectTo: 'dashboard-shop', pathMatch: 'full' }
+    ]
+  },
 
-    // Redirection par défaut
-    { path: '', redirectTo: 'dashboard-shop', pathMatch: 'full' }
-  ]
-},
-
-  // Routes boutique / customer qui ne passent pas par le layout admin
+  // Routes boutique / customer
   {
     path: 'articles',
     loadComponent: () =>
@@ -142,7 +139,6 @@ export const routes: Routes = [
   },
   {
     path: 'mon-contrat',
-
     loadComponent: () =>
       import('./pages-new/admin-centre/contract/contract.component').then(m => m.MonContratComponent)
   },

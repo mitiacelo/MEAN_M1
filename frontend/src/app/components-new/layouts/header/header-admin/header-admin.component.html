@@ -19,6 +19,10 @@
       <a routerLink="/location" routerLinkActive="active" class="nav-item">
         Location
       </a>
+      <a routerLink="/maintenance" routerLinkActive="active" class="nav-item nav-item--maint">
+        Maintenance
+        <span class="maint-dot" *ngIf="urgentsCount > 0">{{ urgentsCount }}</span>
+      </a>
     </nav>
 
     <div class="sidebar-footer">

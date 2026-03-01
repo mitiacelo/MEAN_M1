@@ -1,0 +1,332 @@
+<div class="maint-page" [class.drawer-open]="selectedTicket !== null">
+
+    <!-- ══════════════════════════════════
+         COLONNE PRINCIPALE
+    ══════════════════════════════════ -->
+    <div class="maint-main">
+  
+      <!-- ── Header ── -->
+      <div class="page-header">
+        <div>
+          <h2>Maintenance</h2>
+          <p class="subtitle">Suivi des incidents et interventions</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-refresh" (click)="charger()">↻ Actualiser</button>
+          <button class="btn-new" (click)="ouvrirCreation()">+ Nouveau ticket</button>
+        </div>
+      </div>
+  
+      <!-- ── KPIs ── -->
+      <div class="stats-row" *ngIf="!loading">
+        <div class="stat-card retard">
+          <span class="stat-value">{{ countUrgents }}</span>
+          <span class="stat-label">Urgents</span>
+        </div>
+        <div class="stat-card attente">
+          <span class="stat-value">{{ countOuverts }}</span>
+          <span class="stat-label">Ouverts</span>
+        </div>
+        <div class="stat-card encours">
+          <span class="stat-value">{{ countEnCours }}</span>
+          <span class="stat-label">En cours</span>
+        </div>
+        <div class="stat-card paye">
+          <span class="stat-value">{{ countResolus }}</span>
+          <span class="stat-label">Résolus</span>
+        </div>
+        <div class="stat-card montant">
+          <span class="stat-value">{{ stats.resolusThisMois }}</span>
+          <span class="stat-label">Résolus ce mois</span>
+        </div>
+      </div>
+  
+      <!-- ── Filtres ── -->
+      <div class="filters-row" *ngIf="!loading">
+        <div class="search-wrap">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="search-ico"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" [(ngModel)]="searchQuery" placeholder="Rechercher ticket, local…" />
+          <button class="search-clear" *ngIf="searchQuery" (click)="searchQuery=''">✕</button>
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-tab" [class.filter-tab--active]="activeFilter==='tous'" (click)="activeFilter='tous'">
+            Tous <span class="tab-count">{{ tickets.length }}</span>
+          </button>
+          <button class="filter-tab filter-tab--urgent" [class.filter-tab--active]="activeFilter==='urgent'" (click)="activeFilter='urgent'">
+            🔴 Urgents
+            <span class="tab-badge" *ngIf="countUrgents > 0">{{ countUrgents }}</span>
+          </button>
+          <button class="filter-tab filter-tab--ouvert" [class.filter-tab--active]="activeFilter==='ouvert'" (click)="activeFilter='ouvert'">
+            Ouverts
+          </button>
+          <button class="filter-tab filter-tab--encours" [class.filter-tab--active]="activeFilter==='en_cours'" (click)="activeFilter='en_cours'">
+            En cours
+          </button>
+          <button class="filter-tab filter-tab--resolu" [class.filter-tab--active]="activeFilter==='résolu'" (click)="activeFilter='résolu'">
+            Résolus
+          </button>
+        </div>
+      </div>
+  
+      <div class="loading" *ngIf="loading">Chargement…</div>
+  
+      <ng-container *ngIf="!loading">
+  
+        <div class="empty" *ngIf="filteredTickets.length === 0">Aucun ticket trouvé.</div>
+  
+        <!-- ── Table tickets ── -->
+        <div class="tickets-table" *ngIf="filteredTickets.length > 0">
+  
+          <div class="table-header">
+            <span></span>
+            <span>Titre / Local</span>
+            <span>Signalé par</span>
+            <span>Catégorie</span>
+            <span>Priorité</span>
+            <span>Date</span>
+            <span>Statut</span>
+          </div>
+  
+          <div
+            class="table-row"
+            *ngFor="let ticket of filteredTickets"
+            [class.table-row--selected]="selectedTicket?._id === ticket._id"
+            [class.table-row--urgent]="ticket.priorite === 'urgent' && ticket.statut !== 'résolu'"
+            (click)="ouvrirDetail(ticket)"
+          >
+            <!-- Icône catégorie -->
+            <div class="tr-icon">{{ categorieIcon(ticket.categorie) }}</div>
+  
+            <!-- Titre + local -->
+            <div class="tr-title">
+              <div class="ticket-titre">{{ ticket.titre }}</div>
+              <div class="ticket-shop">{{ ticket.shop.name }}</div>
+            </div>
+  
+            <!-- Signalé par -->
+            <div class="tr-reporter">
+              <div class="reporter-name">{{ ticket.signalePar.firstname }} {{ ticket.signalePar.name }}</div>
+              <div class="reporter-role" [class.role-manager]="ticket.signalePar.role === 'manager'">
+                {{ ticket.signalePar.role === 'manager' ? 'Locataire' : 'Admin' }}
+              </div>
+            </div>
+  
+            <!-- Catégorie -->
+            <div class="tr-cat">
+              <span class="cat-pill" [class]="'cat-' + ticket.categorie">{{ ticket.categorie }}</span>
+            </div>
+  
+            <!-- Priorité -->
+            <div class="tr-prio">
+              <span class="prio-dot" [class]="'prio-' + ticket.priorite"></span>
+              {{ prioriteLabel(ticket.priorite) }}
+            </div>
+  
+            <!-- Date -->
+            <div class="tr-date">
+              <div class="date-val">{{ formatDate(ticket.createdAt) }}</div>
+              <div class="date-age" *ngIf="ticket.statut !== 'résolu'">
+                {{ joursDepuis(ticket.createdAt) }}j
+              </div>
+            </div>
+  
+            <!-- Statut -->
+            <div class="tr-statut">
+              <span class="badge" [class]="'badge-maint-' + ticket.statut">{{ statutLabel(ticket.statut) }}</span>
+              <svg class="row-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+          </div>
+  
+        </div>
+  
+      </ng-container>
+    </div>
+  
+    <!-- ══════════════════════════════════
+         DRAWER DÉTAIL TICKET
+    ══════════════════════════════════ -->
+    <div class="detail-drawer" *ngIf="selectedTicket !== null">
+  
+      <div class="drawer-header">
+        <div class="drawer-title-block">
+          <div class="drawer-cat-icon">{{ categorieIcon(selectedTicket.categorie) }}</div>
+          <div>
+            <h3 class="drawer-title">{{ selectedTicket.titre }}</h3>
+            <p class="drawer-sub">{{ selectedTicket.shop.name }}</p>
+          </div>
+        </div>
+        <button class="drawer-close" (click)="fermerDetail()">✕</button>
+      </div>
+  
+      <!-- Badges priorité + statut -->
+      <div class="drawer-badges">
+        <span class="badge" [class]="'badge-maint-' + selectedTicket.statut">{{ statutLabel(selectedTicket.statut) }}</span>
+        <span class="prio-badge" [class]="'prio-badge-' + selectedTicket.priorite">
+          <span class="prio-dot" [class]="'prio-' + selectedTicket.priorite"></span>
+          {{ prioriteLabel(selectedTicket.priorite) }}
+        </span>
+        <span class="cat-pill" [class]="'cat-' + selectedTicket.categorie">{{ selectedTicket.categorie }}</span>
+      </div>
+  
+      <!-- Section infos -->
+      <div class="drawer-section">
+        <div class="section-label">Détails</div>
+        <div class="info-grid">
+          <div class="ig-item">
+            <span class="ig-label">Local</span>
+            <span class="ig-value">{{ selectedTicket.shop.name }} · {{ selectedTicket.shop.superficie }} m²</span>
+          </div>
+          <div class="ig-item">
+            <span class="ig-label">Signalé par</span>
+            <span class="ig-value">{{ selectedTicket.signalePar.firstname }} {{ selectedTicket.signalePar.name }}</span>
+          </div>
+          <div class="ig-item">
+            <span class="ig-label">Date de signalement</span>
+            <span class="ig-value">{{ formatDateTime(selectedTicket.createdAt) }}</span>
+          </div>
+          <div class="ig-item" *ngIf="selectedTicket.dateIntervention">
+            <span class="ig-label">Intervention prévue</span>
+            <span class="ig-value ig-value--accent">{{ formatDate(selectedTicket.dateIntervention) }}</span>
+          </div>
+          <div class="ig-item" *ngIf="selectedTicket.dateResolution">
+            <span class="ig-label">Date de résolution</span>
+            <span class="ig-value ig-value--green">{{ formatDateTime(selectedTicket.dateResolution) }}</span>
+          </div>
+          <div class="ig-item ig-item--full" *ngIf="selectedTicket.description">
+            <span class="ig-label">Description</span>
+            <span class="ig-value ig-value--desc">{{ selectedTicket.description }}</span>
+          </div>
+          <div class="ig-item ig-item--full" *ngIf="selectedTicket.noteResolution">
+            <span class="ig-label">Note de résolution</span>
+            <span class="ig-value ig-value--note">{{ selectedTicket.noteResolution }}</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section actions -->
+      <div class="drawer-section" *ngIf="selectedTicket.statut !== 'résolu' && selectedTicket.statut !== 'annulé'">
+        <div class="section-label">Mettre à jour</div>
+  
+        <ng-container *ngIf="!editingStatut">
+          <div class="action-btns">
+            <button class="btn-encours"
+              *ngIf="selectedTicket.statut === 'ouvert'"
+              (click)="newStatut='en_cours'; editingStatut=true">
+              → Passer en cours
+            </button>
+            <button class="btn-resoudre"
+              (click)="newStatut='résolu'; editingStatut=true">
+              ✓ Marquer résolu
+            </button>
+            <button class="btn-edit-statut" (click)="ouvrirEditionStatut()">
+              ✎ Modifier
+            </button>
+          </div>
+        </ng-container>
+  
+        <ng-container *ngIf="editingStatut">
+          <div class="edit-form">
+            <label class="form-label">Nouveau statut</label>
+            <select class="form-select" [(ngModel)]="newStatut">
+              <option value="ouvert">Ouvert</option>
+              <option value="en_cours">En cours</option>
+              <option value="résolu">Résolu</option>
+              <option value="annulé">Annulé</option>
+            </select>
+  
+            <label class="form-label">Date d'intervention prévue</label>
+            <input class="form-input" type="date" [(ngModel)]="dateIntervention" />
+  
+            <label class="form-label">Note de résolution</label>
+            <textarea class="form-textarea" [(ngModel)]="noteResolution" rows="3" placeholder="Décrire l'intervention effectuée…"></textarea>
+  
+            <div class="edit-form-actions">
+              <button class="btn-valider" (click)="sauvegarderStatut()" [disabled]="savingStatut">
+                {{ savingStatut ? 'Enregistrement…' : '✓ Enregistrer' }}
+              </button>
+              <button class="btn-cancel" (click)="editingStatut=false">Annuler</button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+  
+      <!-- Résolu : afficher la résolution -->
+      <div class="drawer-section resolved-banner" *ngIf="selectedTicket.statut === 'résolu'">
+        <div class="resolved-icon">✓</div>
+        <div>
+          <div class="resolved-title">Ticket résolu</div>
+          <div class="resolved-date">{{ formatDateTime(selectedTicket.dateResolution) }}</div>
+        </div>
+      </div>
+  
+      <!-- Supprimer -->
+      <div class="drawer-footer">
+        <button class="btn-delete" (click)="supprimerTicket(selectedTicket)">🗑 Supprimer ce ticket</button>
+      </div>
+  
+    </div>
+  
+  </div>
+  
+  <!-- ══════════════════════════════════
+       MODALE CRÉATION TICKET
+  ══════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="showCreate" (click)="showCreate=false">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3>Nouveau ticket de maintenance</h3>
+          <p class="modal-subtitle">Signaler un incident ou un problème</p>
+        </div>
+        <button class="modal-close" (click)="showCreate=false">✕</button>
+      </div>
+      <div class="modal-body">
+  
+        <div class="form-group">
+          <label class="form-label">ID du local (shopId) *</label>
+          <input class="form-input" [(ngModel)]="newTicket.shopId" placeholder="ex: 6650abc..." />
+        </div>
+  
+        <div class="form-group">
+          <label class="form-label">Titre du problème *</label>
+          <input class="form-input" [(ngModel)]="newTicket.titre" placeholder="ex: Fuite d'eau au plafond" />
+        </div>
+  
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Catégorie</label>
+            <select class="form-select" [(ngModel)]="newTicket.categorie">
+              <option value="électricité">⚡ Électricité</option>
+              <option value="plomberie">🔧 Plomberie</option>
+              <option value="structure">🧱 Structure</option>
+              <option value="climatisation">❄️ Climatisation</option>
+              <option value="sécurité">🔒 Sécurité</option>
+              <option value="nettoyage">🧹 Nettoyage</option>
+              <option value="autre">📋 Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Priorité</label>
+            <select class="form-select" [(ngModel)]="newTicket.priorite">
+              <option value="urgent">🔴 Urgent</option>
+              <option value="normal">🟡 Normal</option>
+              <option value="faible">🟢 Faible</option>
+            </select>
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" [(ngModel)]="newTicket.description" rows="3" placeholder="Décrire le problème en détail…"></textarea>
+        </div>
+  
+        <div class="modal-actions">
+          <button class="btn-valider" (click)="creerTicket()" [disabled]="creating || !newTicket.titre || !newTicket.shopId">
+            {{ creating ? 'Création…' : '+ Créer le ticket' }}
+          </button>
+          <button class="btn-cancel" (click)="showCreate=false">Annuler</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
