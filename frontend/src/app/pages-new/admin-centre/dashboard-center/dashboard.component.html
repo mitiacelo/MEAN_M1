@@ -1,56 +1,225 @@
 <div class="dashboard">
 
-    <div class="dashboard-header">
-      <h2>Dashboard — Centre commercial</h2>
-      <button (click)="allerGrille()">Gerer mon centre commercial</button>
+  <!-- ══════════════════════════════════
+       HEADER
+  ══════════════════════════════════ -->
+  <div class="dashboard-header">
+    <div>
+      <h2>Dashboard</h2>
+      <p class="dash-subtitle">Vue d'ensemble du centre commercial</p>
     </div>
-  
-    <div class="dashboard-body">
-  
-      <!-- GRILLE aperçu -->
-      <div class="grille-apercu">
-        <h3>Aperçu de la grille</h3>
-        <table class="grille-table"
-          [style.--colonnes]="colonnes"
-          [style.--lignes]="lignes">
-          <thead>
-            <tr>
-              <th></th>
-              <th *ngFor="let num of getNumeros()">{{ num }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let lettre of getLettres()">
-              <td class="lettre-col">{{ lettre }}</td>
-              <td
-                *ngFor="let num of getNumeros()"
-                class="block-cell"
-                [class.assigned]="isAssigned(lettre, num)"
-                [style.background-color]="getBlockColor(lettre, num)">
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <button class="btn-primary" (click)="allerGrille()">Gérer le centre →</button>
+  </div>
+
+  <div class="loading-state" *ngIf="loading">Chargement…</div>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- ══════════════════════════════════
+         KPIs — LIGNE 1 : LOCAUX
+    ══════════════════════════════════ -->
+    <div class="kpi-row">
+
+      <div class="kpi-card kpi-card--main" (click)="allerGrille()">
+        <div class="kpi-top">
+          <span class="kpi-icon">🏬</span>
+          <span class="kpi-label">Locaux</span>
+        </div>
+        <div class="kpi-value">{{ totalLocaux }}</div>
+        <div class="kpi-sub">
+          <span class="kpi-sub--green">{{ locauxOccupes }} occupés</span>
+          <span class="kpi-sep">·</span>
+          <span class="kpi-sub--muted">{{ locauxVacants }} vacants</span>
+        </div>
+        <div class="kpi-bar-wrap">
+          <div class="kpi-bar"><div class="kpi-bar-fill kpi-bar--green" [style.width.%]="tauxOccupation"></div></div>
+          <span class="kpi-bar-pct">{{ tauxOccupation }}%</span>
+        </div>
       </div>
-  
-      <!-- LISTE DES SHOPS -->
-      <div class="shops-liste">
-        <h3>Salles ({{ shops.length }})</h3>
-        <p *ngIf="shops.length === 0" class="empty">Aucune salle créée.</p>
-  
-        <div class="shop-card"
-          *ngFor="let shop of shops"
-          (click)="ouvrirShop(shop)">
-          <div class="shop-color-bar" [style.background-color]="getShopColor(shop._id)"></div>
-          <div class="shop-info">
-            <div class="shop-name">{{ shop.name }}</div>
-            <div class="shop-meta">
-              <span class="shop-status" [class]="'status-' + shop.status">{{ shop.status }}</span>
-              <span>{{ shop.superficie }} m²</span>
+
+      <div class="kpi-card kpi-card--loyers" (click)="allerLocation()">
+        <div class="kpi-top">
+          <span class="kpi-icon">💰</span>
+          <span class="kpi-label">Loyers ce mois</span>
+        </div>
+        <div class="kpi-value">{{ formatMontant(encaisseMonth) }}</div>
+        <div class="kpi-sub">
+          <span class="kpi-sub--muted">sur {{ formatMontant(attenduMonth) }}</span>
+        </div>
+        <div class="kpi-bar-wrap">
+          <div class="kpi-bar"><div class="kpi-bar-fill kpi-bar--blue" [style.width.%]="tauxEncaissement"></div></div>
+          <span class="kpi-bar-pct">{{ tauxEncaissement }}%</span>
+        </div>
+        <div class="kpi-alert" *ngIf="loyersImpayes > 0">
+          ⚠ {{ loyersImpayes }} impayé{{ loyersImpayes > 1 ? 's' : '' }}
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-card--maint" (click)="allerMaintenance()">
+        <div class="kpi-top">
+          <span class="kpi-icon">🔧</span>
+          <span class="kpi-label">Maintenance</span>
+        </div>
+        <div class="kpi-value">{{ maintenanceOuverts }}</div>
+        <div class="kpi-sub">
+          <span class="kpi-sub--muted">tickets ouverts</span>
+        </div>
+        <div class="kpi-alert kpi-alert--red" *ngIf="maintenanceUrgents > 0">
+          🔴 {{ maintenanceUrgents }} urgent{{ maintenanceUrgents > 1 ? 's' : '' }}
+        </div>
+        <div class="kpi-ok" *ngIf="maintenanceUrgents === 0 && maintenanceOuverts === 0">
+          ✓ Tout est en ordre
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-card--notif" (click)="allerNotifications()">
+        <div class="kpi-top">
+          <span class="kpi-icon">🔔</span>
+          <span class="kpi-label">Notifications</span>
+        </div>
+        <div class="kpi-value">{{ notifNouveaux }}</div>
+        <div class="kpi-sub">
+          <span class="kpi-sub--muted">non lues</span>
+        </div>
+        <div class="kpi-ok" *ngIf="notifNouveaux === 0">✓ À jour</div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════
+         BODY : GRILLE + ACTIVITÉ
+    ══════════════════════════════════ -->
+    <div class="dash-body">
+
+      <!-- Colonne gauche : grille aperçu -->
+      <div class="dash-left">
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Plan du centre</h3>
+            <button class="btn-link" (click)="allerGrille()">Voir la grille →</button>
+          </div>
+          <div class="grille-wrap">
+            <table class="grille-table"
+              [style.--colonnes]="colonnes"
+              [style.--lignes]="lignes">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th *ngFor="let num of getNumeros()">{{ num }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let lettre of getLettres()">
+                  <td class="lettre-col">{{ lettre }}</td>
+                  <td
+                    *ngFor="let num of getNumeros()"
+                    class="block-cell"
+                    [class.assigned]="isAssigned(lettre, num)"
+                    [style.background-color]="getBlockColor(lettre, num)">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Légende shops -->
+          <div class="shops-legend">
+            <div class="legend-item" *ngFor="let shop of shops.slice(0, 8)">
+              <span class="legend-dot" [style.background]="getShopColor(shop._id)"></span>
+              <span class="legend-name">{{ shop.name }}</span>
+              <span class="legend-status" [class]="'ls-' + shop.status">{{ shop.status }}</span>
             </div>
+            <div class="legend-more" *ngIf="shops.length > 8">+{{ shops.length - 8 }} autres</div>
           </div>
         </div>
       </div>
-  
+
+      <!-- Colonne droite : activité -->
+      <div class="dash-right">
+
+        <!-- Loyers en attente / retard -->
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Loyers à traiter</h3>
+            <button class="btn-link" (click)="allerLocation()">Voir tout →</button>
+          </div>
+          <div class="activity-empty" *ngIf="loyersRecents.length === 0">
+            ✓ Tous les loyers sont à jour
+          </div>
+          <div class="loyer-row" *ngFor="let entry of loyersRecents">
+            <div class="loyer-row-left">
+              <div class="loyer-dot" [class]="'ldot-' + entry.loyerMois.statut"></div>
+              <div>
+                <div class="loyer-shop">{{ entry.contract.shop.name }}</div>
+                <div class="loyer-tenant">{{ entry.contract.user.firstname }} {{ entry.contract.user.name }}</div>
+              </div>
+            </div>
+            <div class="loyer-row-right">
+              <div class="loyer-amount">{{ entry.loyerMois.montant | number }} Ar</div>
+              <span class="loyer-badge" [class]="'lbadge-' + entry.loyerMois.statut">
+                {{ statutLoyerLabel(entry.loyerMois.statut) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tickets maintenance urgents -->
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Incidents urgents</h3>
+            <button class="btn-link" (click)="allerMaintenance()">Voir tout →</button>
+          </div>
+          <div class="activity-empty" *ngIf="ticketsUrgents.length === 0">
+            ✓ Aucun incident urgent
+          </div>
+          <div class="ticket-row" *ngFor="let t of ticketsUrgents">
+            <div class="ticket-icon">{{ categorieIcon(t.categorie) }}</div>
+            <div class="ticket-info">
+              <div class="ticket-titre">{{ t.titre }}</div>
+              <div class="ticket-shop">{{ t.shop.name }}</div>
+            </div>
+            <span class="ticket-statut" [class]="'ts-' + t.statut">{{ t.statut }}</span>
+          </div>
+        </div>
+
+        <!-- Taux d'occupation par statut -->
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Répartition des locaux</h3>
+          </div>
+          <div class="repartition-bars">
+            <div class="rep-item">
+              <div class="rep-label">
+                <span>Occupés</span>
+                <span class="rep-count">{{ locauxOccupes }}</span>
+              </div>
+              <div class="rep-bar">
+                <div class="rep-fill rep-fill--green" [style.width.%]="tauxOccupation"></div>
+              </div>
+            </div>
+            <div class="rep-item">
+              <div class="rep-label">
+                <span>Vacants</span>
+                <span class="rep-count">{{ locauxVacants }}</span>
+              </div>
+              <div class="rep-bar">
+                <div class="rep-fill rep-fill--gray" [style.width.%]="100 - tauxOccupation"></div>
+              </div>
+            </div>
+            <div class="rep-item">
+              <div class="rep-label">
+                <span>Loyers payés</span>
+                <span class="rep-count">{{ tauxEncaissement }}%</span>
+              </div>
+              <div class="rep-bar">
+                <div class="rep-fill rep-fill--blue" [style.width.%]="tauxEncaissement"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
-  </div>
+
+  </ng-container>
+</div>

@@ -33,6 +33,6 @@ app.use('/orders', require('./routes/orderRoutes'));
 app.use('/purchases', require('./routes/purchaseRoutes'));
 app.use('/contracts', require('./routes/contractRoutes'));
 app.use('/loyers', require('./routes/loyerRoutes'));
-app.use('/maintenance', require('./routes/maintenance')); 
+app.use('/maintenance', require('./routes/maintenanceRoutes')); 
 
 app.listen(PORT, () => console.log(`Serveur démarré sur le port ${PORT}`));
