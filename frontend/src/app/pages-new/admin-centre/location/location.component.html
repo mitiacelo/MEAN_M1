@@ -1,163 +1,310 @@
-<div class="location-page">
+<div class="loc-page" [class.drawer-open]="selectedShop !== null">
+
+  <!-- ══════════════════════════════════
+       COLONNE PRINCIPALE
+  ══════════════════════════════════ -->
+  <div class="loc-main">
 
     <!-- ── Header ── -->
     <div class="page-header">
       <div>
-        <h2>Gestion des loyers</h2>
-        <p class="subtitle">{{ moisCourantLabel() }}</p>
+        <h2>Gestion des locations</h2>
+        <p class="subtitle">{{ moisCourantLabel() }} · {{ shops.length }} locaux</p>
       </div>
-      <button class="btn-refresh" (click)="charger()">↻ Actualiser</button>
+      <div class="header-actions">
+        <div class="view-toggle">
+          <button class="view-btn" [class.view-btn--active]="viewMode==='list'" (click)="viewMode='list'" title="Liste">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1.5" fill="currentColor"/><circle cx="3.5" cy="12" r="1.5" fill="currentColor"/><circle cx="3.5" cy="18" r="1.5" fill="currentColor"/></svg>
+          </button>
+          <button class="view-btn" [class.view-btn--active]="viewMode==='grid'" (click)="viewMode='grid'" title="Grille">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </button>
+        </div>
+        <button class="btn-refresh" (click)="charger()">↻ Actualiser</button>
+      </div>
     </div>
-  
+
+    <!-- ── KPIs ── -->
+    <div class="stats-row" *ngIf="!loading">
+      <div class="stat-card">
+        <span class="stat-value">{{ totalLocaux }}</span>
+        <span class="stat-label">Locaux totaux</span>
+      </div>
+      <div class="stat-card paye">
+        <span class="stat-value">{{ totalOccupes }}</span>
+        <span class="stat-label">Occupés</span>
+      </div>
+      <div class="stat-card attente">
+        <span class="stat-value">{{ totalVacants }}</span>
+        <span class="stat-label">Vacants</span>
+      </div>
+      <div class="stat-card retard">
+        <span class="stat-value">{{ totalImpayes }}</span>
+        <span class="stat-label">Impayés ce mois</span>
+      </div>
+      <div class="stat-card montant">
+        <span class="stat-value">{{ totalEncaisse | number }} Ar</span>
+        <span class="stat-label">Encaissé / {{ totalAttendu | number }} Ar</span>
+      </div>
+    </div>
+
+    <!-- ── Filtres ── -->
+    <div class="filters-row" *ngIf="!loading">
+      <div class="search-wrap">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="search-ico"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" [(ngModel)]="searchQuery" placeholder="Rechercher local, locataire…" />
+        <button class="search-clear" *ngIf="searchQuery" (click)="searchQuery=''">✕</button>
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab" [class.filter-tab--active]="activeFilter==='tous'" (click)="activeFilter='tous'">
+          Tous <span class="tab-count">{{ shops.length }}</span>
+        </button>
+        <button class="filter-tab filter-tab--paye" [class.filter-tab--active]="activeFilter==='occupé'" (click)="activeFilter='occupé'">
+          Occupés <span class="tab-count">{{ totalOccupes }}</span>
+        </button>
+        <button class="filter-tab filter-tab--attente" [class.filter-tab--active]="activeFilter==='vacant'" (click)="activeFilter='vacant'">
+          Vacants <span class="tab-count">{{ totalVacants }}</span>
+        </button>
+        <button class="filter-tab filter-tab--retard" [class.filter-tab--active]="activeFilter==='impayé'" (click)="activeFilter='impayé'">
+          Impayés
+          <span class="tab-badge" *ngIf="totalImpayes > 0">{{ totalImpayes }}</span>
+        </button>
+      </div>
+    </div>
+
     <div class="loading" *ngIf="loading">Chargement…</div>
-  
+
     <ng-container *ngIf="!loading">
-  
-      <!-- ── Cartes stats ── -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <span class="stat-value">{{ totalLocataires }}</span>
-          <span class="stat-label">Locataires actifs</span>
+
+      <div class="empty" *ngIf="filteredShops.length === 0">Aucun local trouvé.</div>
+
+      <!-- ════════════════════════════
+           VUE LISTE
+      ════════════════════════════ -->
+      <div class="shops-table" *ngIf="viewMode === 'list' && filteredShops.length > 0">
+
+        <div class="table-header">
+          <span>Local</span>
+          <span>Locataire</span>
+          <span>Loyer mensuel</span>
+          <span>Contrat</span>
+          <span>Statut loyer</span>
         </div>
-        <div class="stat-card retard">
-          <span class="stat-value">{{ totalEnRetard }}</span>
-          <span class="stat-label">En retard</span>
-        </div>
-        <div class="stat-card attente">
-          <span class="stat-value">{{ totalEnAttente }}</span>
-          <span class="stat-label">En attente</span>
-        </div>
-        <div class="stat-card paye">
-          <span class="stat-value">{{ totalPayes }}</span>
-          <span class="stat-label">Payés</span>
-        </div>
-        <div class="stat-card montant">
-          <span class="stat-value">{{ totalEncaisse | number }} Ar</span>
-          <span class="stat-label">Encaissé / {{ totalAttendu | number }} Ar</span>
-        </div>
-      </div>
-  
-      <!-- ── Vide ── -->
-      <div class="empty" *ngIf="entries.length === 0">
-        Aucun locataire avec un contrat actif.
-      </div>
-  
-      <!-- ── Liste locataires ── -->
-      <div class="loyer-list">
+
         <div
-          class="loyer-card"
-          *ngFor="let entry of entries"
-          [class]="'card-' + entry.loyerMois.statut"
+          class="table-row"
+          *ngFor="let item of filteredShops"
+          [class.table-row--selected]="selectedShop?.shop?._id === item.shop._id"
+          [class]="'table-row table-row--' + item.status"
+          (click)="ouvrirDetail(item)"
         >
-          <div class="card-left">
-            <div class="statut-dot" [class]="'dot-' + entry.loyerMois.statut"></div>
-            <div class="card-info">
-              <div class="locataire-nom">
-                {{ entry.contract.user.firstname }} {{ entry.contract.user.name }}
+          <!-- Local -->
+          <div class="tr-local">
+            <div class="local-icon" [class]="'local-icon--' + item.status">
+              {{ item.shop.name[0] }}
+            </div>
+            <div>
+              <div class="local-name">{{ item.shop.name }}</div>
+              <div class="local-meta">{{ item.shop.superficie }} m²</div>
+            </div>
+          </div>
+
+          <!-- Locataire -->
+          <div class="tr-tenant">
+            <ng-container *ngIf="item.contract; else vacant">
+              <div class="tenant-name">{{ item.contract.user.firstname }} {{ item.contract.user.name }}</div>
+              <div class="tenant-email">{{ item.contract.user.email }}</div>
+            </ng-container>
+            <ng-template #vacant>
+              <span class="vacant-label">— Local vacant</span>
+            </ng-template>
+          </div>
+
+          <!-- Loyer -->
+          <div class="tr-rent">
+            <span *ngIf="item.contract" class="rent-amount">{{ (item.contract.loyer + item.contract.charges) | number }} Ar</span>
+            <span *ngIf="!item.contract" class="no-data">—</span>
+          </div>
+
+          <!-- Durée contrat -->
+          <div class="tr-contract">
+            <ng-container *ngIf="item.contract">
+              <div class="contract-dates">{{ formatDate(item.contract.dateDebut) }} → {{ formatDate(item.contract.dateFin) }}</div>
+              <div class="contract-expire" [class.contract-expire--soon]="isExpirantBientot(item.contract)">
+                <ng-container *ngIf="isExpirantBientot(item.contract)">⚠ Expire bientôt</ng-container>
               </div>
-              <div class="shop-nom">{{ entry.contract.shop.name }}</div>
-              <div class="locataire-email">{{ entry.contract.user.email }}</div>
-            </div>
+            </ng-container>
+            <span *ngIf="!item.contract" class="no-data">—</span>
           </div>
-  
-          <div class="card-center">
-            <div class="montant">{{ entry.loyerMois.montant | number }} Ar</div>
-            <div class="montant-detail">
-              Loyer {{ entry.loyerMois.loyer | number }} + Charges {{ entry.loyerMois.charges | number }}
-            </div>
-            <div class="date-paiement" *ngIf="entry.loyerMois.datePaiement">
-              Payé le {{ formatDate(entry.loyerMois.datePaiement) }}
-            </div>
-            <div class="note" *ngIf="entry.loyerMois.note">
-              📝 {{ entry.loyerMois.note }}
-            </div>
-          </div>
-  
-          <div class="card-right">
-            <span class="badge" [class]="'badge-' + entry.loyerMois.statut">
-              {{ statutLabel(entry.loyerMois.statut) }}
+
+          <!-- Statut loyer ce mois -->
+          <div class="tr-statut">
+            <span *ngIf="item.loyerMois" class="badge" [class]="'badge-' + item.loyerMois.statut">
+              {{ statutLabel(item.loyerMois.statut) }}
             </span>
-  
-            <!-- Actions selon statut -->
-            <div class="card-actions">
-  
-              <!-- Confirmer paiement (en_attente ou en_retard) -->
-              <ng-container *ngIf="entry.loyerMois.statut !== 'payé'">
-                <ng-container *ngIf="confirmingId === entry.loyerMois._id; else btnConfirmer">
-                  <input
-                    class="note-input"
-                    [(ngModel)]="noteInput"
-                    placeholder="Note (optionnel)"
-                  />
-                  <button class="btn-valider" (click)="confirmerPaiement(entry)">✓ Valider</button>
-                  <button class="btn-cancel" (click)="annulerConfirmation()">✕</button>
-                </ng-container>
-                <ng-template #btnConfirmer>
-                  <button class="btn-payer" (click)="ouvrirConfirmation(entry)">
-                    ✓ Confirmer paiement
-                  </button>
-                </ng-template>
-              </ng-container>
-  
-              <!-- Annuler paiement si payé -->
-              <button
-                class="btn-annuler"
-                *ngIf="entry.loyerMois.statut === 'payé'"
-                (click)="annulerPaiement(entry)"
-              >
-                Annuler
-              </button>
-  
-              <!-- Voir historique -->
-              <button class="btn-historique" (click)="voirHistorique(entry)">
-                Historique
-              </button>
-  
+            <span *ngIf="!item.loyerMois" class="badge badge-vacant">Vacant</span>
+            <svg class="row-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ════════════════════════════
+           VUE GRILLE
+      ════════════════════════════ -->
+      <div class="shops-grid" *ngIf="viewMode === 'grid' && filteredShops.length > 0">
+        <div
+          class="shop-card"
+          *ngFor="let item of filteredShops"
+          [class.shop-card--selected]="selectedShop?.shop?._id === item.shop._id"
+          [class]="'shop-card shop-card--' + item.status"
+          (click)="ouvrirDetail(item)"
+        >
+          <div class="sc-header">
+            <div class="local-icon" [class]="'local-icon--' + item.status">{{ item.shop.name[0] }}</div>
+            <span *ngIf="item.loyerMois" class="badge" [class]="'badge-' + item.loyerMois.statut">{{ statutLabel(item.loyerMois.statut) }}</span>
+            <span *ngIf="!item.loyerMois" class="badge badge-vacant">Vacant</span>
+          </div>
+          <div class="sc-name">{{ item.shop.name }}</div>
+          <div class="sc-meta">{{ item.shop.superficie }} m²</div>
+          <div class="sc-tenant" *ngIf="item.contract">
+            <div class="tenant-name">{{ item.contract.user.firstname }} {{ item.contract.user.name }}</div>
+            <div class="tenant-email">{{ item.contract.user.email }}</div>
+          </div>
+          <div class="sc-vacant" *ngIf="!item.contract">Local disponible</div>
+          <div class="sc-rent" *ngIf="item.contract">
+            {{ (item.contract.loyer + item.contract.charges) | number }} <span class="sc-rent-unit">Ar / mois</span>
+          </div>
+          <div class="sc-expire" *ngIf="item.contract && isExpirantBientot(item.contract)">⚠ Bail expirant bientôt</div>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+
+  <!-- ══════════════════════════════════
+       DRAWER DÉTAIL LOCAL
+  ══════════════════════════════════ -->
+  <div class="detail-drawer" *ngIf="selectedShop !== null">
+
+    <div class="drawer-header">
+      <div class="drawer-title-block">
+        <div class="local-icon local-icon--lg" [class]="'local-icon--' + selectedShop.status">
+          {{ selectedShop.shop.name[0] }}
+        </div>
+        <div>
+          <h3 class="drawer-title">{{ selectedShop.shop.name }}</h3>
+          <p class="drawer-sub">{{ selectedShop.shop.superficie }} m²<ng-container *ngIf="selectedShop.shop.description"> · {{ selectedShop.shop.description }}</ng-container></p>
+        </div>
+      </div>
+      <button class="drawer-close" (click)="fermerDetail()">✕</button>
+    </div>
+
+    <!-- Vacant -->
+    <div class="drawer-vacant-msg" *ngIf="!selectedShop.contract">
+      <div class="vacant-big-icon">🏷️</div>
+      <p>Ce local est actuellement <strong>vacant</strong>.</p>
+      <button class="btn-assign" (click)="assignerLocal()">+ Créer un contrat</button>
+    </div>
+
+    <ng-container *ngIf="selectedShop.contract">
+
+      <!-- ── Section locataire ── -->
+      <div class="drawer-section">
+        <div class="section-label">Locataire</div>
+        <div class="tenant-block">
+          <div class="tenant-avatar">{{ selectedShop.contract.user.firstname[0] }}{{ selectedShop.contract.user.name[0] }}</div>
+          <div>
+            <div class="tenant-name">{{ selectedShop.contract.user.firstname }} {{ selectedShop.contract.user.name }}</div>
+            <div class="tenant-email">{{ selectedShop.contract.user.email }}</div>
+            <div class="tenant-phone" *ngIf="selectedShop.contract.user.phone">{{ selectedShop.contract.user.phone }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section contrat ── -->
+      <div class="drawer-section">
+        <div class="section-label">Contrat actif</div>
+        <div class="contract-grid">
+          <div class="cg-item">
+            <span class="cg-label">Loyer</span>
+            <span class="cg-value">{{ selectedShop.contract.loyer | number }} Ar</span>
+          </div>
+          <div class="cg-item">
+            <span class="cg-label">Charges</span>
+            <span class="cg-value">{{ selectedShop.contract.charges | number }} Ar</span>
+          </div>
+          <div class="cg-item">
+            <span class="cg-label">Total mensuel</span>
+            <span class="cg-value cg-value--strong">{{ (selectedShop.contract.loyer + selectedShop.contract.charges) | number }} Ar</span>
+          </div>
+
+          <div class="cg-item cg-item--full">
+            <span class="cg-label">Période</span>
+            <span class="cg-value">{{ formatDate(selectedShop.contract.dateDebut) }} → {{ formatDate(selectedShop.contract.dateFin) }}</span>
+          </div>
+
+        </div>
+        <div class="contract-expire-alert" *ngIf="isExpirantBientot(selectedShop.contract)">
+          ⚠ Ce bail expire prochainement.
+        </div>
+      </div>
+
+      <!-- ── Section loyer du mois ── -->
+      <div class="drawer-section" *ngIf="selectedShop.loyerMois">
+        <div class="section-label">Loyer — {{ moisCourantLabel() }}</div>
+        <div class="loyer-status-block" [class]="'lsb-' + selectedShop.loyerMois.statut">
+          <div class="lsb-left">
+            <div class="statut-dot" [class]="'dot-' + selectedShop.loyerMois.statut"></div>
+            <div>
+              <div class="lsb-amount">{{ selectedShop.loyerMois.montant | number }} Ar</div>
+              <div class="lsb-detail">Loyer {{ selectedShop.loyerMois.loyer | number }} + Charges {{ selectedShop.loyerMois.charges | number }}</div>
+              <div class="date-paiement" *ngIf="selectedShop.loyerMois.datePaiement">
+                Payé le {{ formatDate(selectedShop.loyerMois.datePaiement) }}
+              </div>
+              <div class="note" *ngIf="selectedShop.loyerMois.note">📝 {{ selectedShop.loyerMois.note }}</div>
             </div>
           </div>
-  
+          <span class="badge" [class]="'badge-' + selectedShop.loyerMois.statut">
+            {{ statutLabel(selectedShop.loyerMois.statut) }}
+          </span>
+        </div>
+
+        <!-- Actions paiement -->
+        <div class="loyer-actions" *ngIf="selectedShop.loyerMois.statut !== 'payé'">
+          <ng-container *ngIf="confirmingId === selectedShop.loyerMois._id; else btnConf">
+            <input class="note-input" [(ngModel)]="noteInput" placeholder="Note (optionnel)" />
+            <div class="actions-row">
+              <button class="btn-valider" (click)="confirmerPaiement(selectedShop)">✓ Valider le paiement</button>
+              <button class="btn-cancel" (click)="annulerConfirmation()">✕</button>
+            </div>
+          </ng-container>
+          <ng-template #btnConf>
+            <button class="btn-payer" (click)="ouvrirConfirmation(selectedShop)">✓ Confirmer le paiement</button>
+          </ng-template>
+        </div>
+        <div class="loyer-actions" *ngIf="selectedShop.loyerMois.statut === 'payé'">
+          <button class="btn-annuler" (click)="annulerPaiement(selectedShop)">Annuler le paiement</button>
         </div>
       </div>
-  
-    </ng-container>
-  
-  </div>
-  
-  <!-- ═══════════════════════════════════
-       MODALE HISTORIQUE
-  ════════════════════════════════════ -->
-  <div class="modal-overlay" *ngIf="showHistorique" (click)="fermerHistorique()">
-    <div class="modal" (click)="$event.stopPropagation()">
-  
-      <div class="modal-header">
-        <div>
-          <h3>Historique — {{ selectedEntry?.contract?.shop?.name }}</h3>
-          <p class="modal-subtitle">
-            {{ selectedEntry?.contract?.user?.firstname }} {{ selectedEntry?.contract?.user?.name }}
-          </p>
-        </div>
-        <button class="modal-close" (click)="fermerHistorique()">✕</button>
-      </div>
-  
-      <div class="modal-body">
+
+      <!-- ── Historique loyers ── -->
+      <div class="drawer-section">
+        <div class="section-label">Historique des loyers</div>
         <div class="loading" *ngIf="loadingHistorique">Chargement…</div>
-  
-        <div class="empty" *ngIf="!loadingHistorique && historique.length === 0">
-          Aucun historique disponible.
-        </div>
-  
-        <div class="historique-list" *ngIf="!loadingHistorique">
+        <div class="empty" *ngIf="!loadingHistorique && historique.length === 0">Aucun historique.</div>
+        <div class="historique-list" *ngIf="!loadingHistorique && historique.length > 0">
           <div class="historique-item" *ngFor="let h of historique" [class]="'hitem-' + h.statut">
             <div class="hitem-mois">{{ nomMois(h.mois, h.annee) }}</div>
             <div class="hitem-montant">{{ h.montant | number }} Ar</div>
             <span class="badge" [class]="'badge-' + h.statut">{{ statutLabel(h.statut) }}</span>
-            <div class="hitem-date" *ngIf="h.datePaiement">
-              Payé le {{ formatDate(h.datePaiement) }}
-            </div>
+            <div class="hitem-date" *ngIf="h.datePaiement">Payé le {{ formatDate(h.datePaiement) }}</div>
             <div class="hitem-note" *ngIf="h.note">{{ h.note }}</div>
           </div>
         </div>
       </div>
-  
-    </div>
+
+    </ng-container>
   </div>
+
+</div>
