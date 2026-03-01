@@ -80,3 +80,36 @@
     font-size: 0.9rem;
     padding-left: 16px;
   }
+
+  .boutique-item {
+    display: block;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  
+  .boutique-info-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+  }
+  
+  .boutique-name {
+    font-size: 0.95rem;
+  }
+  
+  .boutique-domaine {
+    font-size: 0.85rem;
+    color: #555;
+    background: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  
+  .boutique-salle {
+    font-size: 0.85rem;
+    color: #666;
+    display: block;
+    margin-top: 4px;
+  }

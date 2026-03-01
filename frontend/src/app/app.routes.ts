@@ -95,6 +95,18 @@ export const routes: Routes = [
           import('./pages-new/boutique-centre/admin-boutique/salle/salle-manager/salle-manager.component')
             .then(m => m.SalleManagerComponent)
       },
+      {
+        path: 'mes-boutiques',
+        loadComponent: () =>
+          import('./pages-new/boutique-centre/admin-boutique/mes-boutiques/mes-boutiques.component')
+            .then(m => m.MesBoutiquesComponent)
+      },
+      {
+        path: 'boutique-manager/:id',
+        loadComponent: () =>
+          import('./pages-new/boutique-centre/admin-boutique/boutique-manager/boutique-manager.component')
+            .then(m => m.BoutiqueManagerComponent)
+      },
       { path: '', redirectTo: 'dashboard-shop', pathMatch: 'full' }
     ]
   },

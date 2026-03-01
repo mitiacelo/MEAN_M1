@@ -37,6 +37,10 @@ export class BoutiqueService {
     );
   }
 
+  getMyBoutiques(userId: string): Observable<Boutique[]> {
+    return this.http.get<Boutique[]>(`${environment.apiUrl}/boutiques/user/${userId}`);
+  }
+
   createBoutique(data: {
     name: string;
     description?: string;

@@ -18,6 +18,7 @@ export class SidebarShopComponent implements OnInit {
   selectedShop: Shop | null = null;
   selectedBoutique: Boutique | null = null;
   loading = true;
+  boutiques: Boutique[] = [];
 
   constructor(
     private shopService: ShopService,
@@ -56,6 +57,20 @@ export class SidebarShopComponent implements OnInit {
         this.loading = false;
       },
       error: () => this.loading = false
+    });
+  }
+
+  loadBoutiques(): void {
+    const user = this.authService.currentUser;
+    if (!user?.id) return;
+  
+    this.boutiqueService.getMyBoutiques(user.id).subscribe({
+      next: (boutiques) => {
+        this.boutiques = boutiques; // ← plus de filtre status
+        // Ou si tu veux filtrer sur autre chose (ex. active si boutique a id_shop)
+        // this.boutiques = boutiques.filter(b => !!b.id_shop);
+      },
+      error: err => console.error('Erreur chargement boutiques', err)
     });
   }
 

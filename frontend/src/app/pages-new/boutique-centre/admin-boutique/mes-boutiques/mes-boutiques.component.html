@@ -1,0 +1,28 @@
+<div class="mes-boutiques">
+    <h1>Mes Boutiques</h1>
+  
+    @if (loading) {
+      <p>Chargement de vos boutiques...</p>
+    } @else if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    } @else if (boutiques.length === 0) {
+      <p class="info">Vous n'avez pas encore de boutique active.</p>
+    } @else {
+      <div class="boutiques-list">
+        @for (boutique of boutiques; track boutique._id) {
+          <div class="boutique-card">
+            <h3>{{ boutique.name }}</h3>
+            <p>Domaine : {{ boutique.id_domaine?.name || 'Non défini' }}</p>
+            <p>Salle : {{ boutique.id_shop?.name || 'Non rattachée' }}</p>
+            <p>{{ boutique.description || 'Aucune description' }}</p>
+  
+            <div class="actions">
+              <button class="btn primary" [routerLink]="['/boutique-manager', boutique._id]">
+                Gérer cette boutique
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>

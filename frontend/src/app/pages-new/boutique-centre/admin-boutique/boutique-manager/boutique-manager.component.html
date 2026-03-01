@@ -1,0 +1,51 @@
+<div class="boutique-manager">
+    @if (loading) {
+      <p>Chargement de la boutique...</p>
+    } @else if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    } @else if (selectedBoutique) {
+      <div class="boutique-header">
+        <h1>{{ selectedBoutique.name }}</h1>
+        <div class="boutique-info">
+          <p>Domaine : {{ selectedBoutique.id_domaine?.name || 'Non défini' }}</p>
+          <p>Salle : {{ selectedShop?.name || 'Non rattachée' }}</p>
+          <p>{{ selectedBoutique.description || 'Aucune description' }}</p>
+        </div>
+      </div>
+  
+      <!-- Actions rapides -->
+      <div class="actions">
+        <button class="btn primary" (click)="showCreateProductForm = !showCreateProductForm">
+          {{ showCreateProductForm ? 'Fermer' : 'Ajouter un produit' }}
+        </button>
+  
+        <button class="btn secondary" (click)="fileInput.click()" [disabled]="importLoading">
+          {{ importLoading ? 'Import en cours...' : 'Importer CSV / Excel' }}
+        </button>
+  
+        <input type="file" #fileInput accept=".csv,.xlsx" (change)="onFileSelected($event)" style="display: none;" />
+      </div>
+  
+      <!-- Formulaire ajout produit -->
+      @if (showCreateProductForm) {
+        <app-create-product
+          [boutiqueId]="selectedBoutique._id"
+          (productCreated)="onProductCreated($event)"
+          (cancel)="showCreateProductForm = false">
+        </app-create-product>
+      }
+  
+      <!-- Liste produits -->
+      <div class="products-section">
+        <h2>Produits</h2>
+        <app-product-list
+          [products]="products"
+          [types]="types"
+          (productUpdated)="onProductUpdated($event)"
+          (productDeleted)="onProductDeleted($event)">
+        </app-product-list>
+      </div>
+    } @else {
+      <p>Aucune boutique sélectionnée.</p>
+    }
+  </div>
