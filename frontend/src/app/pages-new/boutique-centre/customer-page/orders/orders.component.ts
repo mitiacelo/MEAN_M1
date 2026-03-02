@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router,RouterLink } from '@angular/router';
 import { OrderService } from '../../../../services/order.service';
 import { AuthService } from '../../../../services/auth.service';
+import { HeaderComponent } from '../../../../components-new/layouts/header/header.component';
 
 export interface OrderItem {
   product: {
@@ -26,7 +27,7 @@ export interface Order {
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink,HeaderComponent],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css'
 })

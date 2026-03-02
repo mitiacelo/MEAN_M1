@@ -1,0 +1,52 @@
+<div class="favorites-container">
+    <h1>Mes Favoris</h1>
+  
+    @if (loading) {
+      <div class="loading">Chargement de vos favoris...</div>
+    } @else if (error) {
+      <div class="error-message">{{ error }}</div>
+    } @else if (favorites.length === 0) {
+      <div class="empty-state">
+        <p>Vous n'avez encore aucun favori.</p>
+        <button routerLink="/landing">Découvrir des produits</button>
+      </div>
+    } @else {
+      <div class="favorites-grid">
+        @for (fav of favorites; track fav._id) {
+          <div class="favorite-card">
+            <!-- Image produit (optionnel - adapte selon ton modèle) -->
+            <!-- <img [src]="fav.product.image || 'assets/placeholder.jpg'" alt="{{ fav.product.name }}" class="product-img"> -->
+  
+            <div class="product-info">
+              <h3>{{ fav.product.name }}</h3>
+              <p class="description">{{ fav.product.description || 'Pas de description' }}</p>
+              <p class="price">
+                {{ fav.product.prix_actuel ? (fav.product.prix_actuel | number:'1.0-0') + ' Ar' : 'Prix non défini' }}
+              </p>
+              <p class="stock">
+                Stock : {{ fav.product.quantite }} unités restantes
+              </p>
+              <p class="boutique">
+                Boutique : {{ fav.boutique?.name || 'Inconnue' }}
+              </p>
+            </div>
+  
+            <div class="actions">
+              <button 
+                class="add-to-cart"
+                (click)="addToCart(fav.product._id)"
+                [disabled]="fav.product.quantite <= 0">
+                Ajouter au panier
+              </button>
+  
+              <button 
+                class="remove-fav"
+                (click)="removeFavorite(fav.product._id)">
+                <span>Retirer des favoris ♡</span>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>

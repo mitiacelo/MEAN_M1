@@ -1,168 +1,117 @@
-/* boutiques-list.component.css - version light/blanc, moderne et interactive */
+/* ════════════════════════════════════════
+   BOUTIQUES SECTION — Landing Miniature
+═════════════════════════════════════════ */
 
-/* Section globale boutiques */
 .boutiques-section {
-    margin: 3rem 0;
-    padding: 2.5rem 5%;
-    background: #FFFFFF;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-    max-width: 1400px;
-    margin-left: auto;
-    margin-right: auto;
+  padding: 40px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: 'Poppins', sans-serif;
+  color: #1F2937;
+}
+
+.boutiques-section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2E2E54;
+  margin-bottom: 8px;
+}
+
+.section-intro {
+  font-size: 14px;
+  color: #64748B;
+  margin-bottom: 20px;
+}
+
+/* Loading / Error / Empty */
+.loading,
+.error,
+.empty {
+  font-size: 13px;
+  color: #64748B;
+  margin: 15px 0;
+}
+
+/* Grid boutiques */
+.boutiques-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* Carte boutique mini */
+.boutique-card {
+  background: #FFFFFF;
+  border: 1px solid #EEF1F6;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.boutique-card:hover {
+  transform: translateY(-3px);
+  border-color: #FE8804;
+}
+
+/* Textes */
+.boutique-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2E2E54;
+  margin-bottom: 4px;
+}
+
+.boutique-card .domaine,
+.boutique-card .salle,
+.boutique-card .description {
+  font-size: 12px;
+  color: #64748B;
+  line-height: 1.4;
+}
+
+/* Bouton */
+.consult-btn {
+  margin-top: auto;
+  background: #FE8804;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.consult-btn:hover {
+  background: #e67800;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .boutiques-section {
+    padding: 30px 15px;
   }
-  
-  /* Titre et intro */
-  .boutiques-section h2 {
-    color: #2E2E54;
-    font-weight: 700;
-    font-size: 2.2rem;
-    margin: 0 0 0.8rem;
-    text-align: center;
-    letter-spacing: -0.5px;
-  }
-  
-  .section-intro {
-    color: #555;
-    font-size: 1.15rem;
-    font-weight: 400;
-    text-align: center;
-    margin: 0 0 2.5rem;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  /* Grille des boutiques */
+
   .boutiques-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
   }
-  
-  /* Carte boutique */
+
   .boutique-card {
-    background: #FFFFFF;
-    border-radius: 16px;
-    padding: 1.8rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
-    transition: all 0.35s ease;
-    border: 1px solid #f0f0f0;
-    position: relative;
-    overflow: hidden;
+    padding: 12px;
   }
-  
-  .boutique-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.12);
-    border-color: #FE8804;
-  }
-  
-  /* Effet bandeau coloré au top au hover */
-  .boutique-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: #FE8804;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.4s ease;
-  }
-  
-  .boutique-card:hover::before {
-    transform: scaleX(1);
-  }
-  
+
   .boutique-card h3 {
-    margin: 0 0 1rem;
-    color: #2E2E54;
-    font-weight: 600;
-    font-size: 1.45rem;
+    font-size: 14px;
   }
-  
-  .boutique-card .domaine {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #FE8804;
-    margin: 0 0 0.8rem;
-    display: block;
-  }
-  
-  .boutique-card .description {
-    color: #555;
-    font-size: 0.98rem;
-    line-height: 1.6;
-    margin: 0 0 1rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .boutique-card .salle {
-    color: #777;
-    font-size: 0.95rem;
-    margin: 0 0 1.5rem;
-    font-style: italic;
-  }
-  
-  /* Bouton découvrir */
+
   .consult-btn {
-    width: 100%;
-    background: #FE8804;
-    color: white;
-    border: none;
-    padding: 0.9rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1.05rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(254,136,4,0.25);
+    font-size: 11px;
+    padding: 6px 10px;
   }
-  
-  .consult-btn:hover {
-    background: #e07700;
-    transform: translateY(-4px);
-    box-shadow: 0 10px 30px rgba(254,136,4,0.4);
-  }
-  
-  /* Messages */
-  .loading,
-  .error,
-  .empty {
-    text-align: center;
-    padding: 3rem 0;
-    font-size: 1.2rem;
-    color: #666;
-  }
-  
-  .loading { color: #2E2E54; font-weight: 600; }
-  .error { color: #dc3545; font-weight: 500; }
-  .empty { font-style: italic; }
-  
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .boutiques-grid {
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .boutiques-section {
-      padding: 1.8rem 5%;
-      margin: 2rem 0;
-    }
-  
-    .boutique-card {
-      padding: 1.5rem;
-    }
-  
-    .consult-btn {
-      padding: 0.8rem;
-      font-size: 1rem;
-    }
-  }
+}

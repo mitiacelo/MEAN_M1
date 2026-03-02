@@ -127,4 +127,37 @@ router.get('/carts', authMiddleware, async (req, res) => {
   }
 });
 
+// DELETE /api/cart/:productId → supprimer un article du panier
+router.delete('/:productId', authMiddleware, async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ user: req.user.id });
+    if (!cart) {
+      return res.status(404).json({ message: 'Panier non trouvé' });
+    }
+
+    // Filtre les items pour supprimer celui avec le productId
+    const initialLength = cart.items.length;
+    cart.items = cart.items.filter(item => item.product.toString() !== req.params.productId);
+
+    if (cart.items.length === initialLength) {
+      return res.status(404).json({ message: 'Article non trouvé dans le panier' });
+    }
+
+    await cart.save();
+
+    // Retourne le panier mis à jour (avec populate pour le frontend)
+    const updatedCart = await Cart.findById(cart._id)
+      .populate({
+        path: 'items.product',
+        select: 'name description quantite prix_actuel id_type',
+        populate: { path: 'id_type', select: 'name' }
+      });
+
+    res.json(updatedCart);
+  } catch (err) {
+    console.error('Erreur DELETE /cart/:productId :', err);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
 module.exports = router;

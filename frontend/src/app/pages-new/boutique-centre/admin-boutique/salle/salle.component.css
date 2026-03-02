@@ -1,147 +1,166 @@
-/* Salles disponibles - version encore plus petite et discrète */
+/* ════════════════════════════════════════════
+   LANDING — MINI SECTION SALLES DISPONIBLES
+   Version compacte et discrète
+════════════════════════════════════════════ */
 
 .shops-section.available {
-  margin: 2rem 0;                    /* moins de marge verticale */
-  padding: 1.5rem;                   /* padding réduit */
+  margin-top: 40px;
+  padding: 30px 20px;
   background: #FFFFFF;
-  border-radius: 12px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.05); /* ombre plus légère */
-  max-width: 1100px;                 /* largeur max réduite */
+  border-radius: 16px;
+  border: 1px solid #EEF1F6;
+  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.shops-section h2 {
-  color: #2E2E54;
+/* Titre discret */
+.shops-section.available h2 {
+  font-size: 16px;
   font-weight: 700;
-  font-size: 1.4rem;                 /* titre plus petit */
-  margin: 0 0 0.6rem;
-  text-align: center;
+  color: #2E2E54;
+  margin-bottom: 6px;
 }
 
+/* Intro petite */
 .section-intro {
-  color: #777;
-  font-size: 0.95rem;                /* texte intro plus petit */
-  text-align: center;
-  margin: 0 0 1.2rem;
+  font-size: 13px;
+  color: #64748B;
+  margin-bottom: 20px;
 }
 
+/* Grille compacte */
 .shops-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* cartes plus petites */
-  gap: 1.2rem;                       /* espacement réduit */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
 }
 
+/* Carte mini */
 .shop-card {
-  background: #FFFFFF;
-  border-radius: 10px;
-  padding: 1.2rem;                   /* padding intérieur réduit */
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-  transition: all 0.2s ease;
-  border: 1px solid #f0f0f0;
+  background: #F8F9FC;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #EEF1F6;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .shop-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+  border-color: #E2E8F0;
 }
 
+/* Nom salle */
 .shop-card h3 {
-  margin: 0 0 0.6rem;
-  color: #2E2E54;
+  font-size: 14px;
   font-weight: 600;
-  font-size: 1.25rem;                /* titre carte plus petit */
+  color: #2E2E54;
+  margin: 0;
 }
 
-.shop-card .superficie {
-  font-size: 1.05rem;
+/* Superficie */
+.superficie {
+  font-size: 12px;
   font-weight: 600;
   color: #FE8804;
-  margin: 0 0 0.5rem;
+  margin: 0;
 }
 
-.shop-card .description {
-  color: #666;
-  font-size: 0.92rem;
+/* Description courte */
+.description {
+  font-size: 12px;
+  color: #64748B;
+  margin: 0 0 8px 0;
   line-height: 1.4;
-  margin: 0 0 1rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;             /* limite à 2 lignes */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
-/* Bouton visiter */
+/* Bouton très discret */
 .consult-btn {
-  width: 100%;
-  margin-top: 0.8rem;
-  background: #FE8804;
+  background: #2E2E54;
   color: white;
   border: none;
-  padding: 0.7rem;
-  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 11px;
   font-weight: 600;
-  font-size: 0.95rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
+  align-self: flex-start;
 }
 
 .consult-btn:hover {
-  background: #e07700;
+  opacity: 0.85;
   transform: translateY(-2px);
 }
 
-/* Voir plus / Voir moins */
+/* Message login mini */
+.login-required-message {
+  margin-top: 8px;
+  padding: 8px;
+  font-size: 11px;
+  background: #FFF4E6;
+  border-radius: 8px;
+  color: #92400E;
+}
+
+/* Boutons auth mini */
+.auth-buttons-small {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.auth-buttons-small button {
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: none;
+  background: #FE8804;
+  color: white;
+  cursor: pointer;
+}
+
+/* Fermer */
+.dismiss-btn {
+  margin-top: 6px;
+  font-size: 10px;
+  background: none;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+}
+
+/* Voir plus */
 .see-more-wrapper {
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 16px;
 }
 
 .see-more-btn {
-  background: #2E2E54;
-  color: white;
-  padding: 0.7rem 1.8rem;
+  background: none;
   border: none;
-  border-radius: 10px;
+  font-size: 12px;
   font-weight: 600;
-  font-size: 0.95rem;
+  color: #FE8804;
   cursor: pointer;
-  transition: all 0.25s;
-  box-shadow: 0 3px 10px rgba(46,46,84,0.15);
 }
 
 .see-more-btn:hover {
-  background: #1f1f3c;
-  transform: translateY(-3px);
+  opacity: 0.7;
 }
 
-/* Messages */
-.loading-container,
-.error-container,
+/* Texte vide */
 .empty {
-  text-align: center;
-  padding: 2rem 0;
-  font-size: 1.05rem;
-  color: #666;
+  font-size: 12px;
+  color: #64748B;
 }
 
-.loading-container { color: #2E2E54; font-weight: 500; }
-.error-container { color: #dc3545; }
-.empty { font-style: italic; }
-
-/* Responsive - encore plus compact sur mobile */
-@media (max-width: 768px) {
-  .shops-section.available {
-    margin: 1.5rem 0;
-    padding: 1.2rem;
-  }
-
-  .shops-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .shop-card {
-    padding: 1rem;
-  }
+/* Loading / Error */
+.loading-container,
+.error-container {
+  font-size: 12px;
+  color: #64748B;
 }

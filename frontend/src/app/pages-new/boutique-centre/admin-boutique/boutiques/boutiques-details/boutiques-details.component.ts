@@ -6,6 +6,7 @@ import { ProductService, Product } from '../../../../../services/product.service
 import { CartService } from '../../../../../services/cart.service';
 import { AuthService } from '../../../../../services/auth.service';
 import { HeaderComponent } from '../../../../../components-new/layouts/header/header.component';
+import { FavoriteService, Favorite } from '../../../../../services/favorite.service';
 
 @Component({
   selector: 'app-boutiques-details',
@@ -21,16 +22,20 @@ export class BoutiqueDetailsComponent implements OnInit {
   showLoginMessageForCart = false;
   error = '';
   cartHasItems = false;
+  favorites: Favorite[] = [];
+  loadingFavorites = true;
 
   constructor(
+    public authService: AuthService,
     private route: ActivatedRoute,
     private boutiqueService: BoutiqueService,
     private productService: ProductService,
     private cartService: CartService,
-    public authService: AuthService
+    private favoriteService: FavoriteService
   ) {}
 
   ngOnInit(): void {
+    this.loadFavorites();
     const boutiqueId = this.route.snapshot.paramMap.get('id');
     if (!boutiqueId) {
       this.error = 'ID boutique manquant';
@@ -69,6 +74,52 @@ export class BoutiqueDetailsComponent implements OnInit {
         }
       });
     }
+  }
+  loadFavorites() {
+    if (!this.authService.isLoggedIn) {
+      this.loadingFavorites = false;
+      return;
+    }
+
+    this.favoriteService.getFavorites().subscribe({
+      next: (favs) => {
+        this.favorites = favs;
+        this.loadingFavorites = false;
+      },
+      error: () => this.loadingFavorites = false
+    });
+  }
+
+  toggleFavorite(productId: string) {
+    if (!this.authService.isLoggedIn) {
+      alert('Connectez-vous pour ajouter aux favoris');
+      return;
+    }
+
+    const isFav = this.favorites.some(f => f.product._id === productId);
+
+    if (isFav) {
+      this.favoriteService.removeFromFavorites(productId).subscribe({
+        next: () => {
+          this.favorites = this.favorites.filter(f => f.product._id !== productId);
+          alert('Retiré des favoris');
+        },
+        error: () => alert('Erreur suppression favori')
+      });
+    } else {
+      this.favoriteService.addToFavorites(productId).subscribe({
+        next: () => {
+          // Recharge ou ajoute localement
+          this.loadFavorites();
+          alert('Ajouté aux favoris');
+        },
+        error: () => alert('Erreur ajout favori')
+      });
+    }
+  }
+
+  isFavorite(productId: string): boolean {
+    return this.favorites.some(f => f.product._id === productId);
   }
 
   addToCart(product: any) {

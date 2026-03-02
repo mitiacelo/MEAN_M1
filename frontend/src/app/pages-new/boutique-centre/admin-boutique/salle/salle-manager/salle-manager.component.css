@@ -1,0 +1,296 @@
+/* ════════════════════════════════════════════
+   SALLE MANAGER — Light Minimal Premium
+════════════════════════════════════════════ */
+
+.salle-manager {
+    padding: 36px 42px;
+    background: #F8F9FC;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    color: #1F2937;
+  }
+  
+  /* ───────── HEADER SALLE ───────── */
+  .salle-header {
+    background: #FFFFFF;
+    padding: 28px;
+    border-radius: 16px;
+    border: 1px solid #EEF1F6;
+    margin-bottom: 24px;
+  }
+  
+  .salle-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #2E2E54;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+  
+  .salle-info {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  
+  .salle-info p {
+    font-size: 14px;
+    color: #64748B;
+    margin: 0;
+  }
+  
+  /* Status dynamique */
+  .actif {
+    color: #16A34A;
+  }
+  
+  .inactif {
+    color: #DC2626;
+  }
+  
+  /* ───────── CARD BOUTIQUE ───────── */
+  .boutique-card {
+    background: #FFFFFF;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid #EEF1F6;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.2s ease;
+  }
+  
+  .boutique-card:hover {
+    border-color: #E2E8F0;
+    transform: translateY(-3px);
+  }
+  
+  .boutique-card h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2E2E54;
+    margin-bottom: 6px;
+  }
+  
+  .boutique-card p {
+    font-size: 13px;
+    color: #64748B;
+    margin: 0;
+  }
+  
+  /* ───────── NO BOUTIQUE ───────── */
+  .no-boutique {
+    background: #FFFFFF;
+    padding: 26px;
+    border-radius: 16px;
+    border: 1px dashed #CBD5E1;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  .no-boutique h3 {
+    font-size: 18px;
+    color: #2E2E54;
+    margin-bottom: 8px;
+  }
+  
+  .no-boutique p {
+    font-size: 13px;
+    color: #64748B;
+    margin-bottom: 16px;
+  }
+  
+  /* ───────── BOUTONS ───────── */
+  .btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  
+  /* Primary */
+  .btn.primary {
+    background: #FE8804;
+    color: #FFFFFF;
+  }
+  
+  .btn.primary:hover {
+    background: #e67800;
+    transform: translateY(-2px);
+  }
+  
+  /* Secondary */
+  .btn.secondary {
+    background: #2E2E54;
+    color: #FFFFFF;
+  }
+  
+  .btn.secondary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+  
+  /* Create special */
+  .btn.create {
+    background: #22C55E;
+    color: #FFFFFF;
+  }
+  
+  .btn.create:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+  }
+  
+  /* ───────── FORMULAIRES ───────── */
+  .create-form,
+  .edit-form {
+    background: #FFFFFF;
+    padding: 28px;
+    border-radius: 16px;
+    border: 1px solid #EEF1F6;
+    margin-bottom: 24px;
+  }
+  
+  .create-form h3,
+  .edit-form h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2E2E54;
+    margin-bottom: 18px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+  }
+  
+  .form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #475569;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #CBD5E1;
+    font-size: 13px;
+    transition: border 0.15s ease;
+    font-family: inherit;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #FE8804;
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  /* Buttons zone */
+  .form-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  
+  .form-buttons button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  /* Save */
+  .save-btn {
+    background: #FE8804;
+    color: white;
+  }
+  
+  .save-btn:hover {
+    background: #e67800;
+  }
+  
+  /* Cancel */
+  .cancel-btn {
+    background: #E2E8F0;
+    color: #334155;
+  }
+  
+  .cancel-btn:hover {
+    background: #CBD5E1;
+  }
+  
+  /* ───────── PRODUITS ───────── */
+  .products-section {
+    background: #FFFFFF;
+    padding: 28px;
+    border-radius: 16px;
+    border: 1px solid #EEF1F6;
+    margin-top: 10px;
+  }
+  
+  .products-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2E2E54;
+    margin-bottom: 20px;
+  }
+  
+  /* ───────── ETATS / TEXTES ───────── */
+  .loading {
+    font-size: 14px;
+    color: #64748B;
+  }
+  
+  .error {
+    background: #FEE2E2;
+    color: #B91C1C;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    width: fit-content;
+  }
+  
+  .info {
+    background: #EEF2F7;
+    color: #475569;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    width: fit-content;
+  }
+  
+  /* ───────── RESPONSIVE ───────── */
+  @media (max-width: 768px) {
+    .salle-manager {
+      padding: 20px;
+    }
+  
+    .salle-info {
+      flex-direction: column;
+      gap: 6px;
+    }
+  
+    .form-buttons {
+      flex-direction: column;
+    }
+  
+    .btn {
+      width: 100%;
+    }
+  }

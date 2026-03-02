@@ -1,31 +1,36 @@
-<header class="top-bar">
-    <div class="logo">
-      <h1>Plaza</h1>
-    </div>
-  
-    <div class="auth-buttons">
-      @if (!authService.isLoggedIn) {
-        <button class="login-btn" routerLink="/login">Se connecter</button>
-        <button class="register-btn" routerLink="/register">S'inscrire</button>
-      } @else {
-        <span class="welcome">Bonjour {{ authService.currentUser?.firstname }}</span>
-  
-        <!-- BOUTON "MA BOUTIQUE" uniquement pour les managers -->
-        @if (authService.hasRole('manager')) {
-          <button class="my-shop-btn" routerLink="/dashboard-shop">
-            Ma boutique
-          </button>
-        }
+<header class="top-bar"> 
+  <div class="logo">
+    <h1>Plaza</h1>
+  </div>
 
-        <!-- Bouton Mon panier (utilisateurs normaux) -->
-        @if (authService.isLoggedIn) {
-          <button routerLink="/orders">Mes commandes</button>
-          @if (authService.hasRole('user')) {
-            <button routerLink="/cart">Mon panier</button>
-          }
-        }
-  
-        <button class="logout-btn" (click)="authService.logout()">Déconnexion</button>
+  <div class="auth-buttons">
+    @if (!authService.isLoggedIn) {
+      <button class="login-btn" routerLink="/login">Se connecter</button>
+      <button class="register-btn" routerLink="/register">S'inscrire</button>
+    } @else {
+      <span class="welcome">Bonjour {{ authService.currentUser?.firstname }}</span>
+
+      <!-- BOUTON "MA BOUTIQUE" uniquement pour les managers -->
+      @if (authService.hasRole('manager')) {
+        <button class="my-shop-btn" routerLink="/dashboard-shop">
+          Ma boutique
+        </button>
       }
-    </div>
-  </header>
+
+      <!-- Bouton Mon panier (utilisateurs normaux) -->
+      @if (authService.isLoggedIn) {
+        <button routerLink="/orders">Mes commandes</button>
+        @if (authService.hasRole('user')) {
+          <button routerLink="/cart">Mon panier</button>
+        }
+      }
+
+      <!-- Nouveau bouton Favoris -->
+      <button class="favorites-btn" routerLink="/favorites">
+        Mes favoris
+      </button>
+
+      <button class="logout-btn" (click)="authService.logout()">Déconnexion</button>
+    }
+  </div>
+</header>

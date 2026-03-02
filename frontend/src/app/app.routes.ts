@@ -138,6 +138,11 @@ export const routes: Routes = [
       import('./pages-new/boutique-centre/customer-page/cart/cart.component').then(m => m.CartComponent)
   },
   {
+    path: 'favorites',
+    loadComponent: () =>
+      import('./pages-new/boutique-centre/customer-page/favorites/favorites.component').then(m => m.FavoritesComponent)
+  },
+  {
     path: 'orders',
     loadComponent: () =>
       import('./pages-new/boutique-centre/customer-page/orders/orders.component').then(m => m.OrdersComponent)

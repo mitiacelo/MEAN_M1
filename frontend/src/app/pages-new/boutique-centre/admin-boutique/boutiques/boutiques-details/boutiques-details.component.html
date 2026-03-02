@@ -48,6 +48,13 @@
                 Ajouter au panier
               </button>
 
+              <button 
+              class="favorite-btn"
+              (click)="toggleFavorite(product._id)"
+              [class.active]="isFavorite(product._id)">
+              <span class="heart-icon">{{ isFavorite(product._id) ? '❤️' : '♡' }}</span>
+            </button>
+
               @if (cartHasItems && authService.isLoggedIn) {
                 <button class="view-cart-btn" routerLink="/cart">
                   Voir le panier →

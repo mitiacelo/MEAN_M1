@@ -34,5 +34,5 @@ app.use('/purchases', require('./routes/purchaseRoutes'));
 app.use('/contracts', require('./routes/contractRoutes'));
 app.use('/loyers', require('./routes/loyerRoutes'));
 app.use('/maintenance', require('./routes/maintenanceRoutes')); 
-
+app.use('/favorites', require('./routes/favoriteRoutes'));
 app.listen(PORT, () => console.log(`Serveur démarré sur le port ${PORT}`));

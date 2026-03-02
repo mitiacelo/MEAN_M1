@@ -1,0 +1,128 @@
+/* ════════════════════════════════════════
+   PRODUCT LIST — Liste et édition des produits
+═════════════════════════════════════════ */
+
+.product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 15px;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Item produit */
+  .product-item {
+    padding: 15px 20px;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  /* Titres */
+  .product-item h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+  
+  /* Paragraphes et infos produit */
+  .product-item p {
+    font-size: 14px;
+    margin: 4px 0;
+    color: #374151;
+  }
+  
+  /* Strong pour le prix / stock */
+  .product-item p strong {
+    color: #111827;
+  }
+  
+  /* Boutons actions */
+  .product-item .actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  /* Boutons principaux */
+  .product-item button {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  /* Modifier */
+  .update-btn {
+    background-color: #3B82F6;
+    color: #FFF;
+  }
+  .update-btn:hover {
+    background-color: #2563eb;
+  }
+  
+  /* Supprimer */
+  .delete-btn {
+    background-color: #EF4444;
+    color: #FFF;
+  }
+  .delete-btn:hover {
+    background-color: #dc2626;
+  }
+  
+  /* Enregistrer / valider édition */
+  .save-btn {
+    background-color: #10B981;
+    color: #FFF;
+  }
+  .save-btn:hover {
+    background-color: #0f9a72;
+  }
+  
+  /* Annuler édition */
+  .cancel-btn {
+    background-color: #F3F4F6;
+    color: #374151;
+    border: 1px solid #D1D5DB;
+  }
+  .cancel-btn:hover {
+    background-color: #E5E7EB;
+  }
+  
+  /* Inputs et textarea pour édition */
+  .product-item input[type="text"],
+  .product-item input[type="number"],
+  .product-item textarea,
+  .product-item select {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Texte vide */
+  .product-list p.empty {
+    color: #9CA3AF;
+    font-style: italic;
+    font-size: 14px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .product-item {
+      padding: 12px 15px;
+    }
+    .product-item button {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+  }

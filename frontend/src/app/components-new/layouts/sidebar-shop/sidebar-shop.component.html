@@ -2,11 +2,14 @@
   <!-- Sidebar fixe à gauche -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <h2>Ma Boutique</h2>
+      <h2>Mall.</h2>
       <p>Bonjour {{ authService.currentUser?.firstname || 'Manager' }}</p>
     </div>
 
     <nav class="sidebar-nav">
+      <a routerLink="/" class="nav-item nav-home-minimal">
+        ⟵ Accueil
+      </a>
       <a routerLink="/dashboard-shop" routerLinkActive="active" class="nav-item">
         Dashboard
       </a>
