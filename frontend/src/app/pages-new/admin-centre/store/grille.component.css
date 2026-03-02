@@ -1,37 +1,56 @@
+/* ════════════════════════════════════════════
+   GRILLE — Design System v2
+   Primaire : #2E2E54 | Accent : #FE8804
+   Fond : #F5F5F5 | Carte : #FFFFFF
+   Police : Poppins
+════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
 .grille-container {
   max-width: 95vw;
-  margin: 10px auto;
-  padding: 15px;
+  margin: 0 auto;
+  padding: 32px 36px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  gap: 20px;
+  font-family: 'Poppins', sans-serif;
+  background: #F5F5F5;
+  color: #252525;
 }
 
+/* ── Titre principal ── */
 .grille-container h2 {
   text-align: center;
-  font-size: 20px;
-  margin-bottom: 15px;
-  color: #333;
+  font-size: 22px;
+  font-weight: 700;
+  color: #2E2E54;
+  margin: 0;
+  letter-spacing: -.02em;
 }
 
+/* ── Sélecteurs lignes/colonnes ── */
 .selects-container {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   align-items: center;
   justify-content: center;
-  margin-bottom: 15px;
   flex-wrap: wrap;
 }
 
 .select-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
 }
 
 .select-group label {
   font-weight: 600;
-  color: #555;
+  color: #2E2E54;
   font-size: 13px;
   white-space: nowrap;
   margin: 0;
@@ -40,51 +59,88 @@
 .select-group select {
   padding: 6px 10px;
   font-size: 14px;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-  background-color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: #2E2E54;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 8px;
+  background: #F5F5F5;
   cursor: pointer;
-  transition: border-color 0.3s;
+  transition: border-color .15s;
   width: 70px;
+  outline: none;
 }
 
-.select-group select:hover { border-color: #999; }
-.select-group select:focus { outline: none; border-color: #666; }
+.select-group select:hover  { border-color: #FE8804; }
+.select-group select:focus  { border-color: #2E2E54; }
 
+/* ── Format choisi ── */
 .format-display {
-  background-color: #f8f9fa;
-  padding: 8px 20px;
-  border-radius: 8px;
-  text-align: center;
-  display: inline-block;
-  border: 2px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .format-display h3 {
   margin: 0;
-  color: #495057;
-  font-size: 16px;
-  font-weight: 600;
+  color: #9098A3;
+  font-size: 13px;
+  font-weight: 500;
+  background: #fff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
 }
 
+/* ── Panneau action shop ── */
+.shop-action-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  margin: 0 auto;
+  max-width: 560px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.shop-action-panel p {
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2E2E54;
+  margin: 0 0 8px;
+}
+
+/* ── Grille visuelle ── */
 .grille-visuelle {
-  margin: 10px auto;
+  margin: 0 auto;
   max-width: 95vw;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
 }
 
 .grille-visuelle h3 {
   text-align: center;
-  margin-bottom: 10px;
-  color: #333;
-  font-size: 16px;
+  margin: 0 0 16px;
+  color: #2E2E54;
+  font-size: 14px;
+  font-weight: 600;
 }
 
+/* ── Table grille ── */
 .grille-table {
   border-collapse: separate;
   border-spacing: clamp(3px, 0.5vw, 8px);
@@ -98,137 +154,151 @@
   height: clamp(25px, var(--cell-size), 80px);
   text-align: center;
   vertical-align: middle;
-  font-size: clamp(8px, 1vw, 13px);
-  font-weight: 500;
+  font-size: clamp(8px, 1vw, 12px);
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
 }
 
 .grille-table thead th {
   background: none;
   border: none;
-  color: #999;
-  font-weight: 600;
+  color: #CCCCCC;
+  font-weight: 700;
   padding: 0;
   height: auto;
-  min-height: 20px;
-  max-height: 30px;
+  font-size: 11px;
 }
 
 .lettre-col {
   background: none;
   border: none;
-  color: #999;
-  font-weight: 600;
+  color: #CCCCCC;
+  font-weight: 700;
   padding: 0;
-  width: auto;
   min-width: 20px;
-  max-width: 30px;
+  font-size: 11px;
 }
 
+/* ── Cellules ── */
 .block-cell {
-  background-color: #e9ecef;
-  border-radius: clamp(6px, 1vw, 12px);
-  position: relative;
+  background-color: #F0F0F0;
+  border-radius: clamp(6px, 1vw, 14px);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform .15s, filter .15s, background .15s;
   border: none;
-  color: rgba(0, 0, 0, 0.15);
-  font-size: clamp(8px, 0.8vw, 11px);
-  font-weight: 500;
+  color: rgba(0,0,0,.15);
+  font-size: clamp(7px, 0.7vw, 10px);
+  font-weight: 600;
 }
 
 .block-cell:hover {
-  background-color: #d3d3d3;
-  transform: scale(1.05);
-  color: rgba(0, 0, 0, 0.4);
+  filter: brightness(.9);
+  transform: scale(1.06);
+  color: rgba(0,0,0,.4);
   z-index: 10;
 }
 
 .block-cell.selected {
-  background-color: #495057;
-  color: white;
-  transform: scale(1.05);
+  background-color: #2E2E54;
+  color: #fff;
+  transform: scale(1.06);
 }
 
 .block-cell.assigned {
   cursor: pointer;
-  opacity: 0.85;
-  border: 2px solid rgba(0, 0, 0, 0.08);
+  opacity: .88;
 }
 
 .block-cell.assigned:hover {
-  filter: brightness(0.92);
+  filter: brightness(.88);
+  transform: scale(1.04);
 }
 
 .block-cell.shop-selected {
-  outline: 3px solid #343a40;
+  outline: 3px solid #FE8804;
   outline-offset: -3px;
-  transform: scale(1.05);
+  transform: scale(1.06);
   z-index: 10;
-  filter: brightness(0.88);
+  filter: brightness(.88);
 }
 
-/* ✅ Tous les boutons — style unique simple */
+/* ── Boutons ── */
 button {
-  padding: 8px 16px;
-  background-color: #495057;
-  color: white;
+  padding: 9px 18px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background .15s, transform .1s;
 }
 
-button:hover:not(:disabled) {
-  background-color: #343a40;
-}
+button:hover:not(:disabled) { transform: translateY(-1px); }
+button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
 
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* Bouton principal */
 .save-btn {
   display: block;
-  max-width: 350px;
-  margin: 10px auto;
-}
-
-/* ✅ Panneau action shop — simple */
-.shop-action-panel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  margin: 8px auto;
-  max-width: 500px;
-  flex-wrap: wrap;
-}
-
-.shop-action-panel p {
   width: 100%;
-  text-align: center;
-  font-size: 13px;
-  color: #495057;
-  margin: 0 0 5px 0;
+  max-width: 360px;
+  margin: 0 auto;
+  background: #2E2E54;
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 10px;
+}
+.save-btn:hover:not(:disabled) { background: #24244a; }
+
+/* Bouton CTA orange */
+.save-btn:last-of-type {
+  background: #FE8804;
+  box-shadow: 0 4px 14px rgba(254,136,4,.3);
+}
+.save-btn:last-of-type:hover:not(:disabled) {
+  background: #d97200;
+  box-shadow: 0 6px 20px rgba(254,136,4,.4);
 }
 
+/* Boutons panel */
+.btn-danger {
+  background: #FEE2E2;
+  color: #EF4444;
+}
+.btn-danger:hover:not(:disabled) { background: #FCA5A5; }
+
+.btn-warning {
+  background: #FFF4E6;
+  color: #FE8804;
+}
+.btn-warning:hover:not(:disabled) { background: #FED7AA; }
+
+.btn-success {
+  background: #FE8804;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(254,136,4,.3);
+}
+.btn-success:hover:not(:disabled) { background: #d97200; }
+
+.btn-cancel {
+  background: #F5F5F5;
+  color: #9098A3;
+  border: 1px solid #E0E0E0;
+}
+.btn-cancel:hover:not(:disabled) { background: #E8E8E8; color: #252525; }
+
+/* ── Message info ── */
+.message-info {
+  text-align: center;
+  font-size: 12px;
+  color: #9098A3;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ── Responsive ── */
 @media (max-width: 768px) {
-  .grille-container { padding: 10px; margin: 5px auto; }
-  .grille-container h2 { font-size: 18px; margin-bottom: 10px; }
-  .selects-container { gap: 10px; }
-  .select-group label { font-size: 12px; }
-  .select-group select { width: 60px; font-size: 13px; }
-  .format-display h3 { font-size: 14px; }
-  .grille-table th,
-  .grille-table td {
-    --cell-size: calc(min(90vw, 80vh) / max(var(--colonnes, 5), var(--lignes, 5)) - 8px);
-    width: clamp(20px, var(--cell-size), 60px);
-    height: clamp(20px, var(--cell-size), 60px);
-  }
+  .grille-container { padding: 16px; gap: 14px; }
+  .grille-container h2 { font-size: 17px; }
+  .grille-visuelle { padding: 14px; border-radius: 14px; }
 }

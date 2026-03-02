@@ -1,33 +1,71 @@
 <div class="admin-layout">
 
   <aside class="sidebar">
+
     <div class="sidebar-brand">
       <span class="brand-name">Mall<span class="brand-accent">.</span></span>
     </div>
 
     <nav class="sidebar-nav">
+
       <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+          </svg>
+        </span>
         Dashboard
       </a>
+
       <a routerLink="/grille" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3L2 12h3v8h6v-5h2v5h6v-8h3L12 3z"/>
+          </svg>
+        </span>
         Centre commercial
       </a>
+
       <a routerLink="/notifications" routerLinkActive="active" class="nav-item nav-item--notif">
-        Notifications
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+          </svg>
+        </span>
+        Demande de location
         <span class="notif-dot" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
       </a>
+
       <a routerLink="/location" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+          </svg>
+        </span>
         Location
       </a>
+
       <a routerLink="/maintenance" routerLinkActive="active" class="nav-item nav-item--maint">
-        Maintenance
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13.78 15.3l6 6c.78.78 2.05.78 2.83 0 .78-.78.78-2.05 0-2.83l-6-6c.55-1.4.24-3.05-.93-4.22-1.28-1.28-3.14-1.54-4.69-.8l2.45 2.46-3.58 3.58-2.46-2.45c-.74 1.55-.48 3.41.8 4.69 1.17 1.17 2.82 1.48 4.22.93l1.36-1.36z"/>
+          </svg>
+        </span>
+        Maintenance des salles
         <span class="maint-dot" *ngIf="urgentsCount > 0">{{ urgentsCount }}</span>
       </a>
+
     </nav>
 
     <div class="sidebar-footer">
-      <button class="logout-btn" (click)="logout()">Déconnexion</button>
+      <button class="logout-btn" (click)="logout()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+        </svg>
+        Déconnexion
+      </button>
     </div>
+
   </aside>
 
   <main class="main-content">
