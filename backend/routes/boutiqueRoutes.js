@@ -133,15 +133,5 @@ router.get('/user/:userId', async (req, res) => {
   }
 });
 
-router.get('/user/:userId', async (req, res) => {
-  try {
-    const boutiques = await Boutique.find({ id_manager: req.params.userId })
-      .populate('id_shop', 'name')
-      .populate('id_domaine', 'name');
-    res.json(boutiques);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 
 module.exports = router;

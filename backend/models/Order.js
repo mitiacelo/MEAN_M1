@@ -23,6 +23,10 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  boutiqueId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Boutique' 
+  },
   cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cart',

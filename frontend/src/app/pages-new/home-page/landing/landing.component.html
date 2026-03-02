@@ -3,21 +3,26 @@
 
   <!-- Contenu principal -->
   <main class="hero">
-    <div class="hero-content">
-      <h1 class="main-title">Plaza</h1>
-      <p class="main-subtitle">Le cœur battant d'Antananarivo</p>
+    <div class="hero-bg-gradient"></div> <!-- fond interactif subtil -->
 
-      <p class="catchphrase">
+    <div class="hero-content">
+      <h1 class="main-title animate-fade-up">Plaza</h1>
+      <p class="main-subtitle animate-fade-up" style="animation-delay: 0.3s;">Le cœur battant d'Antananarivo</p>
+
+      <p class="catchphrase animate-fade-up" style="animation-delay: 0.6s;">
         Découvrez l’expérience shopping et lifestyle la plus moderne de la capitale.<br>
         Plus de 120 boutiques, restaurants, cinéma, espaces de loisirs…<br>
-        <strong>Votre destination préférée commence ici.</strong>
+        <strong class="highlight-pulse">Votre destination préférée commence ici.</strong>
       </p>
+
+      <!-- Optionnel : bouton CTA si tu veux en ajouter -->
+      <!-- <button class="btn-cta animate-fade-up" style="animation-delay: 0.9s;">Découvrir maintenant</button> -->
     </div>
 
-    <!-- On garde uniquement les salles disponibles (inactives) -->
-    <app-salle></app-salle>
-
-    <!-- Nouvelle section : les boutiques déjà ouvertes -->
-    <app-boutiques-list></app-boutiques-list>
+    <!-- Sections enfants -->
+    <div class="sections-wrapper">
+      <app-salle class="animate-fade-up" style="animation-delay: 1s;"></app-salle>
+      <app-boutiques-list class="animate-fade-up" style="animation-delay: 1.2s;"></app-boutiques-list>
+    </div>
   </main>
 </div>

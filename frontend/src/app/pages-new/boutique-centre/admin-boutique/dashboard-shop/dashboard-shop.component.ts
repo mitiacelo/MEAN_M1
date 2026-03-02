@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { ShopService, Shop } from '../../../../services/shop.service';
 import { BoutiqueService, Boutique } from '../../../../services/boutique.service';
 import { DomaineService, Domaine } from '../../../../services/domaine.service';
 import { ProductService, Product } from '../../../../services/product.service';
 import { TypeService, Type } from '../../../../services/type.service';
+import { OrderService, Order } from '../../../../services/order.service';
 import { AuthService } from '../../../../services/auth.service';
 import { CreateProductComponent } from '../../../boutique-centre/admin-boutique/product/create-product/create-product.component';
 import { ProductListComponent } from '../../../boutique-centre/admin-boutique/product/product-list/product-list.component';
@@ -37,21 +39,28 @@ export class DashboardShopComponent implements OnInit {
   errorMessage = '';
 
   showCreateBoutique = false;
-  newBoutique = {
-    name: '',
-    description: '',
-    id_domaine: ''
-  };
+  newBoutique = { name: '', description: '', id_domaine: '' };
 
   isEditingBoutique = false;
   editedBoutique: Partial<Boutique> = {};
 
   showCreateProductForm = false;
 
-  // Pour l'import CSV/Excel
+  // Import CSV/Excel
   importLoading = false;
   importError: string = '';
   importSuccess: string = '';
+
+  // Stats globales (toutes boutiques du manager)
+  caToday: number = 0;
+  caTodayChange: number = 0;
+  lowStockCount: number = 0;
+  pendingOrders: number = 0;
+  newClients30d: number = 0;
+
+  topProducts: { product: Product; quantity: number }[] = [];
+  recentOrders: Order[] = [];
+  alerts: string[] = [];
 
   constructor(
     private shopService: ShopService,
@@ -59,11 +68,13 @@ export class DashboardShopComponent implements OnInit {
     private productService: ProductService,
     private typeService: TypeService,
     private domaineService: DomaineService,
+    private orderService: OrderService,
     public authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.loadData();
+    this.loadGlobalStats();
 
     this.domaineService.getAllDomaines().subscribe(dom => this.domaines = dom);
     this.typeService.getAllTypes().subscribe(t => this.types = t);
@@ -106,9 +117,8 @@ export class DashboardShopComponent implements OnInit {
   selectShop(shop: Shop): void {
     this.selectedShop = shop;
     this.selectedBoutique = this.boutiquesMap[shop._id] || null;
-  
+
     if (this.selectedBoutique) {
-      // ← CHANGEMENT : utilise getProductsByBoutique au lieu de getProductsByShop
       this.productService.getProductsByBoutique(this.selectedBoutique._id).subscribe({
         next: prods => {
           console.log(`Produits chargés pour boutique ${this.selectedBoutique?.name} :`, prods.length);
@@ -124,6 +134,140 @@ export class DashboardShopComponent implements OnInit {
     }
   }
 
+  // ────────────── STATS GLOBALES (toutes les boutiques du manager) ──────────────
+  private loadGlobalStats(): void {
+    const user = this.authService.currentUser;
+    if (!user?.id) {
+      console.warn('Aucun user connecté → stats non chargées');
+      return;
+    }
+
+    console.log('Début chargement stats globales pour user:', user.id);
+
+    this.boutiqueService.getMyBoutiques(user.id).subscribe({
+      next: (boutiques) => {
+        console.log('Boutiques récupérées :', boutiques.length, boutiques);
+        if (boutiques.length === 0) {
+          console.log('Aucune boutique → stats à zéro');
+          this.resetStats();
+          return;
+        }
+
+        const productObservables = boutiques.map(b => {
+          console.log('Chargement produits pour boutique:', b._id, b.name);
+          return this.productService.getProductsByBoutique(b._id);
+        });
+
+        const ordersObservable = this.orderService.getOrdersByUser(user.id);
+        ordersObservable.subscribe({
+          next: orders => console.log('Commandes reçues pour user :', orders),
+          error: err => console.error('Erreur getOrdersByUser :', err)
+        });
+
+        forkJoin([...productObservables, ordersObservable]).subscribe({
+          next: (results: (Product[] | Order[])[]) => {
+            console.log('Résultats forkJoin reçus :', results.length, 'tableaux');
+
+            const allProducts = results.slice(0, -1).flat() as Product[];
+            const allOrders = results[results.length - 1] as Order[];
+
+            console.log('Total produits récupérés :', allProducts.length);
+            console.log('Total commandes reçues :', allOrders.length);
+            console.log('Commandes brutes :', allOrders);
+
+            // CA TOTAL (toutes dates) – pour voir au moins 10000
+            this.caToday = allOrders.reduce((sum: number, o: Order) => sum + (o.totalPrice || 0), 0);
+            console.log('CA TOTAL (toutes dates) calculé :', this.caToday);
+
+            // Commandes en attente : pending + confirmed
+            this.pendingOrders = allOrders.filter((o: Order) => 
+              o.status === 'pending' || o.status === 'confirmed'
+            ).length;
+            console.log('Commandes en attente (pending + confirmed) :', this.pendingOrders);
+
+            // Stock faible : produits ≤ 5 unités
+            this.lowStockCount = allProducts.filter(p => p.quantite <= 5).length;
+            console.log('Produits en stock faible :', this.lowStockCount);
+
+            // Top produits (toutes dates)
+            const salesMap = new Map<string, number>();
+
+            allOrders.forEach((o: Order) => {
+              if (o.items) {
+                o.items.forEach((item: any) => {
+                  const prodId = item.product?._id;
+                  if (prodId) {
+                    salesMap.set(prodId, (salesMap.get(prodId) || 0) + (item.quantity || 0));
+                  }
+                });
+              }
+            });
+
+            const top5Ids = [...salesMap.entries()]
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 5)
+              .map(([id]) => id);
+
+            this.topProducts = top5Ids.map(id => {
+              const prod = allProducts.find(p => p._id === id);
+              return { product: prod || { name: 'Produit inconnu' } as Product, quantity: salesMap.get(id)! };
+            });
+            console.log('Top produits (toutes dates) :', this.topProducts);
+
+            // Dernières commandes (5 plus récentes, toutes dates)
+            this.recentOrders = allOrders
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+              .slice(0, 5);
+
+            // Alertes
+            this.alerts = [];
+
+            // Alerte stock critique
+            if (this.lowStockCount > 0) {
+              this.alerts.push(`${this.lowStockCount} produit(s) en stock critique (≤ 5 unités)`);
+            }
+
+            // Autres alertes possibles
+            if (this.pendingOrders > 10) {
+              this.alerts.push(`${this.pendingOrders} commandes en attente – attention surcharge`);
+            }
+
+            console.log('Alertes générées :', this.alerts);
+
+            console.log('Stats finales :', {
+              caToday: this.caToday,
+              lowStockCount: this.lowStockCount,
+              pendingOrders: this.pendingOrders,
+              topProducts: this.topProducts.length,
+              recentOrders: this.recentOrders.length,
+              alerts: this.alerts
+            });
+          },
+          error: (err: any) => {
+            console.error('Erreur forkJoin stats :', err);
+            this.resetStats();
+          }
+        });
+      },
+      error: (err: any) => {
+        console.error('Erreur getMyBoutiques :', err);
+        this.resetStats();
+      }
+    });
+  }
+
+  private resetStats(): void {
+    this.caToday = 0;
+    this.caTodayChange = 0;
+    this.lowStockCount = 0;
+    this.pendingOrders = 0;
+    this.newClients30d = 0;
+    this.topProducts = [];
+    this.recentOrders = [];
+    this.alerts = [];
+  }
+
+  // Méthodes existantes (inchangées)
   createBoutique(): void {
     if (!this.selectedShop || !this.newBoutique.name || !this.newBoutique.id_domaine) {
       this.errorMessage = 'Sélectionnez une salle, nom et domaine obligatoires';
@@ -200,101 +344,91 @@ export class DashboardShopComponent implements OnInit {
   logout(): void {
     this.authService.logout();
   }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length || !this.selectedBoutique) return;
-  
+
     this.importLoading = true;
     this.importError = '';
     this.importSuccess = '';
-  
+
     const file = input.files[0];
     const reader = new FileReader();
-  
+
     reader.onload = (e: any) => {
       try {
         const text = e.target.result as string;
-    
-        // Parsing CSV robuste (gère virgules internes et guillemets)
+
         const rows: string[][] = [];
         let currentRow: string[] = [];
         let currentField = '';
         let inQuotes = false;
-    
+
         for (let i = 0; i < text.length; i++) {
           const char = text[i];
-    
+
           if (char === '"' && text[i - 1] !== '\\') {
             inQuotes = !inQuotes;
             continue;
           }
-    
+
           if (char === ',' && !inQuotes) {
             currentRow.push(currentField);
             currentField = '';
             continue;
           }
-    
+
           if ((char === '\n' || char === '\r') && !inQuotes) {
             currentRow.push(currentField);
-            if (currentRow.some(f => f.trim() !== '')) {
-              rows.push(currentRow);
-            }
+            if (currentRow.some(f => f.trim() !== '')) rows.push(currentRow);
             currentRow = [];
             currentField = '';
-            if (char === '\r' && text[i + 1] === '\n') i++; // skip \n après \r
+            if (char === '\r' && text[i + 1] === '\n') i++;
             continue;
           }
-    
+
           currentField += char;
         }
-    
-        // Dernière ligne
+
         if (currentField || currentRow.length > 0) {
           currentRow.push(currentField);
-          if (currentRow.some(f => f.trim() !== '')) {
-            rows.push(currentRow);
-          }
+          if (currentRow.some(f => f.trim() !== '')) rows.push(currentRow);
         }
-    
-        if (rows.length < 2) {
-          throw new Error('Fichier CSV vide ou sans en-tête');
-        }
-    
-        // En-têtes
+
+        if (rows.length < 2) throw new Error('Fichier CSV vide ou sans en-tête');
+
         const headers = rows[0].map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
-    
+
         const payload: any[] = [];
-    
+
         for (let i = 1; i < rows.length; i++) {
           const values = rows[i].map(v => v.trim().replace(/^"|"$/g, ''));
-    
-          // Mappe les valeurs aux headers (tolère si plus ou moins)
+
           const row: any = {};
           for (let k = 0; k < headers.length && k < values.length; k++) {
             row[headers[k]] = values[k];
           }
-    
-          // Champs clés (tolérance aux noms différents)
+
           const name = row['name'] || row['nom'] || row['produit'] || '';
           const description = row['description'] || row['desc'] || '';
           const typeIdOrName = row['id_type'] || row['type'] || row['categorie'] || '';
           const quantiteStr = row['quantite'] || row['stock'] || row['qte'] || '0';
           const prixStr = row['prix'] || row['price'] || row['prix unitaire'] || '0';
-    
+
           const quantite = Number(quantiteStr);
           const prix = Number(prixStr);
-    
+
           const matchingType = this.types.find(t =>
             t._id === typeIdOrName ||
             t.name.toLowerCase() === typeIdOrName.toLowerCase()
           );
-    
+
           if (!name || !matchingType || isNaN(quantite) || isNaN(prix)) {
-            console.warn(`Ligne ${i + 1} ignorée (champs obligatoires manquants ou invalides) :`, row);
+            console.warn(`Ligne ${i + 1} ignorée :`, row);
             continue;
           }
-    
+
           payload.push({
             name,
             description,
@@ -304,23 +438,19 @@ export class DashboardShopComponent implements OnInit {
             prix
           });
         }
-    
+
         if (payload.length === 0) {
-          this.importError = 'Aucun produit valide trouvé dans le fichier.';
+          this.importError = 'Aucun produit valide trouvé.';
           this.importLoading = false;
           input.value = '';
           return;
         }
-    
-        // Logs debug
-        console.log('=== PAYLOAD ENVOYÉ AU BACKEND ===');
+
+        console.log('=== PAYLOAD ENVOYÉ ===');
         console.log('Nombre produits :', payload.length);
-        console.log('Premier :', payload[0]?.name || 'aucun');
-        console.log('Deuxième :', payload[1]?.name || 'aucun');
-        console.log('Troisième :', payload[2]?.name || 'aucun');
-    
+
         const safePayload = JSON.parse(JSON.stringify(payload));
-    
+
         this.productService.importProducts(safePayload).subscribe({
           next: (created) => {
             console.log('Import OK - Créés :', created.length);
@@ -330,19 +460,19 @@ export class DashboardShopComponent implements OnInit {
             input.value = '';
           },
           error: (err) => {
-            console.error('Erreur HTTP :', err);
+            console.error('Erreur import :', err);
             this.importError = err.error?.message || 'Erreur lors de l\'import';
             this.importLoading = false;
           }
         });
       } catch (err: any) {
         console.error('Erreur lecture CSV :', err);
-        this.importError = err.message || 'Impossible de lire le fichier CSV.';
+        this.importError = err.message || 'Impossible de lire le fichier.';
         this.importLoading = false;
         input.value = '';
       }
     };
-  
+
     reader.readAsText(file);
   }
 }

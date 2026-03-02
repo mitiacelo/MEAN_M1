@@ -16,6 +16,7 @@ export class SalleComponent implements OnInit {
   activeShops: Shop[] = [];
   loading = true;
   errorMessage = '';
+  showAllShops: boolean = false;  // ← Par défaut : limité à 2 salles
 
   showLoginMessage = false;
   selectedShopId: string | null = null;

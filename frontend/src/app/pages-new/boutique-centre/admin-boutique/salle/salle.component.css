@@ -1,251 +1,147 @@
-.shop-page {
-    padding: 5rem 5% 4rem;
-    max-width: 1400px;
-    margin: 0 auto;
-    background: #f8fafc;
-    min-height: calc(50vh - 200px); /* si top-bar fait ~80px */
-  }
-  
-  /* Chargement & Erreur */
-  .loading-container,
-  .error-container {
-    text-align: center;
-    padding: 6rem 1rem;
-    color: #6b7280;
-    font-size: 1.2rem;
-  }
-  
-  .error-container {
-    color: #dc2626;
-    background: #fee2e2;
-    border-radius: 12px;
-    padding: 2rem;
-    max-width: 600px;
-    margin: 4rem auto;
-  }
-  
-  /* Sections */
-  .shops-section {
-    margin-bottom: 4rem;
-  }
-  
-  .shops-section h2 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #1f2937;
-    margin: 0 0 0.8rem;
-    text-align: center;
-  }
-  
-  .section-intro {
-    text-align: center;
-    color: #6b7280;
-    font-size: 1.1rem;
-    margin: 0 0 2.5rem;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  /* Grille des boutiques */
-  .shops-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.8rem;
-  }
-  
-  /* Carte boutique */
-  .shop-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.8rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .shop-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  }
-  
-  .shop-card h3 {
-    margin: 0;
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #1f2937;
-  }
-  
-  .superficie {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2563eb;
-    margin: 0.3rem 0;
-  }
-  
-  .description {
-    color: #4b5563;
-    line-height: 1.5;
-    margin: 0.5rem 0 1rem;
-    flex-grow: 1;
-  }
-  
-  /* Différenciation active / disponible */
-  .shop-card.active {
-    border-left: 4px solid #10b981; /* vert clair pour les actives */
-    background: #f9fffb; /* fond très légèrement plus clair/vert */
-  }
-  
-  /* Bouton consulter */
-  .consult-btn {
-    margin-top: auto;
-    padding: 0.85rem;
-    background: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-  }
-  
-  .consult-btn:hover {
-    background: #1d4ed8;
-    transform: translateY(-2px);
-  }
-  
-  /* Message non connecté */
-  .not-logged-in-message {
-    text-align: center;
+/* Salles disponibles - version encore plus petite et discrète */
+
+.shops-section.available {
+  margin: 2rem 0;                    /* moins de marge verticale */
+  padding: 1.5rem;                   /* padding réduit */
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.05); /* ombre plus légère */
+  max-width: 1100px;                 /* largeur max réduite */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.shops-section h2 {
+  color: #2E2E54;
+  font-weight: 700;
+  font-size: 1.4rem;                 /* titre plus petit */
+  margin: 0 0 0.6rem;
+  text-align: center;
+}
+
+.section-intro {
+  color: #777;
+  font-size: 0.95rem;                /* texte intro plus petit */
+  text-align: center;
+  margin: 0 0 1.2rem;
+}
+
+.shops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* cartes plus petites */
+  gap: 1.2rem;                       /* espacement réduit */
+}
+
+.shop-card {
+  background: #FFFFFF;
+  border-radius: 10px;
+  padding: 1.2rem;                   /* padding intérieur réduit */
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.shop-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.shop-card h3 {
+  margin: 0 0 0.6rem;
+  color: #2E2E54;
+  font-weight: 600;
+  font-size: 1.25rem;                /* titre carte plus petit */
+}
+
+.shop-card .superficie {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #FE8804;
+  margin: 0 0 0.5rem;
+}
+
+.shop-card .description {
+  color: #666;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  margin: 0 0 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;             /* limite à 2 lignes */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Bouton visiter */
+.consult-btn {
+  width: 100%;
+  margin-top: 0.8rem;
+  background: #FE8804;
+  color: white;
+  border: none;
+  padding: 0.7rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.consult-btn:hover {
+  background: #e07700;
+  transform: translateY(-2px);
+}
+
+/* Voir plus / Voir moins */
+.see-more-wrapper {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.see-more-btn {
+  background: #2E2E54;
+  color: white;
+  padding: 0.7rem 1.8rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 3px 10px rgba(46,46,84,0.15);
+}
+
+.see-more-btn:hover {
+  background: #1f1f3c;
+  transform: translateY(-3px);
+}
+
+/* Messages */
+.loading-container,
+.error-container,
+.empty {
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 1.05rem;
+  color: #666;
+}
+
+.loading-container { color: #2E2E54; font-weight: 500; }
+.error-container { color: #dc3545; }
+.empty { font-style: italic; }
+
+/* Responsive - encore plus compact sur mobile */
+@media (max-width: 768px) {
+  .shops-section.available {
+    margin: 1.5rem 0;
     padding: 1.2rem;
-    background: #f3f4f6;
-    border-radius: 8px;
-    margin-top: 1rem;
-  }
-  
-  .not-logged-in-message p {
-    color: #6b7280;
-    margin: 0 0 1rem;
-    font-size: 0.95rem;
-  }
-  
-  .auth-buttons-small {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .auth-buttons-small button {
-    padding: 0.6rem 1.3rem;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .auth-buttons-small button:first-child {
-    background: white;
-    border: 1px solid #d1d5db;
-    color: #2563eb;
-  }
-  
-  .auth-buttons-small button:first-child:hover {
-    background: #eff6ff;
-    border-color: #2563eb;
-  }
-  
-  .auth-buttons-small button:last-child {
-    background: #2563eb;
-    color: white;
-    border: none;
-  }
-  
-  .auth-buttons-small button:last-child:hover {
-    background: #1d4ed8;
-  }
-  
-  /* Message vide */
-  .empty {
-    text-align: center;
-    color: #9ca3af;
-    font-size: 1.2rem;
-    font-style: italic;
-    padding: 4rem 1rem;
-    background: #f1f5f9;
-    border-radius: 12px;
   }
 
-  .login-required-message {
-    margin-top: 1rem;
-    padding: 1.2rem;
-    background: #fefce8;
-    border-radius: 8px;
-    border: 1px solid #fef08a;
-    text-align: center;
-    font-size: 0.95rem;
-    color: #854d0e;
-  }
-  
-  .login-required-message p {
-    margin: 0 0 0.8rem;
-    font-weight: 500;
-  }
-  
-  .auth-buttons-small {
-    display: flex;
-    justify-content: center;
+  .shops-grid {
+    grid-template-columns: 1fr;
     gap: 1rem;
-    margin: 0.8rem 0;
   }
-  
-  .auth-buttons-small button {
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    cursor: pointer;
+
+  .shop-card {
+    padding: 1rem;
   }
-  
-  .auth-buttons-small button:first-child {
-    background: #3b82f6;
-    color: white;
-    border: none;
-  }
-  
-  .auth-buttons-small button:last-child {
-    background: #10b981;
-    color: white;
-    border: none;
-  }
-  
-  .dismiss-btn {
-    background: none;
-    border: none;
-    color: #64748b;
-    font-size: 0.85rem;
-    cursor: pointer;
-    margin-top: 0.5rem;
-  }
-  
-  .dismiss-btn:hover {
-    text-decoration: underline;
-  }
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-    .shop-page {
-      padding: 4rem 4% 3rem;
-    }
-    
-    .shops-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .shops-section h2 {
-      font-size: 1.9rem;
-    }
-  }
+}

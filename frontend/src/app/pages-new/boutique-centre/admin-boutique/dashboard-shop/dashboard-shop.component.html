@@ -17,6 +17,102 @@
     @if (shops.length === 0) {
       <p class="info">Vous n'avez pas encore de salle attribuée.</p>
     } @else {
+      <!-- STATISTIQUES GLOBALES – TOUJOURS AFFICHÉES -->
+      <div class="stats-section">
+        <h2>Vue d'ensemble – Toutes mes boutiques</h2>
+
+        <!-- KPI Cards -->
+        <div class="kpi-row">
+          <div class="kpi-card kpi-green">
+            <div class="kpi-icon">💰</div>
+            <div class="kpi-label">CA aujourd'hui</div>
+            <div class="kpi-value">{{ caToday | number:'1.0-0' }} Ar</div>
+            <div class="kpi-sub" [ngClass]="{'positive': caTodayChange > 0, 'negative': caTodayChange < 0}">
+              {{ caTodayChange > 0 ? '+' : '' }}{{ caTodayChange | number:'1.0-0' }}% vs hier
+            </div>
+          </div>
+
+          <div class="kpi-card kpi-orange" [class.alert]="lowStockCount > 0">
+            <div class="kpi-icon">⚠️</div>
+            <div class="kpi-label">Stock faible</div>
+            <div class="kpi-value">{{ lowStockCount }}</div>
+            <div class="kpi-sub">produits ≤ 5 unités</div>
+          </div>
+
+          <div class="kpi-card kpi-blue">
+            <div class="kpi-icon">📦</div>
+            <div class="kpi-label">Commandes en attente</div>
+            <div class="kpi-value">{{ pendingOrders }}</div>
+            <div class="kpi-sub">à préparer / livrer</div>
+          </div>
+
+          <div class="kpi-card kpi-purple">
+            <div class="kpi-icon">👥</div>
+            <div class="kpi-label">Nouveaux clients</div>
+            <div class="kpi-value">{{ newClients30d }}</div>
+            <div class="kpi-sub">sur 30 jours</div>
+          </div>
+        </div>
+
+        <!-- ALERTES STOCK CRITIQUE + AUTRES -->
+        @if (alerts.length > 0) {
+          <div class="alerts-section">
+            <h3>Alertes importantes</h3>
+            <div class="alert-list">
+              @for (alert of alerts; track $index) {
+                <div class="alert alert-warning">
+                  <span class="alert-icon">⚠️</span>
+                  <span>{{ alert }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Top 5 produits vendus -->
+        <div class="top-products">
+          <h3>Top 5 produits vendus (7 jours) – Toutes boutiques</h3>
+          <div class="top-list">
+            @for (item of topProducts; track item.product._id) {
+              <div class="top-item">
+                <span class="rank">{{ $index + 1 }}</span>
+                <span class="name">{{ item.product.name }}</span>
+                <span class="quantity">{{ item.quantity }} vendus</span>
+              </div>
+            }
+            @if (topProducts.length === 0) {
+              <p class="empty">Aucune vente récente</p>
+            }
+          </div>
+        </div>
+
+        <!-- Dernières commandes -->
+        <div class="recent-orders">
+          <h3>Dernières commandes – Toutes boutiques</h3>
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of recentOrders; track order._id) {
+                <tr>
+                  <td>{{ order.createdAt | date:'short' }}</td>
+                  <td>{{ order.totalPrice | number:'1.0-0' }} Ar</td>
+                  <td [ngClass]="'status-' + order.status">{{ order.status }}</td>
+                </tr>
+              }
+              @if (recentOrders.length === 0) {
+                <tr><td colspan="3" class="empty">Aucune commande récente</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Liste des salles (inchangée) -->
       <div class="shops-list">
         <h2>Vos salles</h2>
         @for (shop of shops; track shop._id) {
@@ -25,7 +121,6 @@
             <p>Superficie : {{ shop.superficie }} m²</p>
             <p>Statut : {{ shop.status }}</p>
 
-            <!-- Boutique de cette salle -->
             @let boutique = boutiquesMap[shop._id];
             @if (boutique) {
               <div class="boutique-info">
@@ -55,7 +150,6 @@
       @if (showCreateBoutique && selectedShop) {
         <div class="create-form">
           <h3>Créer une boutique dans {{ selectedShop.name }}</h3>
-
           <form (ngSubmit)="createBoutique()">
             <div class="form-group">
               <label>Nom :</label>
@@ -114,7 +208,7 @@
         </div>
       }
 
-      <!-- Produits de la boutique sélectionnée -->
+      <!-- Produits de la boutique sélectionnée (conditionnel) -->
       @if (selectedBoutique) {
         <div class="products-section">
           <h2>Produits de {{ selectedBoutique.name }}</h2>
@@ -146,7 +240,7 @@
         
           @if (showCreateProductForm) {
             <app-create-product
-            [boutiqueId]="selectedBoutique!._id"
+              [boutiqueId]="selectedBoutique!._id"
               (productCreated)="onProductCreated($event)"
               (cancel)="showCreateProductForm = false">
             </app-create-product>
@@ -160,7 +254,7 @@
           </app-product-list>
         </div>
       } @else if (shops.length > 0) {
-        <p class="info">Sélectionnez une salle pour voir ou créer sa boutique.</p>
+        <p class="info">Sélectionnez une salle pour gérer ses produits.</p>
       }
     }
   }
