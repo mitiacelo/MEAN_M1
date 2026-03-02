@@ -7,6 +7,7 @@ import { CartService } from '../../../../../services/cart.service';
 import { AuthService } from '../../../../../services/auth.service';
 import { HeaderComponent } from '../../../../../components-new/layouts/header/header.component';
 import { FavoriteService, Favorite } from '../../../../../services/favorite.service';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'app-boutiques-details',
@@ -24,6 +25,7 @@ export class BoutiqueDetailsComponent implements OnInit {
   cartHasItems = false;
   favorites: Favorite[] = [];
   loadingFavorites = true;
+  environment = environment;
 
   constructor(
     public authService: AuthService,
