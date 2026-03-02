@@ -44,5 +44,7 @@ if (require.main === module) {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
 }
+const connectDB = require('./db');
+connectDB();
 
 module.exports = app;
