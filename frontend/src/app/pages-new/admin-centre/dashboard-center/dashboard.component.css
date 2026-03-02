@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════
-   DASHBOARD — Design System v2
+DASHBOARD — Design System v2
    Primaire   : #2E2E54
    Accent     : #FE8804
    Jaune      : #FFCC01
@@ -14,6 +14,7 @@
 /* ────────────────────────────────────────────
    BASE
 ──────────────────────────────────────────── */
+
 .dashboard {
   padding: 32px 36px;
   max-width: 1320px;
@@ -34,7 +35,6 @@
   align-items: center;
   justify-content: space-between;
 }
-
 .dash-header h2 {
   font-size: 28px;
   font-weight: 800;
@@ -42,7 +42,6 @@
   margin: 0 0 4px;
   letter-spacing: -.03em;
 }
-
 .dash-subtitle {
   font-size: 13px;
   color: #9098A3;
@@ -80,7 +79,6 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(254,136,4,.45);
 }
-
 .btn-link {
   background: none;
   border: none;
@@ -93,11 +91,8 @@
   transition: color .15s;
   white-space: nowrap;
 }
+.btn-link:hover { color: #a06030; }
 .btn-link:hover { color: #c06000; }
-
-/* ────────────────────────────────────────────
-   KPI CARDS
-──────────────────────────────────────────── */
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -261,7 +256,6 @@
   gap: 16px;
   align-items: stretch;
 }
-
 .chart-card {
   background: #FFFFFF;
   border: none;
@@ -273,7 +267,6 @@
   position: relative;
   box-shadow: 0 2px 12px rgba(0,0,0,.06);
 }
-
 .chart-header {
   display: flex;
   align-items: flex-start;
@@ -290,7 +283,6 @@
   color: #9098A3;
   margin: 0;
 }
-
 .chart-wrap { position: relative; height: 210px; }
 .chart-wrap--donut {
   height: 190px;
@@ -299,7 +291,6 @@
   justify-content: center;
 }
 .chart-wrap--incidents { height: 170px; }
-
 .donut-center {
   position: absolute;
   top: 50%;
@@ -324,17 +315,15 @@
   text-transform: uppercase;
   letter-spacing: .06em;
 }
-
 /* ────────────────────────────────────────────
-   BOTTOM ROW
-──────────────────────────────────────────── */
+ BOTTOM ROW
+════════════════════════════════ */
 .bottom-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
   align-items: flex-start;
 }
-
 .section-card {
   background: #FFFFFF;
   border: none;
@@ -357,7 +346,6 @@
   color: #2E2E54;
   margin: 0;
 }
-
 .activity-ok {
   font-size: 12px;
   color: #16A34A;
@@ -367,7 +355,6 @@
   align-items: center;
   gap: 6px;
 }
-
 .chart-placeholder {
   display: flex;
   align-items: center;
@@ -377,7 +364,6 @@
 .placeholder-content { text-align: center; color: #9098A3; }
 .placeholder-icon    { font-size: 40px; display: block; margin-bottom: 10px; }
 .placeholder-content p { font-size: 12px; margin: 0; font-weight: 500; }
-
 /* ── Loyer rows ── */
 .loyer-row {
   display: flex;
@@ -419,12 +405,8 @@
 .ticket-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid #F8F8F8;
 }
 .ticket-row:last-child { border-bottom: none; }
-
 .ticket-icon {
   font-size: 20px;
   width: 38px;
@@ -436,7 +418,6 @@
   justify-content: center;
   flex-shrink: 0;
 }
-
 .ticket-info  { flex: 1; min-width: 0; }
 .ticket-titre { font-size: 12px; font-weight: 600; color: #2E2E54; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ticket-shop  { font-size: 11px; color: #FE8804; font-weight: 500; margin-top: 2px; }
@@ -462,7 +443,6 @@
   justify-content: center;
   padding: 10px 0 6px;
 }
-
 .grille-table { border-collapse: separate; border-spacing: clamp(3px, 0.4vw, 6px); }
 .grille-table th, .grille-table td {
   --cell-size: calc(min(55vw, 40vh) / max(var(--colonnes, 5), var(--lignes, 5)) - 6px);

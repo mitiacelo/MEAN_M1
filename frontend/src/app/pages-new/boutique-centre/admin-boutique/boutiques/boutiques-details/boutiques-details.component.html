@@ -24,13 +24,13 @@
           @for (product of products; track product._id) {
             <div class="product-card">
               <!-- Image principale -->
-              <img 
+              <!-- <img 
               *ngIf="product.images?.length" 
               [src]="product.images[0]" 
               alt="{{ product.name }}" 
               class="product-image"
               />
-              <div *ngIf="!product.images?.length" class="placeholder-image">Pas d'image</div>
+              <div *ngIf="!product.images?.length" class="placeholder-image">Pas d'image</div> -->
               <h3>{{ product.name }}</h3>
               <p class="description">{{ product.description || 'Pas de description' }}</p>
               <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
