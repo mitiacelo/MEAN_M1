@@ -10,25 +10,22 @@
     } @else {
       <span class="welcome">Bonjour {{ authService.currentUser?.firstname }}</span>
 
-      <!-- BOUTON "MA BOUTIQUE" uniquement pour les managers -->
+      <!-- ADMIN : uniquement le bouton dashboard -->
+      @if (authService.hasRole('admin')) {
+        <button class="my-shop-btn" routerLink="/dashboard">Dashboard</button>
+      }
+
+      <!-- MANAGER : bouton ma boutique -->
       @if (authService.hasRole('manager')) {
-        <button class="my-shop-btn" routerLink="/dashboard-shop">
-          Ma boutique
-        </button>
+        <button class="my-shop-btn" routerLink="/dashboard-shop">Ma boutique</button>
       }
 
-      <!-- Bouton Mon panier (utilisateurs normaux) -->
-      @if (authService.isLoggedIn) {
+      <!-- USER uniquement : commandes, panier, favoris -->
+      @if (!authService.hasRole('admin') && !authService.hasRole('manager')) {
         <button routerLink="/orders">Mes commandes</button>
-        @if (authService.hasRole('user')) {
-          <button routerLink="/cart">Mon panier</button>
-        }
+        <button routerLink="/cart">Mon panier</button>
+        <button class="favorites-btn" routerLink="/favorites">Mes favoris</button>
       }
-
-      <!-- Nouveau bouton Favoris -->
-      <button class="favorites-btn" routerLink="/favorites">
-        Mes favoris
-      </button>
 
       <button class="logout-btn" (click)="authService.logout()">Déconnexion</button>
     }

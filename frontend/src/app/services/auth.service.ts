@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { Router } from '@angular/router';               // ← AJOUTÉ
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -51,13 +51,11 @@ export class AuthService {
         const user = res.user as User;
         this.currentUserSubject.next(user);
 
-        // REDIRECTION INTELLIGENTE APRÈS LOGIN
         if (user?.role === 'manager' && user?.id_shop) {
           this.router.navigate(['/dashboard-shop']);
         } else if (user?.role === 'admin') {
           this.router.navigate(['/dashboard']);
         } else {
-          
           this.router.navigate(['/landing']);
         }
       })
@@ -65,12 +63,20 @@ export class AuthService {
   }
 
   logout() {
+    const role = this.currentUser?.role; // sauvegarder avant de vider
+
     if (this.isBrowser) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     }
     this.currentUserSubject.next(null);
-    this.router.navigate(['/landing']);
+
+    // Admin/manager → login, pas landing
+    if (role === 'admin' || role === 'manager') {
+      this.router.navigate(['/login']);
+    } else {
+      this.router.navigate(['/landing']);
+    }
   }
 
   get token(): string | null {
@@ -101,7 +107,6 @@ export class AuthService {
         }
         this.currentUserSubject.next(response.user);
 
-        
         const user = response.user as User;
         if (user?.role === 'manager' && user?.id_shop) {
           this.router.navigate(['/dashboard-shop']);
@@ -119,6 +124,6 @@ export class AuthService {
   hasRole(role: string): boolean {
     const user = this.currentUser;
     if (!user || !user.role) return false;
-    return user.role === role || user.role.includes(role); // au cas où c'est un tableau
+    return user.role === role || user.role.includes(role);
   }
 }
