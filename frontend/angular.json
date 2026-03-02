@@ -30,7 +30,7 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "outputMode": "static"
+            "prerender": false
           },
           "configurations": {
             "production": {
