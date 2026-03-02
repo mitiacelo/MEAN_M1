@@ -1,5 +1,5 @@
 <div class="create-product-form">
-    <h2>Ajouter un produit</h2>
+    <h2>Ajouter un produitttttt</h2>
   
     @if (error) {
       <p class="error">{{ error }}</p>
@@ -7,6 +7,10 @@
   
     <form (ngSubmit)="submit()">
       <div class="form-group">
+        <input type="file" (change)="onFilesSelected($event)" multiple />
+        <div *ngFor="let img of imagePreviews">
+          <img [src]="img" alt="Preview" class="preview-img" />
+        </div>
         <label>Nom :</label>
         <input [(ngModel)]="product.name" name="name" required />
       </div>

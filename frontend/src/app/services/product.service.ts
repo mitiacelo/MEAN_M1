@@ -11,7 +11,8 @@ export interface Product {
   id_category: any;
   quantite: number;
   prix_actuel?: number;
-  id_boutique: any;  // ← changé ici
+  id_boutique: any;
+  images?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -29,9 +30,9 @@ export class ProductService {
     return this.http.get<Product>(`${environment.apiUrl}/products/${id}`);
   }
 
-  createProduct(product: Partial<Product>): Observable<Product> {
-    return this.http.post<Product>(`${environment.apiUrl}/products`, product);
-  }
+createProduct(product: Partial<Product> | FormData) : Observable<Product> {
+  return this.http.post<Product>(`${environment.apiUrl}/products`, product);
+}
 
   updateProduct(id: string, product: Partial<Product>): Observable<Product> {
     return this.http.put<Product>(`${environment.apiUrl}/products/${id}`, product);

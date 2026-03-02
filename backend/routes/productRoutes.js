@@ -8,51 +8,39 @@ const Domaine = require('../models/Domaine');
 const Shop = require('../models/Shop');
 const StockMouvement = require('../models/StockMouvement');
 const PriceProduct = require('../models/PriceProduct');
-
-// POST /api/products → Créer un produit + stock initial + prix initial
-router.post('/', async (req, res) => {
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+  
+router.post('/', upload.array('images', 5), async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      id_type,
-      id_boutique,
-      quantite = 0,
-      prix
-    } = req.body;
+    const { name, description, id_type, id_boutique, quantite = 0, prix } = req.body;
 
     if (!name || !id_type || !id_boutique) {
       return res.status(400).json({ message: 'Nom, type et boutique obligatoires' });
     }
+
+    const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
     const product = new Product({
       name,
       description: description || '',
       id_type,
       id_boutique,
-      quantite: Number(quantite)
+      quantite: Number(quantite),
+      images: imagePaths  // ← ajout des images
     });
 
     await product.save();
 
-    // Stock initial
+    // Stock initial et prix (inchangé)
     if (quantite > 0) {
-      await new StockMouvement({
-        id_produit: product._id,
-        type: 'entree',
-        quantite: Number(quantite),
-        stock_apres: Number(quantite)
-      }).save();
+      await new StockMouvement({ id_produit: product._id, type: 'entree', quantite: Number(quantite), stock_apres: Number(quantite) }).save();
     }
-
-    // Prix initial
-    await new PriceProduct({
-      id_product: product._id,
-      prix: Number(prix)
-    }).save();
+    await new PriceProduct({ id_product: product._id, prix: Number(prix) }).save();
 
     const populated = await Product.findById(product._id).populate('id_type', 'name');
     res.status(201).json(populated);
+
   } catch (err) {
     console.error('Erreur création produit :', err.message);
     res.status(400).json({ message: err.message });

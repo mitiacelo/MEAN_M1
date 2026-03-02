@@ -43,6 +43,20 @@ export class CreateProductComponent {
     this.loadTypes();
   }
 
+  selectedFiles: File[] = [];
+  imagePreviews: string[] = [];
+
+  onFilesSelected(event: any) {
+    this.selectedFiles = Array.from(event.target.files);
+    this.imagePreviews = [];
+
+    for (let file of this.selectedFiles) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => this.imagePreviews.push(e.target.result);
+      reader.readAsDataURL(file);
+    }
+  }
+
   private loadTypes() {
     this.typeService.getAllTypes().subscribe({
       next: (types) => this.types = types,
@@ -55,25 +69,28 @@ export class CreateProductComponent {
       this.error = 'Tous les champs obligatoires doivent être remplis';
       return;
     }
-
+  
     if (!this.boutiqueId) {
       this.error = 'Aucune boutique sélectionnée';
       return;
     }
-
-    const payload = {
-      name: this.product.name,
-      description: this.product.description || '',
-      id_type: this.product.id_type,
-      id_category: this.product.id_category || null, // ou supprime si non utilisé
-      id_boutique: this.boutiqueId,  // ← CHANGEMENT IMPORTANT
-      quantite: Number(this.product.quantite),
-      prix: Number(this.product.prix)
-    };
-
-    console.log('Payload envoyé au backend :', payload);
-
-    this.productService.createProduct(payload).subscribe({
+  
+    // Création du FormData
+    const formData = new FormData();
+    formData.append('name', this.product.name);
+    formData.append('description', this.product.description || '');
+    formData.append('id_type', this.product.id_type);
+    formData.append('id_boutique', this.boutiqueId);
+    formData.append('quantite', this.product.quantite.toString());
+    formData.append('prix', this.product.prix.toString());
+  
+    // Ajout des fichiers images sélectionnés
+    for (let file of this.selectedFiles) {
+      formData.append('images', file);
+    }
+  
+    // Envoi au backend via le service ProductService
+    this.productService.createProduct(formData).subscribe({
       next: (newProduct) => {
         console.log('Produit créé avec succès :', newProduct);
         this.productCreated.emit(newProduct);
