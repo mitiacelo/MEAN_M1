@@ -3,10 +3,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*'
+}));
 app.use(express.json());
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -35,6 +36,13 @@ app.use('/orders', require('./routes/orderRoutes'));
 app.use('/purchases', require('./routes/purchaseRoutes'));
 app.use('/contracts', require('./routes/contractRoutes'));
 app.use('/loyers', require('./routes/loyerRoutes'));
-app.use('/maintenance', require('./routes/maintenanceRoutes')); 
+app.use('/maintenance', require('./routes/maintenanceRoutes'));
 app.use('/favorites', require('./routes/favoriteRoutes'));
-app.listen(PORT, () => console.log(`Serveur démarré sur le port ${PORT}`));
+
+// ✅ AJOUT ICI — important pour Vercel
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
+}
+
+module.exports = app;

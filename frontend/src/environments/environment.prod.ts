@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://api.monsite.com' // URL pour la production
-   };
+    apiUrl: 'https://TON-PROJET.vercel.app/api' // ← on mettra la vraie URL après
+  };
