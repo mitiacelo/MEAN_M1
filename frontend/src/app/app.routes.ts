@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  // Route par défaut
-  { path: '', redirectTo: 'grille', pathMatch: 'full' },
+  // Route par défaut → landing
+  { path: '', redirectTo: 'landing', pathMatch: 'full' },
 
   // Pages publiques / auth
   {
@@ -33,12 +34,15 @@ export const routes: Routes = [
         .then(m => m.SalleDetailsComponent)
   },
 
-  // Routes encadrées par le layout admin
+  // ══════════════════════════════════════════════
+  // Routes ADMIN — protégées par adminGuard
+  // ══════════════════════════════════════════════
   {
     path: '',
     loadComponent: () =>
       import('./components-new/layouts/header/header-admin/header-admin.component')
         .then(m => m.AdminLayoutComponent),
+    canActivate: [adminGuard],          // ← guard sur le layout parent
     children: [
       {
         path: 'dashboard',
@@ -62,7 +66,7 @@ export const routes: Routes = [
             .then(m => m.LocationComponent)
       },
       {
-        path: 'maintenance',                                          // ← AJOUT
+        path: 'maintenance',
         loadComponent: () =>
           import('./pages-new/admin-centre/maintenance/maintenance.component')
             .then(m => m.MaintenanceComponent)
