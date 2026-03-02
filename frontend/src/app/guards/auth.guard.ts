@@ -5,18 +5,29 @@ import { AuthService } from '../services/auth.service';
 export const adminGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);
+  const user   = auth.currentUser;
 
-  const user = auth.currentUser;
-
-  // Pas connecté → login
   if (!user) {
     router.navigate(['/login']);
     return false;
   }
 
-  // Connecté mais pas admin → landing
   if (user.role !== 'admin') {
     router.navigate(['/landing']);
+    return false;
+  }
+
+  return true;
+};
+
+// Bloque cart, orders, favorites, invoice, order-confirm pour l'admin
+export const customerGuard: CanActivateFn = () => {
+  const auth   = inject(AuthService);
+  const router = inject(Router);
+  const user   = auth.currentUser;
+
+  if (user?.role === 'admin') {
+    router.navigate(['/dashboard']);
     return false;
   }
 

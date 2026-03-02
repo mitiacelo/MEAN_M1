@@ -1,11 +1,10 @@
 import { Routes } from '@angular/router';
-import { adminGuard } from './guards/auth.guard';
+import { adminGuard, customerGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  // Route par défaut → landing
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
 
-  // Pages publiques / auth
+  // Pages publiques — tout le monde peut voir, admin inclus
   {
     path: 'landing',
     loadComponent: () =>
@@ -21,7 +20,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages-new/auth/register/register.component').then(m => m.RegisterComponent)
   },
-
   {
     path: 'salle',
     loadComponent: () =>
@@ -33,6 +31,17 @@ export const routes: Routes = [
       import('./pages-new/boutique-centre/admin-boutique/salle/salle-details/salle-details.component')
         .then(m => m.SalleDetailsComponent)
   },
+  {
+    path: 'boutique/:id',
+    loadComponent: () =>
+      import('./pages-new/boutique-centre/admin-boutique/boutiques/boutiques-details/boutiques-details.component')
+        .then(m => m.BoutiqueDetailsComponent)
+  },
+  {
+    path: 'articles',
+    loadComponent: () =>
+      import('./components/article-list/article-list.component').then(m => m.ArticleListComponent)
+  },
 
   // ══════════════════════════════════════════════
   // Routes ADMIN — protégées par adminGuard
@@ -42,7 +51,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components-new/layouts/header/header-admin/header-admin.component')
         .then(m => m.AdminLayoutComponent),
-    canActivate: [adminGuard],          // ← guard sur le layout parent
+    canActivate: [adminGuard],
     children: [
       {
         path: 'dashboard',
@@ -115,57 +124,54 @@ export const routes: Routes = [
     ]
   },
 
-  // Routes boutique / customer
-  {
-    path: 'articles',
-    loadComponent: () =>
-      import('./components/article-list/article-list.component').then(m => m.ArticleListComponent)
-  },
-  {
-    path: 'shop/:id/admin',
-    loadComponent: () =>
-      import('./pages-new/admin-centre/shop/shop-edit/shop-edit.component').then(m => m.ShopEditComponent)
-  },
-  {
-    path: 'boutique/:id',
-    loadComponent: () =>
-      import('./pages-new/boutique-centre/admin-boutique/boutiques/boutiques-details/boutiques-details.component')
-        .then(m => m.BoutiqueDetailsComponent)
-  },
+  // Routes customer — bloquées pour l'admin
   {
     path: 'cart',
+    canActivate: [customerGuard],
     loadComponent: () =>
       import('./pages-new/boutique-centre/customer-page/cart/cart.component').then(m => m.CartComponent)
   },
   {
     path: 'favorites',
+    canActivate: [customerGuard],
     loadComponent: () =>
       import('./pages-new/boutique-centre/customer-page/favorites/favorites.component').then(m => m.FavoritesComponent)
   },
   {
     path: 'orders',
+    canActivate: [customerGuard],
     loadComponent: () =>
       import('./pages-new/boutique-centre/customer-page/orders/orders.component').then(m => m.OrdersComponent)
   },
   {
     path: 'order-confirm/:id',
+    canActivate: [customerGuard],
     loadComponent: () =>
       import('./pages-new/boutique-centre/customer-page/order-confirm/order-confirm.component')
         .then(m => m.OrderConfirmComponent)
   },
   {
     path: 'invoice/:id',
+    canActivate: [customerGuard],
     loadComponent: () =>
       import('./pages-new/boutique-centre/customer-page/invoice/invoice.component').then(m => m.InvoiceComponent)
   },
   {
     path: 'mon-contrat',
+    canActivate: [customerGuard],
     loadComponent: () =>
       import('./pages-new/admin-centre/contract/contract.component').then(m => m.MonContratComponent)
   },
   {
     path: 'contrat/signer/:token',
+    canActivate: [customerGuard],
     loadComponent: () =>
       import('./pages-new/admin-centre/contract/contract.component').then(m => m.MonContratComponent)
+  },
+  {
+    path: 'shop/:id/admin',
+    canActivate: [customerGuard],
+    loadComponent: () =>
+      import('./pages-new/admin-centre/shop/shop-edit/shop-edit.component').then(m => m.ShopEditComponent)
   }
 ];
