@@ -4,7 +4,7 @@ import { adminGuard, customerGuard } from './guards/auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
 
-  // Pages publiques — tout le monde peut voir, admin inclus
+  // Pages publiques
   {
     path: 'landing',
     loadComponent: () =>
@@ -71,14 +71,18 @@ export const routes: Routes = [
       {
         path: 'location',
         loadComponent: () =>
-          import('./pages-new/admin-centre/location/location.component')
-            .then(m => m.LocationComponent)
+          import('./pages-new/admin-centre/location/location.component').then(m => m.LocationComponent)
       },
       {
         path: 'maintenance',
         loadComponent: () =>
-          import('./pages-new/admin-centre/maintenance/maintenance.component')
-            .then(m => m.MaintenanceComponent)
+          import('./pages-new/admin-centre/maintenance/maintenance.component').then(m => m.MaintenanceComponent)
+      },
+      {
+        path: 'parametres',                                           // ← NOUVEAU
+        loadComponent: () =>
+          import('./pages-new/admin-centre/centre/centre.component')
+            .then(m => m.ParametresCentreComponent)
       }
     ]
   },
@@ -124,7 +128,7 @@ export const routes: Routes = [
     ]
   },
 
-  // Routes customer — bloquées pour l'admin
+  // Routes customer
   {
     path: 'cart',
     canActivate: [customerGuard],

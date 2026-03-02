@@ -12,8 +12,9 @@ import { NotificationService } from '../../../../services/notification.service';
   styleUrls: ['./header-admin.component.css']
 })
 export class AdminLayoutComponent implements OnInit {
-  pendingCount = 0;
-  urgentsCount = 0;
+  centreName: string = 'Mall'; // Ajouté pour le template
+  pendingCount: number = 0;
+  urgentsCount: number = 0;
 
   constructor(
     private notificationService: NotificationService,

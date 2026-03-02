@@ -1,0 +1,149 @@
+<div class="params-page">
+
+    <!-- ── Header ── -->
+    <div class="page-header">
+      <div>
+        <h2>Paramètres du centre</h2>
+        <p class="subtitle">Informations générales de votre centre commercial</p>
+      </div>
+      <button class="btn-save" (click)="save()" [disabled]="saving">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+        </svg>
+        {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+      </button>
+    </div>
+  
+    <!-- ── Loading ── -->
+    <div class="loading" *ngIf="loading">Chargement…</div>
+  
+    <!-- ── Alerts ── -->
+    <div class="alert alert-success" *ngIf="saved">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+      Modifications enregistrées avec succès.
+    </div>
+    <div class="alert alert-error" *ngIf="error">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      {{ error }}
+    </div>
+  
+    <ng-container *ngIf="!loading">
+  
+      <div class="params-grid">
+  
+        <!-- ══════════════════════════════
+             COLONNE GAUCHE : Logo
+        ══════════════════════════════ -->
+        <div class="card logo-card">
+          <div class="card-label">Logo du centre</div>
+  
+          <div class="logo-preview" [class.logo-preview--empty]="!logoPreview">
+            <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo" />
+            <div class="logo-placeholder" *ngIf="!logoPreview">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" style="color:#D0D0D0">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+              <span>Aucun logo</span>
+            </div>
+          </div>
+  
+          <div class="logo-actions">
+            <label class="btn-upload" for="logo-input">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+              Changer le logo
+            </label>
+            <input id="logo-input" type="file" accept="image/*" (change)="onLogoSelected($event)" hidden />
+            <button class="btn-remove-logo" *ngIf="logoPreview" (click)="removeLogo()">Supprimer</button>
+          </div>
+  
+          <p class="logo-hint">PNG, JPG, SVG — max 2 Mo</p>
+        </div>
+  
+        <!-- ══════════════════════════════
+             COLONNE DROITE : Infos
+        ══════════════════════════════ -->
+        <div class="card infos-card">
+  
+          <!-- Identité -->
+          <div class="card-section">
+            <div class="card-label">Identité</div>
+            <div class="form-grid">
+              <div class="form-group form-group--full">
+                <label>Nom du centre <span class="required">*</span></label>
+                <input type="text" [(ngModel)]="centre.nom" placeholder="ex: Mall Antananarivo" />
+              </div>
+              <div class="form-group form-group--full">
+                <label>Slogan</label>
+                <input type="text" [(ngModel)]="centre.slogan" placeholder="ex: Le shopping au cœur de la ville" />
+              </div>
+            </div>
+          </div>
+  
+          <!-- Localisation -->
+          <div class="card-section">
+            <div class="card-label">Localisation</div>
+            <div class="form-grid">
+              <div class="form-group form-group--full">
+                <label>Adresse</label>
+                <input type="text" [(ngModel)]="centre.adresse" placeholder="ex: Lot II J 67 Bis Ampandrana" />
+              </div>
+              <div class="form-group">
+                <label>Ville</label>
+                <input type="text" [(ngModel)]="centre.ville" placeholder="ex: Antananarivo" />
+              </div>
+            </div>
+          </div>
+  
+          <!-- Contact -->
+          <div class="card-section">
+            <div class="card-label">Contact</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Téléphone</label>
+                <input type="tel" [(ngModel)]="centre.telephone" placeholder="ex: +261 20 22 000 00" />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" [(ngModel)]="centre.email" placeholder="ex: contact@mall.mg" />
+              </div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+  
+      <!-- ── Aperçu carte récap ── -->
+      <div class="card preview-card">
+        <div class="card-label">Aperçu — comme affiché dans l'application</div>
+        <div class="preview-block">
+          <div class="preview-logo">
+            <img *ngIf="logoPreview" [src]="logoPreview" alt="logo" />
+            <div class="preview-logo--fallback" *ngIf="!logoPreview">
+              {{ centre.nom ? centre.nom[0] : 'M' }}
+            </div>
+          </div>
+          <div class="preview-infos">
+            <div class="preview-nom">{{ centre.nom || '—' }}</div>
+            <div class="preview-slogan" *ngIf="centre.slogan">{{ centre.slogan }}</div>
+            <div class="preview-meta">
+                <span *ngIf="centre.adresse || centre.ville">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
+                    </svg>
+                    {{ getAdresseComplete() }}
+                  </span>
+              <span *ngIf="centre.telephone">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>
+                {{ centre.telephone }}
+              </span>
+              <span *ngIf="centre.email">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                {{ centre.email }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </ng-container>
+  </div>

@@ -156,3 +156,10 @@
   min-width: 0;
   overflow-y: auto;
 }
+
+/* Séparateur nav */
+.nav-separator {
+  height: 1px;
+  background: rgba(255,255,255,.08);
+  margin: 6px 4px;
+}
