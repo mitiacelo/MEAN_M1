@@ -39,12 +39,8 @@ app.use('/loyers', require('./routes/loyerRoutes'));
 app.use('/maintenance', require('./routes/maintenanceRoutes'));
 app.use('/favorites', require('./routes/favoriteRoutes'));
 
-// ✅ AJOUT ICI — important pour Vercel
-if (require.main === module) {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
-}
-const connectDB = require('./db');
-connectDB();
+// Lancer le serveur (Render peut utiliser PORT dynamique)
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
 
 module.exports = app;
