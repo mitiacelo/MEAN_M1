@@ -12,13 +12,13 @@ import { environment } from '../../../../../../environments/environment';
 @Component({
   selector: 'app-boutiques-details',
   standalone: true,
-  imports: [CommonModule, RouterLink,HeaderComponent],
+  imports: [CommonModule, RouterLink, HeaderComponent],
   templateUrl: './boutiques-details.component.html',
-  styleUrl: './boutiques-details.component.css'
+  styleUrls: ['./boutiques-details.component.css']
 })
 export class BoutiqueDetailsComponent implements OnInit {
   boutique: Boutique | null = null;
-  products: Product[] = [];
+  products: (Product & { mainImage: string })[] = []; // <-- ajout mainImage
   loading = true;
   showLoginMessageForCart = false;
   error = '';
@@ -53,11 +53,15 @@ export class BoutiqueDetailsComponent implements OnInit {
         if (boutique.id_shop?._id) {
           this.productService.getProductsByBoutique(boutique._id).subscribe({
             next: (products: Product[]) => {
-              this.products = products;
-              console.log(`Produits chargés pour boutique ${boutique.name} : ${products.length}`);
+              // Préparer mainImage pour chaque produit
+              this.products = products.map(p => ({
+                ...p,
+                mainImage: p.images?.[0] ? `${environment.apiUrl}${p.images[0]}` : ''
+              }));
             },
             error: (err: any) => {
               console.error('Erreur chargement produits boutique', err);
+              this.products = [];
             }
           });
         }
@@ -77,6 +81,7 @@ export class BoutiqueDetailsComponent implements OnInit {
       });
     }
   }
+
   loadFavorites() {
     if (!this.authService.isLoggedIn) {
       this.loadingFavorites = false;
@@ -111,7 +116,6 @@ export class BoutiqueDetailsComponent implements OnInit {
     } else {
       this.favoriteService.addToFavorites(productId).subscribe({
         next: () => {
-          // Recharge ou ajoute localement
           this.loadFavorites();
           alert('Ajouté aux favoris');
         },
@@ -133,7 +137,7 @@ export class BoutiqueDetailsComponent implements OnInit {
     this.cartService.addToCart(product._id, 1).subscribe({
       next: () => {
         alert(`${product.name} ajouté au panier !`);
-        this.cartHasItems = true;  // ← on suppose qu'il y a au moins 1 article maintenant
+        this.cartHasItems = true;
       },
       error: (err) => {
         if (err.status === 401) {
@@ -143,5 +147,8 @@ export class BoutiqueDetailsComponent implements OnInit {
         }
       }
     });
+  }
+  trackByProductId(index: number, product: Product & { mainImage?: string }): string {
+    return product._id;
   }
 }

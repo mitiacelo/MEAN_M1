@@ -11,7 +11,7 @@ import { ShopService, Shop } from '../../../../services/shop.service';
 import { AuthService } from '../../../../services/auth.service';
 import { CreateProductComponent } from '../../../boutique-centre/admin-boutique/product/create-product/create-product.component';
 import { ProductListComponent } from '../../../boutique-centre/admin-boutique/product/product-list/product-list.component';
-import * as XLSX from 'xlsx';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-boutique-manager',
@@ -28,7 +28,7 @@ import * as XLSX from 'xlsx';
 export class BoutiqueManagerComponent implements OnInit {
   selectedBoutique: Boutique | null = null;
   selectedShop: Shop | null = null;
-  products: Product[] = [];
+  products: (Product & { mainImage: string })[] = [];
   types: Type[] = [];
   domaines: Domaine[] = [];
   loading = true;
@@ -38,6 +38,8 @@ export class BoutiqueManagerComponent implements OnInit {
   importLoading = false;
   importError: string = '';
   importSuccess: string = '';
+
+  environment = environment; // pour accès direct dans le template
 
   constructor(
     private route: ActivatedRoute,
@@ -64,12 +66,13 @@ export class BoutiqueManagerComponent implements OnInit {
           return [];
         }
         this.loading = true;
-        return this.boutiqueService.getBoutiqueById(boutiqueId); // suppose que tu as cette méthode
+        return this.boutiqueService.getBoutiqueById(boutiqueId);
       })
     ).subscribe({
       next: (boutique: Boutique | null) => {
         if (boutique) {
           this.selectedBoutique = boutique;
+
           // Charger la salle associée
           if (boutique.id_shop?._id) {
             this.shopService.getShopById(boutique.id_shop._id).subscribe({
@@ -77,6 +80,8 @@ export class BoutiqueManagerComponent implements OnInit {
               error: () => this.selectedShop = null
             });
           }
+
+          // Charger produits et préparer mainImage
           this.loadProducts(boutique._id);
         } else {
           this.errorMessage = 'Boutique non trouvée';
@@ -93,7 +98,10 @@ export class BoutiqueManagerComponent implements OnInit {
   private loadProducts(boutiqueId: string): void {
     this.productService.getProductsByBoutique(boutiqueId).subscribe({
       next: prods => {
-        this.products = prods;
+        this.products = prods.map(p => ({
+          ...p,
+          mainImage: p.images?.[0] ? `${environment.apiUrl}${p.images[0]}` : ''
+        }));
         this.loading = false;
       },
       error: err => {
@@ -104,15 +112,22 @@ export class BoutiqueManagerComponent implements OnInit {
     });
   }
 
-  // Gestion produits (identique à salle-manager et dashboard-shop)
   onProductCreated(product: Product): void {
-    this.products.push(product);
+    this.products.push({
+      ...product,
+      mainImage: product.images?.[0] ? `${environment.apiUrl}${product.images[0]}` : ''
+    });
     this.showCreateProductForm = false;
   }
 
   onProductUpdated(updated: Product): void {
     const index = this.products.findIndex(p => p._id === updated._id);
-    if (index !== -1) this.products[index] = updated;
+    if (index !== -1) {
+      this.products[index] = {
+        ...updated,
+        mainImage: updated.images?.[0] ? `${environment.apiUrl}${updated.images[0]}` : ''
+      };
+    }
   }
 
   onProductDeleted(id: string): void {
@@ -120,8 +135,6 @@ export class BoutiqueManagerComponent implements OnInit {
   }
 
   onFileSelected(event: Event): void {
-    // Copie ta méthode onFileSelected complète ici (parsing CSV + import)
-    // ... colle-la telle quelle depuis dashboard-shop ...
-    // N'oublie pas d'utiliser this.selectedBoutique!._id
+    // Implémentation de l'import CSV / XLSX
   }
 }

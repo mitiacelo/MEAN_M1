@@ -1,94 +1,75 @@
 <div class="boutique-details-container">
+  <!-- Header -->
   <app-header></app-header>
-  @if (loading) {
-    <p class="loading">Chargement de la boutique...</p>
-  } @else if (error) {
-    <p class="error">{{ error }}</p>
-  } @else if (boutique) {
+
+  <!-- Loading / Error -->
+  <p *ngIf="loading" class="loading">Chargement de la boutique...</p>
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <!-- Boutique -->
+  <div *ngIf="boutique">
     <header class="boutique-header">
       <h1>{{ boutique.name }}</h1>
       <p class="domaine">{{ boutique.id_domaine?.name || 'Domaine non défini' }}</p>
       <p class="description">{{ boutique.description || 'Aucune description disponible' }}</p>
       <p class="salle">
-        Située dans la salle : {{ boutique.id_shop?.name }} ({{ boutique.id_shop?.superficie }} m²)
+        Située dans la salle : {{ boutique.id_shop?.name || 'Non rattachée' }}
+        <span *ngIf="boutique.id_shop?.superficie">({{ boutique.id_shop?.superficie }} m²)</span>
       </p>
     </header>
 
+    <!-- Produits -->
     <section class="products-section">
       <h2>Produits disponibles</h2>
 
-      @if (products.length === 0) {
-        <p class="empty">Aucun produit disponible pour le moment.</p>
-      } @else {
-        <div class="products-grid">
-          @for (product of products; track product._id) {
-            <div class="product-card">
-              <!-- Image principale -->
-              <!-- <img 
-                *ngIf="product.images?.length" 
-                [src]="environment.apiUrl + (product.images[0] || '')" 
-                alt="{{ product.name }}" 
-                class="product-image"
-              /> -->
-              <div *ngIf="!product.images?.length" class="placeholder-image">Pas d'image</div>
-              <div *ngIf="!product.images?.length" class="placeholder-image">Pas d'image</div> -->
-              <h3>{{ product.name }}</h3>
-              <p class="description">{{ product.description || 'Pas de description' }}</p>
-              <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
+      <p *ngIf="products.length === 0" class="empty">Aucun produit disponible pour le moment.</p>
 
-              <!-- Prix actuel -->
-              <p class="prix">
-                Prix : 
-                <strong>
-                  {{ product.prix_actuel ? (product.prix_actuel | currency:'Ar':'symbol':'1.0-0') : 'Non défini' }}
-                </strong>
-              </p>
+      <div class="products-grid">
+        <div *ngFor="let product of products; trackBy: trackByProductId" class="product-card">
+          
+          <!-- Image principale -->
+          <img *ngIf="product.mainImage" [src]="product.mainImage" alt="{{ product.name }}" class="product-image" />
+          <div *ngIf="!product.mainImage" class="placeholder-image">Pas d'image</div>
 
-              <!-- Stock (optionnel : tu peux l'ajouter si tu le souhaites) -->
-              <p class="stock">
-                Stock : {{ product.quantite }} unités
-              </p>
+          <!-- Infos produit -->
+          <h3>{{ product.name }}</h3>
+          <p class="description">{{ product.description || 'Pas de description' }}</p>
+          <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
+          <p class="prix">
+            Prix : <strong>{{ product.prix_actuel ? (product.prix_actuel | currency:'Ar':'symbol':'1.0-0') : 'Non défini' }}</strong>
+          </p>
+          <p class="stock">Stock : {{ product.quantite }} unités</p>
 
-              <!-- Bouton Ajouter au panier -->
-              <button 
-                class="add-to-cart-btn" 
-                (click)="addToCart(product)"
-                [disabled]="product.quantite <= 0">
-                Ajouter au panier
-              </button>
+          <!-- Actions -->
+          <button class="add-to-cart-btn" (click)="addToCart(product)" [disabled]="product.quantite <= 0">
+            Ajouter au panier
+          </button>
 
-              <button 
-              class="favorite-btn"
-              (click)="toggleFavorite(product._id)"
-              [class.active]="isFavorite(product._id)">
-              <span class="heart-icon">{{ isFavorite(product._id) ? '❤️' : '♡' }}</span>
-            </button>
+          <button class="favorite-btn" (click)="toggleFavorite(product._id)" [class.active]="isFavorite(product._id)">
+            <span class="heart-icon">{{ isFavorite(product._id) ? '❤️' : '♡' }}</span>
+          </button>
 
-              @if (cartHasItems && authService.isLoggedIn) {
-                <button class="view-cart-btn" routerLink="/cart">
-                  Voir le panier →
-                </button>
-              }
-              
-              @if (showLoginMessageForCart) {
-                <div class="login-required-message">
-                  <p>Vous devez être connecté pour ajouter des produits au panier.</p>
-                  <div class="auth-buttons-small">
-                    <button routerLink="/login">Se connecter</button>
-                    <button routerLink="/register">S'inscrire</button>
-                  </div>
-                  <button class="dismiss-btn" (click)="showLoginMessageForCart = false">Fermer</button>
-                </div>
-              }
-              <button class="view-btn" [routerLink]="['/product', product._id]">
-                Voir le produit
-              </button>
+          <button *ngIf="cartHasItems && authService.isLoggedIn" class="view-cart-btn" routerLink="/cart">
+            Voir le panier →
+          </button>
+
+          <div *ngIf="showLoginMessageForCart" class="login-required-message">
+            <p>Vous devez être connecté pour ajouter des produits au panier.</p>
+            <div class="auth-buttons-small">
+              <button routerLink="/login">Se connecter</button>
+              <button routerLink="/register">S'inscrire</button>
             </div>
-          }
+            <button class="dismiss-btn" (click)="showLoginMessageForCart = false">Fermer</button>
+          </div>
+
+          <button class="view-btn" [routerLink]="['/product', product._id]">
+            Voir le produit
+          </button>
         </div>
-      }
+      </div>
     </section>
 
+    <!-- Bouton retour -->
     <button class="back-btn" routerLink="/landing">Retour à l'accueil</button>
-  }
+  </div>
 </div>

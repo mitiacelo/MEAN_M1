@@ -1,51 +1,54 @@
 <div class="boutique-manager">
-    @if (loading) {
-      <p>Chargement de la boutique...</p>
-    } @else if (errorMessage) {
-      <p class="error">{{ errorMessage }}</p>
-    } @else if (selectedBoutique) {
-      <div class="boutique-header">
-        <h1>{{ selectedBoutique.name }}</h1>
-        <div class="boutique-info">
-          <p>Domaine : {{ selectedBoutique.id_domaine?.name || 'Non défini' }}</p>
-          <p>Salle : {{ selectedShop?.name || 'Non rattachée' }}</p>
-          <p>{{ selectedBoutique.description || 'Aucune description' }}</p>
+  <p *ngIf="loading">Chargement de la boutique...</p>
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+
+  <div *ngIf="selectedBoutique">
+    <div class="boutique-header">
+      <h1>{{ selectedBoutique.name }}</h1>
+      <div class="boutique-info">
+        <p>Domaine : {{ selectedBoutique.id_domaine?.name || 'Non défini' }}</p>
+        <p>Salle : {{ selectedShop?.name || 'Non rattachée' }}</p>
+        <p>{{ selectedBoutique.description || 'Aucune description' }}</p>
+      </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="actions">
+      <button class="btn primary" (click)="showCreateProductForm = !showCreateProductForm">
+        {{ showCreateProductForm ? 'Fermer' : 'Ajouter un produit' }}
+      </button>
+      <button class="btn secondary" (click)="fileInput.click()" [disabled]="importLoading">
+        {{ importLoading ? 'Import en cours...' : 'Importer CSV / Excel' }}
+      </button>
+      <input type="file" #fileInput accept=".csv,.xlsx" (change)="onFileSelected($event)" style="display:none;">
+    </div>
+
+    <!-- Formulaire ajout produit -->
+    <app-create-product
+      *ngIf="showCreateProductForm"
+      [boutiqueId]="selectedBoutique._id"
+      (productCreated)="onProductCreated($event)"
+      (cancel)="showCreateProductForm = false">
+    </app-create-product>
+
+    <!-- Liste produits -->
+    <div class="products-section">
+      <h2>Produits</h2>
+
+      <div *ngIf="products.length === 0">Aucun produit disponible</div>
+
+      <div class="products-grid">
+        <div class="product-card" *ngFor="let product of products">
+          <img *ngIf="product.mainImage" [src]="product.mainImage" [alt]="product.name" class="product-image">
+          <div *ngIf="!product.mainImage" class="placeholder-image">Pas d'image</div>
+
+          <h3>{{ product.name }}</h3>
+          <p class="description">{{ product.description || 'Pas de description' }}</p>
+          <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
+          <p class="prix">Prix : {{ product.prix_actuel ? (product.prix_actuel | currency:'Ar':'symbol':'1.0-0') : 'Non défini' }}</p>
+          <p class="stock">Stock : {{ product.quantite }} unités</p>
         </div>
       </div>
-  
-      <!-- Actions rapides -->
-      <div class="actions">
-        <button class="btn primary" (click)="showCreateProductForm = !showCreateProductForm">
-          {{ showCreateProductForm ? 'Fermer' : 'Ajouter un produit' }}
-        </button>
-  
-        <button class="btn secondary" (click)="fileInput.click()" [disabled]="importLoading">
-          {{ importLoading ? 'Import en cours...' : 'Importer CSV / Excel' }}
-        </button>
-  
-        <input type="file" #fileInput accept=".csv,.xlsx" (change)="onFileSelected($event)" style="display: none;" />
-      </div>
-  
-      <!-- Formulaire ajout produit -->
-      @if (showCreateProductForm) {
-        <app-create-product
-          [boutiqueId]="selectedBoutique._id"
-          (productCreated)="onProductCreated($event)"
-          (cancel)="showCreateProductForm = false">
-        </app-create-product>
-      }
-  
-      <!-- Liste produits -->
-      <div class="products-section">
-        <h2>Produits</h2>
-        <app-product-list
-          [products]="products"
-          [types]="types"
-          (productUpdated)="onProductUpdated($event)"
-          (productDeleted)="onProductDeleted($event)">
-        </app-product-list>
-      </div>
-    } @else {
-      <p>Aucune boutique sélectionnée.</p>
-    }
+    </div>
   </div>
+</div>
