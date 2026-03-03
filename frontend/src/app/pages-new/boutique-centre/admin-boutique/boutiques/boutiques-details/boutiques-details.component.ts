@@ -56,7 +56,7 @@ export class BoutiqueDetailsComponent implements OnInit {
               // Préparer mainImage pour chaque produit
               this.products = products.map(p => ({
                 ...p,
-                mainImage: p.images?.[0] ? `${environment.apiUrl}${p.images[0]}` : ''
+                mainImage: p.images?.[0] || ''
               }));
             },
             error: (err: any) => {

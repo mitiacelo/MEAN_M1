@@ -11,7 +11,7 @@ const PriceProduct = require('../models/PriceProduct');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
   
-router.post('/', upload.array('images', 5), async (req, res) => {
+router.post('/', parser.array('images', 5), async (req, res) => {
   try {
     const { name, description, id_type, id_boutique, quantite = 0, prix } = req.body;
 
@@ -19,7 +19,8 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       return res.status(400).json({ message: 'Nom, type et boutique obligatoires' });
     }
 
-    const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    // Récupérer les URLs Cloudinary
+    const imageUrls = req.files ? req.files.map(file => file.path) : [];
 
     const product = new Product({
       name,
@@ -27,12 +28,12 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       id_type,
       id_boutique,
       quantite: Number(quantite),
-      images: imagePaths  // ← ajout des images
+      images: imageUrls  // ← stocker les URLs Cloudinary
     });
 
     await product.save();
 
-    // Stock initial et prix (inchangé)
+    // Stock initial et prix
     if (quantite > 0) {
       await new StockMouvement({ id_produit: product._id, type: 'entree', quantite: Number(quantite), stock_apres: Number(quantite) }).save();
     }

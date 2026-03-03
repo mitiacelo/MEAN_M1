@@ -52,11 +52,9 @@ export class BoutiqueManagerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Charger types et domaines
     this.typeService.getAllTypes().subscribe(t => this.types = t);
     this.domaineService.getAllDomaines().subscribe(d => this.domaines = d);
 
-    // Charger la boutique via l'ID dans l'URL
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const boutiqueId = params.get('id');
@@ -73,7 +71,6 @@ export class BoutiqueManagerComponent implements OnInit {
         if (boutique) {
           this.selectedBoutique = boutique;
 
-          // Charger la salle associée
           if (boutique.id_shop?._id) {
             this.shopService.getShopById(boutique.id_shop._id).subscribe({
               next: shop => this.selectedShop = shop,
@@ -81,7 +78,6 @@ export class BoutiqueManagerComponent implements OnInit {
             });
           }
 
-          // Charger produits et préparer mainImage
           this.loadProducts(boutique._id);
         } else {
           this.errorMessage = 'Boutique non trouvée';
@@ -100,7 +96,7 @@ export class BoutiqueManagerComponent implements OnInit {
       next: prods => {
         this.products = prods.map(p => ({
           ...p,
-          mainImage: p.images?.[0] ? `${environment.apiUrl}${p.images[0]}` : ''
+          mainImage: p.images?.[0] || '' // ← Cloudinary URL complète
         }));
         this.loading = false;
       },
@@ -115,7 +111,7 @@ export class BoutiqueManagerComponent implements OnInit {
   onProductCreated(product: Product): void {
     this.products.push({
       ...product,
-      mainImage: product.images?.[0] ? `${environment.apiUrl}${product.images[0]}` : ''
+      mainImage: product.images?.[0] || '' // ← Cloudinary URL
     });
     this.showCreateProductForm = false;
   }
@@ -125,7 +121,7 @@ export class BoutiqueManagerComponent implements OnInit {
     if (index !== -1) {
       this.products[index] = {
         ...updated,
-        mainImage: updated.images?.[0] ? `${environment.apiUrl}${updated.images[0]}` : ''
+        mainImage: updated.images?.[0] || '' // ← Cloudinary URL
       };
     }
   }
