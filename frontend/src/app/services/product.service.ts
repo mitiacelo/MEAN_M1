@@ -45,4 +45,8 @@ createProduct(product: Partial<Product> | FormData) : Observable<Product> {
   importProducts(products: any[]): Observable<Product[]> {
     return this.http.post<Product[]>(`${environment.apiUrl}/products/import`, products);
   }
+
+  getProductsWithPromotion(boutiqueId: string) {
+    return this.http.get<Product[]>(`${environment.apiUrl}/products/boutique/${boutiqueId}`);
+  }
 }

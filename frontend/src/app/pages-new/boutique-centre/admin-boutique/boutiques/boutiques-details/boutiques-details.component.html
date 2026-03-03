@@ -1,12 +1,9 @@
 <div class="boutique-details-container">
-  <!-- Header -->
   <app-header></app-header>
 
-  <!-- Loading / Error -->
   <p *ngIf="loading" class="loading">Chargement de la boutique...</p>
   <p *ngIf="error" class="error">{{ error }}</p>
 
-  <!-- Boutique -->
   <div *ngIf="boutique">
     <header class="boutique-header">
       <h1>{{ boutique.name }}</h1>
@@ -18,29 +15,37 @@
       </p>
     </header>
 
-    <!-- Produits -->
     <section class="products-section">
       <h2>Produits disponibles</h2>
-
       <p *ngIf="products.length === 0" class="empty">Aucun produit disponible pour le moment.</p>
 
       <div class="products-grid">
         <div *ngFor="let product of products; trackBy: trackByProductId" class="product-card">
-          
-          <!-- Image principale -->
           <img *ngIf="product.mainImage" [src]="product.mainImage" alt="{{ product.name }}" class="product-image" />
           <div *ngIf="!product.mainImage" class="placeholder-image">Pas d'image</div>
 
-          <!-- Infos produit -->
           <h3>{{ product.name }}</h3>
           <p class="description">{{ product.description || 'Pas de description' }}</p>
           <p class="type">Type : {{ product.id_type?.name || 'Non spécifié' }}</p>
+
           <p class="prix">
-            Prix : <strong>{{ product.prix_actuel ? (product.prix_actuel | currency:'Ar':'symbol':'1.0-0') : 'Non défini' }}</strong>
+            <ng-container *ngIf="product.promotion && product.promoPrice !== product.prix_actuel">
+              <span class="original-price">{{ product.prix_actuel | currency:'Ar':'symbol':'1.0-0' }}</span>
+              <span class="final-price">{{ product.promoPrice | currency:'Ar':'symbol':'1.0-0' }}</span>
+              <span *ngIf="product.promotion.discountType === 'percentage'">
+                (-{{ product.promotion.discountValue }}%)
+              </span>
+              <span *ngIf="product.promotion.discountType === 'fixed'">
+                (-{{ product.promotion.discountValue | currency:'Ar':'symbol':'1.0-0' }})
+              </span>
+            </ng-container>
+            <ng-container *ngIf="!product.promotion || product.promoPrice === product.prix_actuel">
+              {{ product.prix_actuel | currency:'Ar':'symbol':'1.0-0' }}
+            </ng-container>
           </p>
+
           <p class="stock">Stock : {{ product.quantite }} unités</p>
 
-          <!-- Actions -->
           <button class="add-to-cart-btn" (click)="addToCart(product)" [disabled]="product.quantite <= 0">
             Ajouter au panier
           </button>
@@ -69,7 +74,6 @@
       </div>
     </section>
 
-    <!-- Bouton retour -->
     <button class="back-btn" routerLink="/landing">Retour à l'accueil</button>
   </div>
 </div>

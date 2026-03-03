@@ -4,6 +4,7 @@ const authMiddleware = require('../middleware/auth');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const PriceProduct = require('../models/PriceProduct');
+const { getFinalPrice } = require('../utils/priceUtils');
 
 // POST /api/cart → ajouter au panier de l'utilisateur connecté
 router.post('/', authMiddleware, async (req, res) => {
@@ -17,11 +18,11 @@ router.post('/', authMiddleware, async (req, res) => {
 
     if (product.quantite < quantity) return res.status(400).json({ message: 'Stock insuffisant' });
 
-    const lastPrice = await PriceProduct.findOne({ id_product: productId })
-      .sort({ createdAt: -1 })
-      .select('prix');
+    const finalPrice = await getFinalPrice(productId);
 
-    const currentPrice = lastPrice ? lastPrice.prix : 0;
+    if (finalPrice === null) {
+      return res.status(400).json({ message: 'Prix introuvable pour ce produit' });
+    }
 
     let cart = await Cart.findOne({ user: req.user.id });
     if (!cart) {
@@ -31,11 +32,15 @@ router.post('/', authMiddleware, async (req, res) => {
     const existingItem = cart.items.find(item => item.product.toString() === productId);
     if (existingItem) {
       existingItem.quantity += quantity;
+    
+      // 🔥 IMPORTANT : mettre à jour le prix aussi
+      existingItem.priceAtAddition = finalPrice;
+    
     } else {
       cart.items.push({
         product: productId,
         quantity,
-        priceAtAddition: currentPrice
+        priceAtAddition: finalPrice
       });
     }
 

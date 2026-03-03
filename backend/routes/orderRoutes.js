@@ -7,6 +7,7 @@ const Product = require('../models/Product');
 const Purchase = require('../models/Purchase');
 const Boutique = require('../models/Boutique');
 const Shop = require('../models/Shop');
+const { getFinalPrice } = require('../utils/priceUtils');
 
 // POST /api/orders
 router.post('/', authMiddleware, async (req, res) => {

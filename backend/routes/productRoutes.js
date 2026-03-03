@@ -12,7 +12,8 @@ const Domaine = require('../models/Domaine');
 const Shop = require('../models/Shop');
 const StockMouvement = require('../models/StockMouvement');
 const PriceProduct = require('../models/PriceProduct');
-const cloudinary = require('../config/cloudinary'); // ← fichier de config Cloudinary
+const cloudinary = require('../config/cloudinary');
+const Promotion = require('../models/Promotion');
 
 // Multer temporaire pour stocker localement avant upload Cloudinary
 const upload = multer({ dest: 'uploads/' });
@@ -71,41 +72,41 @@ router.post('/', upload.array('images', 5), async (req, res) => {
 });
 
 // ------------------ GET PRODUCTS BY BOUTIQUE ------------------
-router.get('/boutique/:boutiqueId', async (req, res) => {
-  const boutiqueId = req.params.boutiqueId;
+// router.get('/boutique/:boutiqueId', async (req, res) => {
+//   const boutiqueId = req.params.boutiqueId;
 
-  if (!mongoose.Types.ObjectId.isValid(boutiqueId)) {
-    return res.status(400).json({ message: 'ID de boutique invalide' });
-  }
+//   if (!mongoose.Types.ObjectId.isValid(boutiqueId)) {
+//     return res.status(400).json({ message: 'ID de boutique invalide' });
+//   }
 
-  try {
-    const products = await Product.find({ id_boutique: boutiqueId })
-      .populate({
-        path: 'id_type',
-        select: 'name id_category',
-        populate: {
-          path: 'id_category',
-          select: 'name id_domaine',
-          populate: { path: 'id_domaine', select: 'name' }
-        }
-      })
-      .populate('id_boutique', 'name description');
+//   try {
+//     const products = await Product.find({ id_boutique: boutiqueId })
+//       .populate({
+//         path: 'id_type',
+//         select: 'name id_category',
+//         populate: {
+//           path: 'id_category',
+//           select: 'name id_domaine',
+//           populate: { path: 'id_domaine', select: 'name' }
+//         }
+//       })
+//       .populate('id_boutique', 'name description');
 
-    // Ajouter le prix actuel à chaque produit
-    const productsWithPrice = await Promise.all(products.map(async (product) => {
-      const lastPrice = await PriceProduct.findOne({ id_product: product._id }).sort({ createdAt: -1 });
-      return {
-        ...product.toObject(),
-        prix_actuel: lastPrice ? lastPrice.prix : null
-      };
-    }));
+//     // Ajouter le prix actuel à chaque produit
+//     const productsWithPrice = await Promise.all(products.map(async (product) => {
+//       const lastPrice = await PriceProduct.findOne({ id_product: product._id }).sort({ createdAt: -1 });
+//       return {
+//         ...product.toObject(),
+//         prix_actuel: lastPrice ? lastPrice.prix : null
+//       };
+//     }));
 
-    res.json(productsWithPrice);
-  } catch (err) {
-    console.error('ERREUR GET /products/boutique/:boutiqueId :', err);
-    res.status(500).json({ message: 'Erreur serveur', details: err.message });
-  }
-});
+//     res.json(productsWithPrice);
+//   } catch (err) {
+//     console.error('ERREUR GET /products/boutique/:boutiqueId :', err);
+//     res.status(500).json({ message: 'Erreur serveur', details: err.message });
+//   }
+// });
 
 // ------------------ GET PRODUCT DETAIL ------------------
 router.get('/:id', async (req, res) => {
@@ -250,6 +251,85 @@ router.post('/import', async (req, res) => {
     });
   } catch (err) {
     console.error('ERREUR IMPORT :', err);
+    res.status(500).json({ message: 'Erreur serveur', details: err.message });
+  }
+});
+
+// ------------------ GET PRODUCTS BY BOUTIQUE AVEC PROMOTION ------------------
+router.get('/boutique/:boutiqueId', async (req, res) => {
+  const boutiqueId = req.params.boutiqueId;
+
+  if (!mongoose.Types.ObjectId.isValid(boutiqueId)) {
+    return res.status(400).json({ message: 'ID de boutique invalide' });
+  }
+
+  try {
+    const products = await Product.find({ id_boutique: boutiqueId })
+      .populate({
+        path: 'id_type',
+        select: 'name id_category',
+        populate: {
+          path: 'id_category',
+          select: 'name id_domaine',
+          populate: { path: 'id_domaine', select: 'name' }
+        }
+      })
+      .populate('id_boutique', 'name description');
+
+    const now = new Date();
+
+    const productsWithPromo = await Promise.all(
+      products.map(async (product) => {
+
+        // 🔹 Prix actuel
+        const lastPrice = await PriceProduct
+          .findOne({ id_product: product._id })
+          .sort({ createdAt: -1 });
+
+        const prixActuel = lastPrice ? lastPrice.prix : null;
+
+        // 🔹 Chercher promo ACTIVE et valide en date
+        const promotion = await Promotion.findOne({
+          product: product._id,
+          isActive: true,
+          startDate: { $lte: now },
+          endDate: { $gte: now }
+        });
+
+        let promoPrice = prixActuel;
+        let promoData = null;
+
+        if (promotion && prixActuel != null) {
+
+          if (promotion.discountType === 'percentage') {
+            promoPrice = prixActuel - (prixActuel * promotion.discountValue / 100);
+          }
+
+          if (promotion.discountType === 'fixed') {
+            promoPrice = prixActuel - promotion.discountValue;
+          }
+
+          promoData = {
+            discountType: promotion.discountType,
+            discountValue: promotion.discountValue
+          };
+        }
+
+        return {
+          ...product.toObject(),
+          prix_actuel: prixActuel,
+          promoPrice,
+          promotion: promoData,
+          mainImage: product.images?.[0] || '',
+          hasPromotion: promoData !== null
+        };
+      })
+    );
+
+    res.json(productsWithPromo);
+
+  } catch (err) {
+    console.error('ERREUR GET /products/boutique/:boutiqueId :', err);
     res.status(500).json({ message: 'Erreur serveur', details: err.message });
   }
 });

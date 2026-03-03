@@ -14,9 +14,9 @@
         @for (item of cart.items; track item.product._id) {
           <div class="cart-item">
             <div class="item-info">
-              <h3>{{ item.product.name }}</h3>
-              <p>Type : {{ item.product.id_type?.name || 'Non spécifié' }}</p>
-              <p>Prix unitaire : {{ item.priceAtAddition || item.product.prix_actuel || 0 }} Ar</p>
+              <h3>{{ item.product?.name || 'Produit supprimé' }}</h3>
+              <p>Type : {{ item.product?.id_type?.name || 'Non spécifié' }}</p>
+              <p>Prix unitaire : {{ item.priceAtAddition || item.product?.prix_actuel || 0 }} Ar</p>
             </div>
   
             <div class="quantity">

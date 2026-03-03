@@ -9,6 +9,17 @@ import { HeaderComponent } from '../../../../../components-new/layouts/header/he
 import { FavoriteService, Favorite } from '../../../../../services/favorite.service';
 import { environment } from '../../../../../../environments/environment';
 
+// Interface produit avec promotion
+export interface ProductWithPromotion extends Product {
+  mainImage: string;
+  hasPromotion: boolean;
+  promoPrice: number;
+  promotion: {
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+  } | null;
+}
+
 @Component({
   selector: 'app-boutiques-details',
   standalone: true,
@@ -18,7 +29,7 @@ import { environment } from '../../../../../../environments/environment';
 })
 export class BoutiqueDetailsComponent implements OnInit {
   boutique: Boutique | null = null;
-  products: (Product & { mainImage: string })[] = []; // <-- ajout mainImage
+  products: ProductWithPromotion[] = [];
   loading = true;
   showLoginMessageForCart = false;
   error = '';
@@ -52,16 +63,18 @@ export class BoutiqueDetailsComponent implements OnInit {
 
         if (boutique.id_shop?._id) {
           this.productService.getProductsByBoutique(boutique._id).subscribe({
-            next: (products: Product[]) => {
-              // Préparer mainImage pour chaque produit
+            next: (products: any[]) => {
               this.products = products.map(p => ({
                 ...p,
-                mainImage: p.images?.[0] || ''
+                mainImage: p.images?.[0] || '',
+                hasPromotion: !!p.promotion,
+                promoPrice: p.promoPrice ?? p.prix_actuel,
+                promotion: p.promotion
               }));
+              console.log('Produits avec promo:', this.products);
             },
             error: (err: any) => {
               console.error('Erreur chargement produits boutique', err);
-              this.products = [];
             }
           });
         }
@@ -128,7 +141,7 @@ export class BoutiqueDetailsComponent implements OnInit {
     return this.favorites.some(f => f.product._id === productId);
   }
 
-  addToCart(product: any) {
+  addToCart(product: ProductWithPromotion) {
     if (product.quantite <= 0) {
       alert('Stock épuisé !');
       return;
@@ -148,7 +161,8 @@ export class BoutiqueDetailsComponent implements OnInit {
       }
     });
   }
-  trackByProductId(index: number, product: Product & { mainImage?: string }): string {
+
+  trackByProductId(index: number, product: ProductWithPromotion): string {
     return product._id;
   }
 }
