@@ -1,86 +1,124 @@
 <div class="admin-layout">
 
-  <aside class="sidebar">
+  <!-- Overlay mobile -->
+  <div class="sidebar-overlay"
+       [class.visible]="mobileOpen"
+       (click)="closeMobile()">
+  </div>
 
+  <!-- Top bar mobile -->
+  <div class="mobile-topbar">
+    <button class="hamburger" [class.open]="mobileOpen"
+            (click)="toggleMobile()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="topbar-brand">
+      {{ centreName }}<span class="brand-accent">.</span>
+    </span>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar"
+         [class.collapsed]="collapsed"
+         [class.mobile-open]="mobileOpen">
+
+    <!-- Toggle desktop -->
+    <button class="sidebar-toggle" (click)="toggleCollapse()" aria-label="Toggle sidebar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    </button>
+
+    <!-- Brand -->
     <div class="sidebar-brand">
+      <div class="brand-icon">{{ centreName?.charAt(0)?.toUpperCase() }}</div>
       <span class="brand-name">
-        {{ centreName || 'Mall' }}<span class="brand-accent">.</span>
+        {{ centreName }}<span class="brand-accent">.</span>
       </span>
     </div>
 
+    <!-- Nav -->
     <nav class="sidebar-nav">
 
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
         <span class="nav-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
           </svg>
         </span>
-        Dashboard
+        <span class="nav-label">Dashboard</span>
+        <span class="nav-tooltip">Dashboard</span>
       </a>
 
-      <a routerLink="/grille" routerLinkActive="active" class="nav-item">
+      <a routerLink="/grille" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
         <span class="nav-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 3L2 12h3v8h6v-5h2v5h6v-8h3L12 3z"/>
           </svg>
         </span>
-        Centre commercial
+        <span class="nav-label">Centre commercial</span>
+        <span class="nav-tooltip">Centre commercial</span>
       </a>
 
-      <a routerLink="/notifications" routerLinkActive="active" class="nav-item nav-item--notif">
+      <a routerLink="/notifications" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
         <span class="nav-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
           </svg>
         </span>
-        Demandes location
+        <span class="nav-label">Demandes location</span>
         <span class="notif-dot" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+        <span class="nav-tooltip">Demandes location</span>
       </a>
 
-      <a routerLink="/location" routerLinkActive="active" class="nav-item">
+      <a routerLink="/location" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
         <span class="nav-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
           </svg>
         </span>
-        Location
+        <span class="nav-label">Location</span>
+        <span class="nav-tooltip">Location</span>
       </a>
 
-      <a routerLink="/maintenance" routerLinkActive="active" class="nav-item nav-item--maint">
+      <a routerLink="/maintenance" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
         <span class="nav-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M13.78 15.3l6 6c.78.78 2.05.78 2.83 0 .78-.78.78-2.05 0-2.83l-6-6c.55-1.4.24-3.05-.93-4.22-1.28-1.28-3.14-1.54-4.69-.8l2.45 2.46-3.58 3.58-2.46-2.45c-.74 1.55-.48 3.41.8 4.69 1.17 1.17 2.82 1.48 4.22.93l1.36-1.36z"/>
           </svg>
         </span>
-        Maintenance
+        <span class="nav-label">Maintenance</span>
         <span class="maint-dot" *ngIf="urgentsCount > 0">{{ urgentsCount }}</span>
+        <span class="nav-tooltip">Maintenance</span>
       </a>
 
       <div class="nav-separator"></div>
 
-      <a routerLink="/parametres" routerLinkActive="active" class="nav-item">
+      <a routerLink="/parametres" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
         <span class="nav-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
           </svg>
         </span>
-        Paramètres
+        <span class="nav-label">Paramètres</span>
+        <span class="nav-tooltip">Paramètres</span>
       </a>
 
     </nav>
 
+    <!-- Footer -->
     <div class="sidebar-footer">
       <button class="logout-btn" (click)="logout()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="logout-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
           <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
         </svg>
-        Déconnexion
+        <span class="logout-label">Déconnexion</span>
       </button>
     </div>
 
   </aside>
 
+  <!-- Main -->
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
