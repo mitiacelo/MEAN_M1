@@ -1,0 +1,21 @@
+.footer {
+    width: 100%;
+    padding: 1rem 2rem;
+    background-color: #f9f9f9; /* fond clair */
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .footer-content {
+    display: flex;
+    gap: 2rem; /* espace entre les noms */
+  }
+  
+  .creator {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555; /* gris discret */
+  }

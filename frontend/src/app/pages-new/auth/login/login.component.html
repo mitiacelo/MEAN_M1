@@ -1,56 +1,65 @@
 <div class="auth-container">
-  <div class="auth-card">
-    <h2>Connexion</h2>
+  <div class="auth-left">
+    <div class="auth-card">
+      <h2>Connexion</h2>
 
-    @if (errorMessage) {
-      <div class="error-message">{{ errorMessage }}</div>
-    }
+      @if (errorMessage) {
+        <div class="error-message">{{ errorMessage }}</div>
+      }
 
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          [(ngModel)]="credentials.email"
-          required
-          email
-          #emailCtrl="ngModel"
-        />
-        @if (emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)) {
-          <span class="field-error">Email invalide</span>
-        }
-      </div>
-
-      <div class="form-group password-group">
-        <label for="password">Mot de passe</label>
-        <div class="password-wrapper">
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <div class="form-group">
+          <label for="email">Email</label>
           <input
-            [type]="showPassword ? 'text' : 'password'"
-            id="password"
-            name="password"
-            [(ngModel)]="credentials.password"
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="credentials.email"
             required
-            minlength="6"
-            #passwordCtrl="ngModel"
+            email
+            #emailCtrl="ngModel"
           />
-          <span class="toggle-password" (click)="showPassword = !showPassword">
-            {{ showPassword ? '🙈' : '👁️' }}
-          </span>
+          @if (emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)) {
+            <span class="field-error">Email invalide</span>
+          }
         </div>
-        @if (passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)) {
-          <span class="field-error">Mot de passe requis (min. 6 caractères)</span>
-        }
-      </div>
 
-      <button type="submit" [disabled]="loginForm.invalid || isLoading">
-        {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
-      </button>
-    </form>
+        <div class="form-group password-group">
+          <label for="password">Mot de passe</label>
+          <div class="password-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              name="password"
+              [(ngModel)]="credentials.password"
+              required
+              minlength="6"
+              #passwordCtrl="ngModel"
+            />
+            <span class="toggle-password" (click)="showPassword = !showPassword">
+              <i [class]="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+            </span>
+          </div>
+          @if (passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)) {
+            <span class="field-error">Mot de passe requis (min. 6 caractères)</span>
+          }
+        </div>
 
-    <p class="register-link">
-      Pas de compte ? <a routerLink="/register">S'inscrire</a>
-    </p>
+        <button type="submit" [disabled]="loginForm.invalid || isLoading">
+          {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <p class="register-link">
+        Pas de compte ? <a routerLink="/register">S'inscrire</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="right-content">
+      <h1>Bienvenue !</h1>
+      <p>Connectez-vous pour accéder à votre compte et découvrir nos services.</p>
+    </div>
   </div>
 </div>
