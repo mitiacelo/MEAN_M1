@@ -34,6 +34,11 @@ export class SalleManagerComponent implements OnInit {
   loading = true;
   errorMessage = '';
 
+  boutiqueImageFile: File | null = null;
+  imageUploadLoading = false;
+  imageUploadError = '';
+  imageUploadSuccess = '';
+
   // Création boutique
   showCreateBoutique = false;
   newBoutique = {
@@ -339,5 +344,41 @@ export class SalleManagerComponent implements OnInit {
     };
 
     reader.readAsText(file);
+  }
+  onBoutiqueImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files.length) return;
+  
+    this.boutiqueImageFile = input.files[0];
+    this.imageUploadError = '';
+    this.imageUploadSuccess = '';
+  }
+
+  uploadBoutiqueImage(boutiqueId: string): void {
+    if (!this.boutiqueImageFile) {
+      this.imageUploadError = 'Aucun fichier sélectionné';
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('image', this.boutiqueImageFile);
+  
+    this.imageUploadLoading = true;
+    this.boutiqueService.uploadBoutiqueImage(boutiqueId, formData).subscribe({
+      next: (res) => {
+        this.imageUploadSuccess = 'Image boutique uploadée avec succès !';
+        this.imageUploadLoading = false;
+        this.boutiqueImageFile = null;
+  
+        // Si tu veux mettre à jour la boutique côté frontend
+        if (this.selectedBoutique) {
+          this.selectedBoutique.imageUrl = res.imageUrl;
+        }
+      },
+      error: (err) => {
+        this.imageUploadError = err.error?.message || 'Erreur lors de l\'upload de l\'image';
+        this.imageUploadLoading = false;
+      }
+    });
   }
 }

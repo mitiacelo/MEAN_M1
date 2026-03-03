@@ -8,7 +8,8 @@ import { Order } from '../orders/orders.component';
   selector: 'app-order-confirm',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './order-confirm.component.html'
+  templateUrl: './order-confirm.component.html',
+  styleUrl: './order-confirm.component.css'
 })
 export class OrderConfirmComponent implements OnInit {
   orderId: string = '';

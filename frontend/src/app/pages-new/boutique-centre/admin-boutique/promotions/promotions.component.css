@@ -1,56 +1,120 @@
+/* Container général */
 .promotions-container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
+  background-color: #fffaf5; /* blanc cassé / beige très clair */
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  max-width: 800px;
+  margin: 2rem auto;
+  font-size: 0.9rem; /* texte un peu plus petit */
+}
+
+/* Titres */
+.promotions-container h2 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: #4a3f35;
+}
+
+.promotions-container h3 {
+  font-size: 1.2rem;
+  margin: 0.8rem 0 0.5rem 0;
+  color: #4a3f35;
+}
+
+/* Formulaire compact */
+.form-promo, .form-group {
+  margin-bottom: 0.6rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #6b5e4f;
+  font-size: 0.85rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.4rem 0.6rem; /* moins d’espace vertical */
+  border: 1px solid #e0d7cc;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background-color: #fff;
+  transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #d4b78f;
+  box-shadow: 0 0 0 2px rgba(212, 183, 143, 0.15);
+}
+
+/* Boutons plus petits */
+button {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+button.create, .form-promo button {
+  background-color: #d4b78f;
+  color: #fff;
+}
+
+button.consult-btn {
+  background-color: #8b7b6b;
+  color: #fff;
+}
+
+button.delete-btn {
+  background-color: #e07a5f;
+  color: #fff;
+}
+
+/* Messages d'alerte */
+.success, .error {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+/* Table */
+.list-promotions table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+}
+
+.list-promotions th, .list-promotions td {
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid #e0d7cc;
+}
+
+.list-promotions th {
+  background-color: #fdf6f0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .promotions-container {
+    padding: 1rem;
+    font-size: 0.85rem;
   }
-  
-  .form-group {
-    margin-bottom: 12px;
-    display: flex;
-    flex-direction: column;
+
+  .form-group input, .form-group select {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.5rem;
   }
-  
-  input, select {
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+
+  .list-promotions table, .list-promotions th, .list-promotions td {
+    font-size: 0.8rem;
   }
-  
-  button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 6px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  .success {
-    color: green;
-  }
-  
-  .error {
-    color: red;
-  }
-  
-  .list-promotions {
-    margin-top: 30px;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  th {
-    background-color: #f4f4f4;
-  }
+}

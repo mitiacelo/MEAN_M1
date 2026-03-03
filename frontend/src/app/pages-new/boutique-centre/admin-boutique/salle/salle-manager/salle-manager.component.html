@@ -42,6 +42,10 @@
           <h3>Créer une boutique dans {{ selectedShop.name }}</h3>
           <form (ngSubmit)="createBoutique()">
             <div class="form-group">
+                <label>Image de la boutique :</label>
+                <input type="file" (change)="onBoutiqueImageSelected($event)" accept="image/*" />
+                <p *ngIf="imageUploadError" class="error">{{ imageUploadError }}</p>
+                <p *ngIf="imageUploadSuccess" class="success">{{ imageUploadSuccess }}</p>
               <label>Nom :</label>
               <input [(ngModel)]="newBoutique.name" name="name" required />
             </div>

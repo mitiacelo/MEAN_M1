@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { BoutiqueService, Boutique } from '../../../../../services/boutique.service';
@@ -8,10 +8,10 @@ import { BoutiqueService, Boutique } from '../../../../../services/boutique.serv
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './boutiques-list.component.html',
-  styleUrl: './boutiques-list.component.css'
+  styleUrls: ['./boutiques-list.component.css']
 })
 export class BoutiquesListComponent implements OnInit {
-  boutiques: Boutique[] = [];
+  @Input() boutiques: Boutique[] = [];
   loading = true;
   error = '';
 
@@ -20,7 +20,11 @@ export class BoutiquesListComponent implements OnInit {
   ngOnInit(): void {
     this.boutiqueService.getAllBoutiques().subscribe({
       next: (boutiques: Boutique[]) => {
-        this.boutiques = boutiques;
+        // Ajouter un fallback image si imageUrl manquant
+        this.boutiques = boutiques.map(b => ({
+          ...b,
+          imageUrl: b.imageUrl || '/assets/default-boutique.jpg'
+        }));
         this.loading = false;
       },
       error: (err: any) => {

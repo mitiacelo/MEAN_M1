@@ -61,7 +61,11 @@
 
     <section class="sections-wrapper">
       <app-salle class="animate-fade-up"></app-salle>
-      <app-boutiques-list class="animate-fade-up"></app-boutiques-list>
+      <!-- Liste des boutiques filtrées -->
+      <app-boutiques-list
+        class="animate-fade-up"
+        [boutiques]="filteredBoutiques">
+      </app-boutiques-list>
     </section>
 
     <footer class="landing-footer" *ngIf="centre">

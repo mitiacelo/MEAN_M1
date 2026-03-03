@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-
+import {Boutique} from './boutique.service'
 export interface ChiffreAtout {
   icone: string;
   valeur: string;
@@ -28,6 +28,7 @@ export interface Centre {
   chiffresEtAtouts: ChiffreAtout[];
   facebook: string;
   instagram: string;
+  boutiques?: Boutique[];
 }
 
 @Injectable({ providedIn: 'root' })

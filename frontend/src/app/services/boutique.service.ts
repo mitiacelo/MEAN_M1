@@ -12,6 +12,7 @@ export interface Boutique {
   id_domaine: string | any;
   createdAt: string;
   updatedAt: string;
+  imageUrl: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -90,6 +91,13 @@ getAllBoutiques(): Observable<Boutique[]> {
         if (err.status === 404) return []; // Retourne tableau vide si pas de boutique
         return throwError(() => err);
       })
+    );
+  }
+
+  uploadBoutiqueImage(boutiqueId: string, formData: FormData) {
+    return this.http.post<{ imageUrl: string }>(
+      `${environment.apiUrl}/boutiques/${boutiqueId}/upload-image`, 
+      formData
     );
   }
 

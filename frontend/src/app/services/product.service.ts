@@ -25,6 +25,10 @@ export class ProductService {
   getProductsByBoutique(boutiqueId: string): Observable<Product[]> {
     return this.http.get<Product[]>(`${environment.apiUrl}/products/boutique/${boutiqueId}`);
   }
+  
+  getAllProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>('/products'); // adapte l'URL à ton backend
+  }
 
   getProductById(id: string): Observable<Product> {
     return this.http.get<Product>(`${environment.apiUrl}/products/${id}`);

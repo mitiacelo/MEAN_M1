@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 // Interface Promotion pour typage
 export interface Promotion {
   _id?: string;
-  product: string;
+  product: any; 
   discountType: 'percentage' | 'fixed';
   discountValue: number;
   startDate: string;
@@ -29,5 +29,15 @@ export class PromotionService {
   // Récupérer toutes les promotions
   getAllPromotions(): Observable<Promotion[]> {
     return this.http.get<Promotion[]>(this.baseUrl);
+  }
+
+  // Supprimer une promotion
+  deletePromotion(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/${id}`);
+  }
+
+  // Modifier une promotion
+  updatePromotion(id: string, data: Promotion): Observable<Promotion> {
+    return this.http.put<Promotion>(`${this.baseUrl}/${id}`, data);
   }
 }

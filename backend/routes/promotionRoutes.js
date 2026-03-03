@@ -49,4 +49,44 @@ router.get('/', async (req, res) => {
     res.json(promotions);
   });
 
+  // Supprimer une promotion
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const promo = await Promotion.findById(id);
+    if (!promo) return res.status(404).json({ message: 'Promotion non trouvée' });
+
+    await Promotion.findByIdAndDelete(id);
+    res.json({ message: 'Promotion supprimée avec succès' });
+  } catch (error) {
+    console.error("Erreur suppression promo :", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Modifier une promotion
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { product, discountType, discountValue, startDate, endDate } = req.body;
+
+    if (!product || !discountType || discountValue == null) {
+      return res.status(400).json({ message: 'Champs manquants' });
+    }
+
+    const updatedPromo = await Promotion.findByIdAndUpdate(
+      id,
+      { product, discountType, discountValue, startDate, endDate },
+      { new: true }
+    );
+
+    if (!updatedPromo) return res.status(404).json({ message: 'Promotion non trouvée' });
+
+    res.json(updatedPromo);
+  } catch (error) {
+    console.error("Erreur modification promo :", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

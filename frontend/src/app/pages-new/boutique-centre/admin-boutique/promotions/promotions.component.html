@@ -67,12 +67,16 @@
         </thead>
         <tbody>
           <tr *ngFor="let p of promotions">
-            <td>{{ p.productData?.name || 'Produit supprimé' }}</td>
+            <td>{{ getProductName(p) }}</td>
             <td>{{ p.discountType }}</td>
             <td>{{ p.discountValue }}</td>
             <td>{{ p.startDate | date:'shortDate' }}</td>
             <td>{{ p.endDate | date:'shortDate' }}</td>
             <td>{{ p.isActive ? 'Oui' : 'Non' }}</td>
+            <td>
+              <button (click)="editPromotion(p)">Modifier</button>
+              <button (click)="deletePromotion(p)">Supprimer</button>
+            </td>
           </tr>
         </tbody>
       </table>
