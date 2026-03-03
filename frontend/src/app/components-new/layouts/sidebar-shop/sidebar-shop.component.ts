@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ShopService, Shop } from '../../../services/shop.service';
-import { BoutiqueService, Boutique } from '../../../services/boutique.service';
 import { AuthService } from '../../../services/auth.service';
+import { Boutique, BoutiqueService } from '../../../services/boutique.service';
+import { CentreService } from '../../../services/centre.service';
+import { Shop, ShopService } from '../../../services/shop.service';
 
 @Component({
   selector: 'app-sidebar-shop',
@@ -19,41 +20,45 @@ export class SidebarShopComponent implements OnInit {
   selectedBoutique: Boutique | null = null;
   loading = true;
   boutiques: Boutique[] = [];
+  centreName = '';
 
   constructor(
     private shopService: ShopService,
     private boutiqueService: BoutiqueService,
+    private centreService: CentreService,
     public authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    // Nom du centre — cache d'abord, sinon appel API
+    const cached = this.centreService.currentCentre;
+    if (cached?.nom) {
+      this.centreName = cached.nom;
+    } else {
+      this.centreService.getCentre().subscribe({
+        next: c  => this.centreName = c.nom || '',
+        error: () => this.centreName = ''
+      });
+    }
+
     this.loadShopsAndBoutiques();
   }
 
   private loadShopsAndBoutiques(): void {
     const user = this.authService.currentUser;
-    if (!user?.id) {
-      this.loading = false;
-      return;
-    }
+    if (!user?.id) { this.loading = false; return; }
 
     this.shopService.getShopsByUser(user.id).subscribe({
-      next: (shops) => {
+      next: shops => {
         this.shops = shops;
-
         shops.forEach(shop => {
           this.boutiqueService.getMyBoutique(user.id).subscribe({
-            next: (boutique) => {
-              if (boutique && boutique.id_shop?._id === shop._id) {
-                this.boutiquesMap[shop._id] = boutique;
-              } else {
-                this.boutiquesMap[shop._id] = null;
-              }
+            next: boutique => {
+              this.boutiquesMap[shop._id] = boutique?.id_shop?._id === shop._id ? boutique : null;
             },
             error: () => this.boutiquesMap[shop._id] = null
           });
         });
-
         this.loading = false;
       },
       error: () => this.loading = false
@@ -63,13 +68,8 @@ export class SidebarShopComponent implements OnInit {
   loadBoutiques(): void {
     const user = this.authService.currentUser;
     if (!user?.id) return;
-  
     this.boutiqueService.getMyBoutiques(user.id).subscribe({
-      next: (boutiques) => {
-        this.boutiques = boutiques; // ← plus de filtre status
-        // Ou si tu veux filtrer sur autre chose (ex. active si boutique a id_shop)
-        // this.boutiques = boutiques.filter(b => !!b.id_shop);
-      },
+      next: boutiques => this.boutiques = boutiques,
       error: err => console.error('Erreur chargement boutiques', err)
     });
   }
@@ -77,9 +77,5 @@ export class SidebarShopComponent implements OnInit {
   selectShop(shop: Shop): void {
     this.selectedShop = shop;
     this.selectedBoutique = this.boutiquesMap[shop._id] || null;
-
-    // Optionnel : tu peux stocker selectedBoutique dans un service partagé
-    // pour que dashboard-shop le récupère, ou passer par un événement
-    console.log('Salle sélectionnée :', shop.name, 'Boutique :', this.selectedBoutique?.name);
   }
 }
