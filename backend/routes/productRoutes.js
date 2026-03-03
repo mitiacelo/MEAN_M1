@@ -11,7 +11,7 @@ const PriceProduct = require('../models/PriceProduct');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
   
-router.post('/', parser.array('images', 5), async (req, res) => {
+router.post('/', upload.array('images', 5), async (req, res) => {
   try {
     const { name, description, id_type, id_boutique, quantite = 0, prix } = req.body;
 
