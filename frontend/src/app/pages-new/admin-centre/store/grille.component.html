@@ -37,37 +37,71 @@
     <button class="btn-cancel" (click)="annulerSelection()">Annuler</button>
   </div>
 
-  <div class="grille-visuelle">
-    <h3>Aperçu de la grille :</h3>
+  <!-- ── Layout : grille à gauche + liste shops à droite ── -->
+  <div class="grille-et-shops">
 
-    <table class="grille-table"
-      [style.--colonnes]="colonnes"
-      [style.--lignes]="lignes">
-      <thead>
-        <tr>
-          <th></th>
-          <th *ngFor="let num of getNumeros()">{{ num }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let lettre of getLettres()">
-          <td class="lettre-col">{{ lettre }}</td>
-          <td
-            *ngFor="let num of getNumeros()"
-            class="block-cell"
-            [class.selected]="isSelected(lettre, num)"
-            [class.assigned]="isAssigned(lettre, num) && !isInSelectedShop(lettre, num)"
-            [class.shop-selected]="isInSelectedShop(lettre, num)"
-            [style.background-color]="getBlockColor(lettre, num)"
-            (click)="toggleCell(lettre, num)"
-          >
-            <span *ngIf="!isAssigned(lettre, num)">
-              {{ getBlockId(lettre, num) }}
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="grille-visuelle">
+      <h3>Aperçu de la grille :</h3>
+
+      <table class="grille-table"
+        [style.--colonnes]="colonnes"
+        [style.--lignes]="lignes">
+        <thead>
+          <tr>
+            <th></th>
+            <th *ngFor="let num of getNumeros()">{{ num }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let lettre of getLettres()">
+            <td class="lettre-col">{{ lettre }}</td>
+            <td
+              *ngFor="let num of getNumeros()"
+              class="block-cell"
+              [class.selected]="isSelected(lettre, num)"
+              [class.assigned]="isAssigned(lettre, num) && !isInSelectedShop(lettre, num)"
+              [class.shop-selected]="isInSelectedShop(lettre, num)"
+              [style.background-color]="getBlockColor(lettre, num)"
+              (click)="toggleCell(lettre, num)"
+            >
+              <span *ngIf="!isAssigned(lettre, num)">
+                {{ getBlockId(lettre, num) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── Liste des boutiques ── -->
+    <div class="shops-sidebar">
+      <div class="shops-sidebar-header">
+        <span class="shops-sidebar-title">Boutiques</span>
+        <span class="shops-sidebar-count">{{ shops.length }}</span>
+      </div>
+
+      <div *ngIf="shops.length > 0; else noShops" class="shops-sidebar-list">
+        <div
+          *ngFor="let shop of shops"
+          class="shop-item"
+          [class.shop-item--active]="shop._id === selectedShopId"
+          (click)="ouvrirShop(shop._id)"
+        >
+          <div class="shop-item-color" [style.background-color]="getShopColor(shop._id)"></div>
+          <div class="shop-item-info">
+            <p class="shop-item-name">{{ shop.name }}</p>
+            <p class="shop-item-meta">{{ shop.superficie }} m² · {{ getShopBlockCount(shop._id) }} blocs</p>
+          </div>
+          <span class="shop-item-dot" [class]="'dot--' + shop.status"></span>
+          <span class="shop-item-arrow">›</span>
+        </div>
+      </div>
+
+      <ng-template #noShops>
+        <p class="shops-sidebar-empty">Aucune boutique.<br>Sélectionnez des blocs pour créer.</p>
+      </ng-template>
+    </div>
+
   </div>
 
   <!-- Boutons principaux cachés pendant une action sur un shop -->
@@ -82,11 +116,11 @@
       Créer un shop avec les blocs sélectionnés
     </button>
     <button
-    class="save-btn"
-    (click)="validerGrille()"
-    [disabled]="!grilleExiste">
-    Valider et voir le dashboard →
-  </button>
+      class="save-btn"
+      (click)="validerGrille()"
+      [disabled]="!grilleExiste">
+      Valider et voir le dashboard →
+    </button>
   </ng-container>
 
   <p *ngIf="grilleExiste" class="message-info">
