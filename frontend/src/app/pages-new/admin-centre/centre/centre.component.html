@@ -1,149 +1,284 @@
 <div class="params-page">
 
-    <!-- ── Header ── -->
-    <div class="page-header">
-      <div>
-        <h2>Paramètres du centre</h2>
-        <p class="subtitle">Informations générales de votre centre commercial</p>
-      </div>
-      <button class="btn-save" (click)="save()" [disabled]="saving">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
-        </svg>
-        {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+  <!-- ════════════════════════════════
+       HEADER
+  ════════════════════════════════ -->
+  <div class="page-header">
+    <div>
+      <h2>Paramètres du centre</h2>
+      <p class="subtitle">Gérez toutes les informations de votre centre commercial</p>
+    </div>
+    <button class="btn-save" (click)="save()" [disabled]="saving || loading">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+      </svg>
+      {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+    </button>
+  </div>
+
+  <!-- Alerts -->
+  <div class="alert alert-success" *ngIf="saved">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+    Modifications enregistrées avec succès.
+  </div>
+  <div class="alert alert-error" *ngIf="error">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    {{ error }}
+  </div>
+
+  <div class="loading-block" *ngIf="loading">Chargement…</div>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- ════════════════════════════════
+         ONGLETS
+    ════════════════════════════════ -->
+    <div class="tabs">
+      <button class="tab" [class.tab--active]="activeTab==='identite'" (click)="activeTab='identite'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Identité
+      </button>
+      <button class="tab" [class.tab--active]="activeTab==='coordonnees'" (click)="activeTab='coordonnees'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+        Coordonnées
+      </button>
+      <button class="tab" [class.tab--active]="activeTab==='landing'" (click)="activeTab='landing'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Page d'accueil
+      </button>
+      <button class="tab" [class.tab--active]="activeTab==='chiffres'" (click)="activeTab='chiffres'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        Chiffres clés
+      </button>
+      <button class="tab" [class.tab--active]="activeTab==='social'" (click)="activeTab='social'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+        Réseaux sociaux
       </button>
     </div>
-  
-    <!-- ── Loading ── -->
-    <div class="loading" *ngIf="loading">Chargement…</div>
-  
-    <!-- ── Alerts ── -->
-    <div class="alert alert-success" *ngIf="saved">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-      Modifications enregistrées avec succès.
-    </div>
-    <div class="alert alert-error" *ngIf="error">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-      {{ error }}
-    </div>
-  
-    <ng-container *ngIf="!loading">
-  
-      <div class="params-grid">
-  
-        <!-- ══════════════════════════════
-             COLONNE GAUCHE : Logo
-        ══════════════════════════════ -->
-        <div class="card logo-card">
-          <div class="card-label">Logo du centre</div>
-  
-          <div class="logo-preview" [class.logo-preview--empty]="!logoPreview">
-            <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo" />
-            <div class="logo-placeholder" *ngIf="!logoPreview">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" style="color:#D0D0D0">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-              <span>Aucun logo</span>
+
+    <!-- ════════════════════════════════
+         TAB : IDENTITÉ
+    ════════════════════════════════ -->
+    <div class="tab-content" *ngIf="activeTab==='identite'">
+      <div class="two-col">
+
+        <!-- Logo -->
+        <div class="card">
+          <div class="card-title">Logo</div>
+          <div class="logo-zone">
+            <div class="logo-preview" [class.logo-preview--empty]="!logoPreview">
+              <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo" />
+              <div class="logo-placeholder" *ngIf="!logoPreview">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color:#D0D0D0"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                <span>Aucun logo</span>
+              </div>
             </div>
+            <div class="logo-btns">
+              <label class="btn-upload" for="logo-input">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+                Choisir un fichier
+              </label>
+              <input id="logo-input" type="file" accept="image/*" (change)="onLogoSelected($event)" hidden />
+              <button class="btn-remove" *ngIf="logoPreview" (click)="removeLogo()">Supprimer</button>
+            </div>
+            <p class="img-hint">PNG, JPG, SVG, WebP · max 4 Mo</p>
           </div>
-  
-          <div class="logo-actions">
-            <label class="btn-upload" for="logo-input">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
-              Changer le logo
-            </label>
-            <input id="logo-input" type="file" accept="image/*" (change)="onLogoSelected($event)" hidden />
-            <button class="btn-remove-logo" *ngIf="logoPreview" (click)="removeLogo()">Supprimer</button>
-          </div>
-  
-          <p class="logo-hint">PNG, JPG, SVG — max 2 Mo</p>
         </div>
-  
-        <!-- ══════════════════════════════
-             COLONNE DROITE : Infos
-        ══════════════════════════════ -->
-        <div class="card infos-card">
-  
-          <!-- Identité -->
-          <div class="card-section">
-            <div class="card-label">Identité</div>
-            <div class="form-grid">
-              <div class="form-group form-group--full">
-                <label>Nom du centre <span class="required">*</span></label>
-                <input type="text" [(ngModel)]="centre.nom" placeholder="ex: Mall Antananarivo" />
-              </div>
-              <div class="form-group form-group--full">
-                <label>Slogan</label>
-                <input type="text" [(ngModel)]="centre.slogan" placeholder="ex: Le shopping au cœur de la ville" />
-              </div>
+
+        <!-- Nom & Slogan -->
+        <div class="card">
+          <div class="card-title">Nom & Slogan</div>
+          <div class="form-col">
+            <div class="form-group">
+              <label>Nom du centre <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="centre.nom" placeholder="ex: Mall Ankorondrano" />
             </div>
-          </div>
-  
-          <!-- Localisation -->
-          <div class="card-section">
-            <div class="card-label">Localisation</div>
-            <div class="form-grid">
-              <div class="form-group form-group--full">
-                <label>Adresse</label>
-                <input type="text" [(ngModel)]="centre.adresse" placeholder="ex: Lot II J 67 Bis Ampandrana" />
-              </div>
-              <div class="form-group">
-                <label>Ville</label>
-                <input type="text" [(ngModel)]="centre.ville" placeholder="ex: Antananarivo" />
-              </div>
+            <div class="form-group">
+              <label>Slogan</label>
+              <input type="text" [(ngModel)]="centre.slogan" placeholder="ex: Le shopping au cœur de la ville" />
             </div>
-          </div>
-  
-          <!-- Contact -->
-          <div class="card-section">
-            <div class="card-label">Contact</div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Téléphone</label>
-                <input type="tel" [(ngModel)]="centre.telephone" placeholder="ex: +261 20 22 000 00" />
-              </div>
-              <div class="form-group">
-                <label>Email</label>
-                <input type="email" [(ngModel)]="centre.email" placeholder="ex: contact@mall.mg" />
-              </div>
-            </div>
-          </div>
-  
-        </div>
-      </div>
-  
-      <!-- ── Aperçu carte récap ── -->
-      <div class="card preview-card">
-        <div class="card-label">Aperçu — comme affiché dans l'application</div>
-        <div class="preview-block">
-          <div class="preview-logo">
-            <img *ngIf="logoPreview" [src]="logoPreview" alt="logo" />
-            <div class="preview-logo--fallback" *ngIf="!logoPreview">
-              {{ centre.nom ? centre.nom[0] : 'M' }}
-            </div>
-          </div>
-          <div class="preview-infos">
-            <div class="preview-nom">{{ centre.nom || '—' }}</div>
-            <div class="preview-slogan" *ngIf="centre.slogan">{{ centre.slogan }}</div>
-            <div class="preview-meta">
-                <span *ngIf="centre.adresse || centre.ville">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
-                    </svg>
-                    {{ getAdresseComplete() }}
-                  </span>
-              <span *ngIf="centre.telephone">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>
-                {{ centre.telephone }}
-              </span>
-              <span *ngIf="centre.email">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                {{ centre.email }}
-              </span>
+            <div class="form-group">
+              <label>Année de fondation</label>
+              <input type="number" [(ngModel)]="centre.anneeFondation" placeholder="ex: 2018" />
             </div>
           </div>
         </div>
       </div>
-  
-    </ng-container>
-  </div>
+
+      <!-- Aperçu sidebar -->
+      <div class="card preview-sidebar-card">
+        <div class="card-title">Aperçu — Barre latérale</div>
+        <div class="preview-sidebar">
+          <div class="ps-logo">
+            <img *ngIf="logoPreview" [src]="logoPreview" alt="" />
+            <span *ngIf="!logoPreview">{{ centre.nom ? centre.nom[0] : 'M' }}</span>
+          </div>
+          <div class="ps-name">{{ centre.nom || 'Nom du centre' }}<span class="ps-dot">.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         TAB : COORDONNÉES
+    ════════════════════════════════ -->
+    <div class="tab-content" *ngIf="activeTab==='coordonnees'">
+      <div class="card">
+        <div class="card-title">Localisation</div>
+        <div class="form-grid-2">
+          <div class="form-group fg-full">
+            <label>Adresse</label>
+            <input type="text" [(ngModel)]="centre.adresse" placeholder="ex: Lot II J 67 Bis Ampandrana" />
+          </div>
+          <div class="form-group">
+            <label>Ville</label>
+            <input type="text" [(ngModel)]="centre.ville" placeholder="ex: Antananarivo" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-title">Contact</div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Téléphone</label>
+            <input type="tel" [(ngModel)]="centre.telephone" placeholder="ex: +261 20 22 000 00" />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="centre.email" placeholder="ex: contact@mall.mg" />
+          </div>
+          <div class="form-group">
+            <label>Horaires d'ouverture</label>
+            <input type="text" [(ngModel)]="centre.heureOuverture" placeholder="ex: Lun–Sam 9h–20h · Dim 10h–18h" />
+          </div>
+          <div class="form-group">
+            <label>Site web</label>
+            <input type="url" [(ngModel)]="centre.siteWeb" placeholder="ex: https://mall.mg" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         TAB : PAGE D'ACCUEIL
+    ════════════════════════════════ -->
+    <div class="tab-content" *ngIf="activeTab==='landing'">
+      <div class="two-col">
+
+        <!-- Bannière -->
+        <div class="card">
+          <div class="card-title">Image bannière (hero)</div>
+          <div class="banniere-zone">
+            <div class="banniere-preview" [class.banniere-preview--empty]="!bannierePreview">
+              <img *ngIf="bannierePreview" [src]="bannierePreview" alt="Bannière" />
+              <div class="banniere-placeholder" *ngIf="!bannierePreview">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color:#D0D0D0"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                <span>Aucune bannière</span>
+                <span class="hint-small">Recommandé : 1920×600px</span>
+              </div>
+            </div>
+            <div class="logo-btns">
+              <label class="btn-upload" for="banniere-input">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+                Choisir une image
+              </label>
+              <input id="banniere-input" type="file" accept="image/*" (change)="onBanniereSelected($event)" hidden />
+              <button class="btn-remove" *ngIf="bannierePreview" (click)="removeBanniere()">Supprimer</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="card">
+          <div class="card-title">Texte de présentation</div>
+          <div class="form-col">
+            <div class="form-group">
+              <label>Description du centre</label>
+              <textarea [(ngModel)]="centre.description" rows="5"
+                placeholder="Présentez votre centre commercial en quelques phrases. Ce texte sera affiché sur la page d'accueil."></textarea>
+              <span class="char-count">{{ centre.description?.length || 0 }} caractères</span>
+            </div>
+            <div class="form-group">
+              <label>Nombre de visiteurs</label>
+              <input type="text" [(ngModel)]="centre.nombreVisiteurs" placeholder="ex: 500 000 visiteurs / an" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         TAB : CHIFFRES CLÉS
+    ════════════════════════════════ -->
+    <div class="tab-content" *ngIf="activeTab==='chiffres'">
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title">Chiffres clés & atouts</div>
+          <button class="btn-add" (click)="addChiffre()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Ajouter
+          </button>
+        </div>
+        <p class="section-hint">Ces chiffres s'afficheront sur la page d'accueil du centre (ex: 120 boutiques, 500 000 visiteurs…)</p>
+
+        <div class="chiffres-empty" *ngIf="centre.chiffresEtAtouts.length === 0">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color:#D0D0D0"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          <p>Aucun chiffre clé. Cliquez sur "Ajouter" pour commencer.</p>
+        </div>
+
+        <div class="chiffres-list">
+          <div class="chiffre-item" *ngFor="let c of centre.chiffresEtAtouts; let i = index">
+            <div class="chiffre-icone-input">
+              <input type="text" [(ngModel)]="c.icone" placeholder="🏬" class="input-emoji" />
+            </div>
+            <div class="form-group" style="flex:1">
+              <label>Valeur</label>
+              <input type="text" [(ngModel)]="c.valeur" placeholder="ex: 120" />
+            </div>
+            <div class="form-group" style="flex:2">
+              <label>Label</label>
+              <input type="text" [(ngModel)]="c.label" placeholder="ex: boutiques" />
+            </div>
+            <button class="btn-remove-chiffre" (click)="removeChiffre(i)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+
+            <!-- Aperçu inline -->
+            <div class="chiffre-preview">
+              <span class="cp-icon">{{ c.icone }}</span>
+              <span class="cp-val">{{ c.valeur }}</span>
+              <span class="cp-label">{{ c.label }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         TAB : RÉSEAUX SOCIAUX
+    ════════════════════════════════ -->
+    <div class="tab-content" *ngIf="activeTab==='social'">
+      <div class="card">
+        <div class="card-title">Réseaux sociaux</div>
+        <p class="section-hint">Ces liens s'afficheront dans le footer de la page d'accueil.</p>
+        <div class="form-col">
+          <div class="form-group form-group--icon">
+            <label>Facebook</label>
+            <div class="input-icon-wrap">
+              <span class="input-prefix">facebook.com/</span>
+              <input type="text" [(ngModel)]="centre.facebook" placeholder="nom-de-votre-page" />
+            </div>
+          </div>
+          <div class="form-group form-group--icon">
+            <label>Instagram</label>
+            <div class="input-icon-wrap">
+              <span class="input-prefix">instagram.com/</span>
+              <input type="text" [(ngModel)]="centre.instagram" placeholder="nom-de-votre-compte" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

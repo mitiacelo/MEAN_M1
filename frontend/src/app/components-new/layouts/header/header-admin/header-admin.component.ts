@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../../services/auth.service';
+import { CentreService } from '../../../../services/centre.service';
 import { MaintenanceService } from '../../../../services/maintenance.service';
 import { NotificationService } from '../../../../services/notification.service';
 
@@ -12,33 +14,38 @@ import { NotificationService } from '../../../../services/notification.service';
   styleUrls: ['./header-admin.component.css']
 })
 export class AdminLayoutComponent implements OnInit {
-  centreName: string = 'Mall'; // Ajouté pour le template
-  pendingCount: number = 0;
-  urgentsCount: number = 0;
+  centreName   = '';
+  pendingCount = 0;
+  urgentsCount = 0;
 
   constructor(
+    private authService: AuthService,
+    private centreService: CentreService,
     private notificationService: NotificationService,
     private maintenanceService: MaintenanceService
   ) {}
 
   ngOnInit(): void {
-    this.notificationService.getAll().subscribe({
-      next: (notifs) => {
-        this.pendingCount = notifs.filter(n => n.status === 'nouveau').length;
-      },
-      error: (err) => console.error(err)
+    // Nom du centre → remplace "Mall" dans la sidebar
+    this.centreService.getCentre().subscribe({
+      next: c  => this.centreName = c.nom || '',
+      error: () => this.centreName = ''
     });
 
+    // Badge notifications en attente
+    this.notificationService.getAll().subscribe({
+      next: notifs => this.pendingCount = notifs.filter(n => n.status === 'nouveau').length,
+      error: err   => console.error(err)
+    });
+
+    // Badge tickets urgents non résolus
     this.maintenanceService.getStats().subscribe({
-      next: (stats) => {
-        this.urgentsCount = stats.urgents;
-      },
-      error: (err) => console.error(err)
+      next: stats => this.urgentsCount = stats.urgents,
+      error: err  => console.error(err)
     });
   }
 
   logout(): void {
-    // TODO: appeler AuthService.logout() puis rediriger
-    console.log('logout');
+    this.authService.logout();
   }
 }
