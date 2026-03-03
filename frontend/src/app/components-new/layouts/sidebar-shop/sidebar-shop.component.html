@@ -1,50 +1,130 @@
 <div class="shop-layout">
-  <aside class="sidebar">
 
+  <!-- Overlay mobile -->
+  <div class="sidebar-overlay"
+       [class.visible]="mobileOpen"
+       (click)="closeMobile()">
+  </div>
+
+  <!-- Top bar mobile -->
+  <div class="mobile-topbar">
+    <button class="hamburger" [class.open]="mobileOpen"
+            (click)="toggleMobile()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="topbar-brand">
+      {{ centreName }}<span class="brand-accent">.</span>
+    </span>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar"
+         [class.collapsed]="collapsed"
+         [class.mobile-open]="mobileOpen">
+
+    <!-- Toggle desktop -->
+    <button class="sidebar-toggle" (click)="toggleCollapse()" aria-label="Toggle sidebar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    </button>
+
+    <!-- Header -->
     <div class="sidebar-header">
-      <h2>{{ centreName || 'Mall' }}<span style="color:#FE8804">.</span></h2>
+      <h2>{{ centreName }}<span style="color:#FE8804">.</span></h2>
       <p>Bonjour {{ authService.currentUser?.firstname || 'Manager' }}</p>
     </div>
 
+    <!-- Nav -->
     <nav class="sidebar-nav">
-      <a routerLink="/" class="nav-item nav-home-minimal">⟵ Accueil</a>
 
-      <a routerLink="/dashboard-shop" routerLinkActive="active" class="nav-item">Dashboard</a>
+      <a routerLink="/" class="nav-item nav-home-minimal" (click)="closeMobile()">
+        <span class="nav-label">⟵ Accueil</span>
+        <span class="nav-tooltip">Accueil</span>
+      </a>
 
+      <a routerLink="/dashboard-shop" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+          </svg>
+        </span>
+        <span class="nav-label">Dashboard</span>
+        <span class="nav-tooltip">Dashboard</span>
+      </a>
+
+      <!-- Mes Salles -->
       <div class="sidebar-section">
         <h3>Mes Salles</h3>
         @if (shops.length === 0) {
           <p class="sidebar-empty">Aucune salle attribuée</p>
         } @else {
           @for (shop of shops; track shop._id) {
-            <a [routerLink]="['/salle-manager', shop._id]" routerLinkActive="active" class="nav-item shop-item">
-              {{ shop.name }}
+            <a [routerLink]="['/salle-manager', shop._id]"
+               routerLinkActive="active"
+               class="nav-item"
+               (click)="closeMobile()">
+              <span class="nav-label">{{ shop.name }}</span>
               <span class="shop-status" [ngClass]="shop.status">
                 {{ shop.status === 'actif' ? 'Actif' : 'Inactif' }}
               </span>
+              <span class="nav-tooltip">{{ shop.name }}</span>
             </a>
           }
         }
       </div>
 
+      <!-- Mes Boutiques -->
       <div class="sidebar-section">
-        <a routerLink="/mes-boutiques" routerLinkActive="active" class="nav-item">Mes Boutiques</a>
+        <h3>Gestion</h3>
+        <a routerLink="/mes-boutiques" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+            </svg>
+          </span>
+          <span class="nav-label">Mes Boutiques</span>
+          <span class="nav-tooltip">Mes Boutiques</span>
+        </a>
+
+        <a routerLink="/promotions" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+          </span>
+          <span class="nav-label">Promotions</span>
+          <span class="nav-tooltip">Promotions</span>
+        </a>
+
+        <a routerLink="/suivi-donnees" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>
+            </svg>
+          </span>
+          <span class="nav-label">Suivi des données</span>
+          <span class="nav-tooltip">Suivi des données</span>
+        </a>
       </div>
 
-      <div class="sidebar-section">
-        <a routerLink="/promotions" routerLinkActive="active" class="nav-item">Promotions</a>
-      </div>
-
-      <a routerLink="/suivi-donnees" routerLinkActive="active" class="nav-item">Suivi des données</a>
     </nav>
 
+    <!-- Footer -->
     <div class="sidebar-footer">
-      <button class="logout-btn" (click)="authService.logout()">Déconnexion</button>
+      <button class="logout-btn" (click)="authService.logout()">
+        <svg class="logout-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+        </svg>
+        <span class="logout-label">Déconnexion</span>
+      </button>
     </div>
 
   </aside>
 
+  <!-- Main -->
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
+
 </div>

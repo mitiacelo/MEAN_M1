@@ -2,25 +2,36 @@
   <app-header></app-header>
   <main>
 
-    <section class="hero"
-    [class.has-banniere]="!!centre?.banniere"
-    [style.backgroundImage]="centre?.banniere ? 'url(' + centre!.banniere + ')' : 'none'">
-  
-    <!-- Infos animées collées en bas -->
-    <div class="hero-bottom">
-      <p class="hero-catchphrase animate-slide-up" style="--delay: 0.15s" *ngIf="!centre?.description">
-        Découvrez le meilleur du shopping.&nbsp;
-        <strong class="highlight-pulse">Votre destination préférée commence ici.</strong>
-      </p>
-      <div class="hero-meta animate-slide-up" style="--delay: 0.3s"
-        *ngIf="centre?.heureOuverture || centre?.ville || centre?.telephone">
-        <span *ngIf="centre!.heureOuverture">{{ centre!.heureOuverture }}</span>
-        <span *ngIf="centre!.ville">{{ centre!.ville }}</span>
-        <span *ngIf="centre!.telephone">{{ centre!.telephone }}</span>
+    <section class="hero" [class.has-banniere]="!!centre?.banniere">
+
+      <!-- Desktop : background cover -->
+      <div class="hero-bg"
+           *ngIf="centre?.banniere"
+           [style.backgroundImage]="'url(' + centre!.banniere + ')'">
       </div>
-    </div>
-  
-  </section>
+
+      <!-- Mobile : vrai <img> qui prend sa hauteur naturelle, zéro espace blanc -->
+      <img class="hero-img"
+           *ngIf="centre?.banniere"
+           [src]="centre!.banniere"
+           [alt]="centre!.nom"
+           loading="eager" />
+
+      <!-- Infos animées collées en bas -->
+      <div class="hero-bottom">
+        <p class="hero-catchphrase animate-slide-up" style="--delay: 0.15s" *ngIf="!centre?.description">
+          Découvrez le meilleur du shopping.&nbsp;
+          <strong class="highlight-pulse">Votre destination préférée commence ici.</strong>
+        </p>
+        <div class="hero-meta animate-slide-up" style="--delay: 0.3s"
+          *ngIf="centre?.heureOuverture || centre?.ville || centre?.telephone">
+          <span *ngIf="centre!.heureOuverture">{{ centre!.heureOuverture }}</span>
+          <span *ngIf="centre!.ville">{{ centre!.ville }}</span>
+          <span *ngIf="centre!.telephone">{{ centre!.telephone }}</span>
+        </div>
+      </div>
+
+    </section>
 
     <div class="ticker-band">
       <div class="ticker-inner">
@@ -61,7 +72,6 @@
 
     <section class="sections-wrapper">
       <app-salle class="animate-fade-up"></app-salle>
-      <!-- Liste des boutiques filtrées -->
       <app-boutiques-list
         class="animate-fade-up"
         [boutiques]="filteredBoutiques">

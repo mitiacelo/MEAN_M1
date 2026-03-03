@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { Boutique, BoutiqueService } from '../../../services/boutique.service';
@@ -22,6 +22,9 @@ export class SidebarShopComponent implements OnInit {
   boutiques: Boutique[] = [];
   centreName = '';
 
+  collapsed  = false;
+  mobileOpen = false;
+
   constructor(
     private shopService: ShopService,
     private boutiqueService: BoutiqueService,
@@ -30,17 +33,15 @@ export class SidebarShopComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Nom du centre — cache d'abord, sinon appel API
     const cached = this.centreService.currentCentre;
     if (cached?.nom) {
       this.centreName = cached.nom;
     } else {
       this.centreService.getCentre().subscribe({
-        next: c  => this.centreName = c.nom || '',
+        next:  c  => this.centreName = c.nom || '',
         error: () => this.centreName = ''
       });
     }
-
     this.loadShopsAndBoutiques();
   }
 
@@ -53,7 +54,7 @@ export class SidebarShopComponent implements OnInit {
         this.shops = shops;
         shops.forEach(shop => {
           this.boutiqueService.getMyBoutique(user.id).subscribe({
-            next: boutique => {
+            next:  boutique => {
               this.boutiquesMap[shop._id] = boutique?.id_shop?._id === shop._id ? boutique : null;
             },
             error: () => this.boutiquesMap[shop._id] = null
@@ -69,13 +70,22 @@ export class SidebarShopComponent implements OnInit {
     const user = this.authService.currentUser;
     if (!user?.id) return;
     this.boutiqueService.getMyBoutiques(user.id).subscribe({
-      next: boutiques => this.boutiques = boutiques,
-      error: err => console.error('Erreur chargement boutiques', err)
+      next:  boutiques => this.boutiques = boutiques,
+      error: err       => console.error('Erreur chargement boutiques', err)
     });
   }
 
   selectShop(shop: Shop): void {
-    this.selectedShop = shop;
+    this.selectedShop     = shop;
     this.selectedBoutique = this.boutiquesMap[shop._id] || null;
+  }
+
+  toggleCollapse(): void { this.collapsed  = !this.collapsed;  }
+  toggleMobile():   void { this.mobileOpen = !this.mobileOpen; }
+  closeMobile():    void { this.mobileOpen = false; }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(e: Event): void {
+    if ((e.target as Window).innerWidth > 768) this.mobileOpen = false;
   }
 }
