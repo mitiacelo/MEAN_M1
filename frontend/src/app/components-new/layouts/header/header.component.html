@@ -1,6 +1,6 @@
-<header class="top-bar"> 
+<header class="top-bar">
   <div class="logo">
-    <h1>Plaza</h1>
+    <h1>{{ centreName || 'Plaza' }}</h1>
   </div>
 
   <div class="auth-buttons">
@@ -10,17 +10,14 @@
     } @else {
       <span class="welcome">Bonjour {{ authService.currentUser?.firstname }}</span>
 
-      <!-- ADMIN : uniquement le bouton dashboard -->
       @if (authService.hasRole('admin')) {
         <button class="my-shop-btn" routerLink="/dashboard">Dashboard</button>
       }
 
-      <!-- MANAGER : bouton ma boutique -->
       @if (authService.hasRole('manager')) {
         <button class="my-shop-btn" routerLink="/dashboard-shop">Ma boutique</button>
       }
 
-      <!-- USER uniquement : commandes, panier, favoris -->
       @if (!authService.hasRole('admin') && !authService.hasRole('manager')) {
         <button routerLink="/orders">Mes commandes</button>
         <button routerLink="/cart">Mon panier</button>
