@@ -39,6 +39,7 @@ app.use('/loyers', require('./routes/loyerRoutes'));
 app.use('/maintenance', require('./routes/maintenanceRoutes'));
 app.use('/favorites', require('./routes/favoriteRoutes'));
 app.use('/centre', require('./routes/centreRoutes')); 
+app.use('/promotions', require('./routes/promotionRoutes'));
 
 // Lancer le serveur (Render peut utiliser PORT dynamique)
 const PORT = process.env.PORT || 5000;

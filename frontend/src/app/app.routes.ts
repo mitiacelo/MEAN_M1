@@ -124,6 +124,12 @@ export const routes: Routes = [
           import('./pages-new/boutique-centre/admin-boutique/boutique-manager/boutique-manager.component')
             .then(m => m.BoutiqueManagerComponent)
       },
+      {
+        path: 'promotions',
+        loadComponent: () =>
+          import('./pages-new/boutique-centre/admin-boutique/promotions/promotions.component')
+            .then(m => m.PromotionsComponent)
+      },
       { path: '', redirectTo: 'dashboard-shop', pathMatch: 'full' }
     ]
   },

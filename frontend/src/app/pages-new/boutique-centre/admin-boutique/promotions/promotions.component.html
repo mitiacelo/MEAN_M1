@@ -1,0 +1,80 @@
+<div class="promotions-container">
+    <h2>Gestion des Promotions</h2>
+  
+    <!-- Filtre Boutique -->
+    <div class="form-group">
+      <label>Boutique :</label>
+      <select [(ngModel)]="selectedBoutiqueId" (change)="onBoutiqueChange(selectedBoutiqueId)">
+        <option value="" disabled>Sélectionner une boutique</option>
+        <option *ngFor="let b of boutiques" [value]="b._id">{{ b.name }}</option>
+      </select>
+    </div>
+  
+    <!-- Formulaire création promotion -->
+    <div class="form-promo">
+      <h3>Créer une promotion</h3>
+  
+      <p class="success" *ngIf="success">{{ success }}</p>
+      <p class="error" *ngIf="error">{{ error }}</p>
+  
+      <div class="form-group">
+        <label>Produit :</label>
+        <select [(ngModel)]="newPromotion.product" name="product" [disabled]="!products.length">
+          <option value="" disabled>Sélectionner un produit</option>
+          <option *ngFor="let p of products" [value]="p._id">{{ p.name }}</option>
+        </select>
+      </div>
+  
+      <div class="form-group">
+        <label>Type de remise :</label>
+        <select [(ngModel)]="newPromotion.discountType" name="discountType">
+          <option value="percentage">Pourcentage (%)</option>
+          <option value="fixed">Montant fixe</option>
+        </select>
+      </div>
+  
+      <div class="form-group">
+        <label>Valeur :</label>
+        <input type="number" [(ngModel)]="newPromotion.discountValue" name="discountValue" min="0"/>
+      </div>
+  
+      <div class="form-group">
+        <label>Date début :</label>
+        <input type="date" [(ngModel)]="newPromotion.startDate" name="startDate"/>
+      </div>
+  
+      <div class="form-group">
+        <label>Date fin :</label>
+        <input type="date" [(ngModel)]="newPromotion.endDate" name="endDate"/>
+      </div>
+  
+      <button (click)="createPromotion()">Créer la promotion</button>
+    </div>
+  
+    <!-- Liste promotions -->
+    <div class="list-promotions">
+      <h3>Promotions existantes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Type</th>
+            <th>Valeur</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Active</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of promotions">
+            <td>{{ p.productData?.name || 'Produit supprimé' }}</td>
+            <td>{{ p.discountType }}</td>
+            <td>{{ p.discountValue }}</td>
+            <td>{{ p.startDate | date:'shortDate' }}</td>
+            <td>{{ p.endDate | date:'shortDate' }}</td>
+            <td>{{ p.isActive ? 'Oui' : 'Non' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

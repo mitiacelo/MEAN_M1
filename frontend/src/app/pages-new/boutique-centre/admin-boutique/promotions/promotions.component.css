@@ -1,0 +1,56 @@
+.promotions-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  input, select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .success {
+    color: green;
+  }
+  
+  .error {
+    color: red;
+  }
+  
+  .list-promotions {
+    margin-top: 30px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  th {
+    background-color: #f4f4f4;
+  }
