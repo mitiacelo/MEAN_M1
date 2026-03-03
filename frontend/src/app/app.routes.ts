@@ -79,10 +79,16 @@ export const routes: Routes = [
           import('./pages-new/admin-centre/maintenance/maintenance.component').then(m => m.MaintenanceComponent)
       },
       {
-        path: 'parametres',                                           // ← NOUVEAU
+        path: 'parametres',
         loadComponent: () =>
           import('./pages-new/admin-centre/centre/centre.component')
             .then(m => m.ParametresCentreComponent)
+      },
+      // ✅ DÉPLACÉ ICI depuis le bloc customerGuard
+      {
+        path: 'shop/:id/admin',
+        loadComponent: () =>
+          import('./pages-new/admin-centre/shop/shop-edit/shop-edit.component').then(m => m.ShopEditComponent)
       }
     ]
   },
@@ -177,11 +183,6 @@ export const routes: Routes = [
     canActivate: [customerGuard],
     loadComponent: () =>
       import('./pages-new/admin-centre/contract/contract.component').then(m => m.MonContratComponent)
-  },
-  {
-    path: 'shop/:id/admin',
-    canActivate: [customerGuard],
-    loadComponent: () =>
-      import('./pages-new/admin-centre/shop/shop-edit/shop-edit.component').then(m => m.ShopEditComponent)
   }
+  // ✅ shop/:id/admin retiré d'ici — déplacé dans le bloc adminGuard ci-dessus
 ];
