@@ -1,27 +1,14 @@
-const express = require('express');
-const router  = express.Router();
-const Centre  = require('../models/Centre');
-const multer  = require('multer');
-const path    = require('path');
-const fs      = require('fs');
+const express    = require('express');
+const router     = express.Router();
+const multer     = require('multer');
+const fs         = require('fs');
+const Centre     = require('../models/Centre');
+const cloudinary = require('../config/cloudinary'); // meme config que productRoutes
 
-// ── Multer helper ─────────────────────────────────
-const makeUpload = (subdir) => multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      const dir = `uploads/${subdir}`;
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      cb(null, dir);
-    },
-    filename: (req, file, cb) => cb(null, subdir + path.extname(file.originalname))
-  }),
-  limits: { fileSize: 4 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    cb(null, /jpeg|jpg|png|svg|webp/.test(path.extname(file.originalname).toLowerCase()));
-  }
-});
+// Multer memoire identique a productRoutes
+const upload = multer({ dest: 'uploads/' });
 
-// ── GET /centre ───────────────────────────────────
+// GET /centre
 router.get('/', async (req, res) => {
   try {
     let centre = await Centre.findOne();
@@ -32,7 +19,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ── PUT /centre ── mise à jour infos texte ─────────
+// PUT /centre
 router.put('/', async (req, res) => {
   try {
     const fields = [
@@ -50,28 +37,42 @@ router.put('/', async (req, res) => {
   }
 });
 
-// ── POST /centre/logo ─────────────────────────────
-router.post('/logo', makeUpload('logos').single('logo'), async (req, res) => {
+// POST /centre/logo
+router.post('/logo', upload.single('logo'), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ message: 'Aucun fichier reçu' });
+    if (!req.file) return res.status(400).json({ message: 'Aucun fichier recu' });
+
+    const result = await cloudinary.uploader.upload(req.file.path, { folder: 'centre' });
+    fs.unlinkSync(req.file.path);
+
     let centre = await Centre.findOne();
     if (!centre) centre = new Centre({ nom: 'Mon Centre' });
-    centre.logo = `/uploads/logos/${req.file.filename}`;
+    centre.logo = result.secure_url;
     await centre.save();
+
     res.json({ logo: centre.logo, centre });
-  } catch (err) { res.status(500).json({ message: err.message }); }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-// ── POST /centre/banniere ─────────────────────────
-router.post('/banniere', makeUpload('bannieres').single('banniere'), async (req, res) => {
+// POST /centre/banniere
+router.post('/banniere', upload.single('banniere'), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ message: 'Aucun fichier reçu' });
+    if (!req.file) return res.status(400).json({ message: 'Aucun fichier recu' });
+
+    const result = await cloudinary.uploader.upload(req.file.path, { folder: 'centre' });
+    fs.unlinkSync(req.file.path);
+
     let centre = await Centre.findOne();
     if (!centre) centre = new Centre({ nom: 'Mon Centre' });
-    centre.banniere = `/uploads/bannieres/${req.file.filename}`;
+    centre.banniere = result.secure_url;
     await centre.save();
+
     res.json({ banniere: centre.banniere, centre });
-  } catch (err) { res.status(500).json({ message: err.message }); }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;

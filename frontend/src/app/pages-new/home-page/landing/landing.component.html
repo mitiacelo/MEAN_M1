@@ -1,28 +1,92 @@
 <div class="landing-wrapper">
   <app-header></app-header>
+  <main>
 
-  <!-- Contenu principal -->
-  <main class="hero">
-    <div class="hero-bg-gradient"></div> <!-- fond interactif subtil -->
-
-    <div class="hero-content">
-      <h1 class="main-title animate-fade-up">Mall</h1>
-      <p class="main-subtitle animate-fade-up" style="animation-delay: 0.3s;">Le cœur battant d'Antananarivo</p>
-
-      <p class="catchphrase animate-fade-up" style="animation-delay: 0.6s;">
-        Découvrez l’expérience shopping et lifestyle la plus moderne de la capitale.<br>
-        Plus de 120 boutiques, restaurants, cinéma, espaces de loisirs…<br>
+    <section class="hero"
+    [class.has-banniere]="!!centre?.banniere"
+    [style.backgroundImage]="centre?.banniere ? 'url(' + centre!.banniere + ')' : 'none'">
+  
+    <!-- Infos animées collées en bas -->
+    <div class="hero-bottom">
+      <p class="hero-catchphrase animate-slide-up" style="--delay: 0.15s" *ngIf="!centre?.description">
+        Découvrez le meilleur du shopping.&nbsp;
         <strong class="highlight-pulse">Votre destination préférée commence ici.</strong>
       </p>
+      <div class="hero-meta animate-slide-up" style="--delay: 0.3s"
+        *ngIf="centre?.heureOuverture || centre?.ville || centre?.telephone">
+        <span *ngIf="centre!.heureOuverture">{{ centre!.heureOuverture }}</span>
+        <span *ngIf="centre!.ville">{{ centre!.ville }}</span>
+        <span *ngIf="centre!.telephone">{{ centre!.telephone }}</span>
+      </div>
+    </div>
+  
+  </section>
 
-      <!-- Optionnel : bouton CTA si tu veux en ajouter -->
-      <!-- <button class="btn-cta animate-fade-up" style="animation-delay: 0.9s;">Découvrir maintenant</button> -->
+    <div class="ticker-band">
+      <div class="ticker-inner">
+        <span class="ticker-item">Shopping</span>
+        <span class="ticker-item">Loisirs</span>
+        <span class="ticker-item">Restauration</span>
+        <span class="ticker-item">{{ centre?.nom || 'Centre Commercial' }}</span>
+        <span class="ticker-item">Services</span>
+        <span class="ticker-item">Boutiques</span>
+        <span class="ticker-item">{{ centre?.ville || 'Antananarivo' }}</span>
+        <span class="ticker-item">Shopping</span>
+        <span class="ticker-item">Loisirs</span>
+        <span class="ticker-item">Restauration</span>
+        <span class="ticker-item">{{ centre?.nom || 'Centre Commercial' }}</span>
+        <span class="ticker-item">Services</span>
+        <span class="ticker-item">Boutiques</span>
+        <span class="ticker-item">{{ centre?.ville || 'Antananarivo' }}</span>
+      </div>
     </div>
 
-    <!-- Sections enfants -->
-    <div class="sections-wrapper">
-      <app-boutiques-list class="animate-fade-up" style="animation-delay: 1.2s;"></app-boutiques-list>
-      <app-salle class="animate-fade-up" style="animation-delay: 1s;"></app-salle>
+    <section class="chiffres-section" *ngIf="centre?.chiffresEtAtouts?.length">
+      <div class="chiffres-grid">
+        <div class="chiffre-card" *ngFor="let c of centre!.chiffresEtAtouts">
+          <span class="chiffre-icone">{{ c.icone }}</span>
+          <span class="chiffre-valeur">{{ c.valeur }}</span>
+          <span class="chiffre-label">{{ c.label }}</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="intro-band" *ngIf="centre?.description">
+      <div class="intro-band-inner">
+        <span class="intro-band-label">Notre mission</span>
+        <div class="intro-band-divider"></div>
+        <span class="intro-band-text">{{ centre!.description }}</span>
+      </div>
     </div>
+
+    <section class="sections-wrapper">
+      <app-salle class="animate-fade-up"></app-salle>
+      <app-boutiques-list class="animate-fade-up"></app-boutiques-list>
+    </section>
+
+    <footer class="landing-footer" *ngIf="centre">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="footer-nom">{{ centre.nom }}<span class="footer-dot">.</span></span>
+          <p *ngIf="centre.slogan">{{ centre.slogan }}</p>
+        </div>
+        <div class="footer-contact">
+          <div class="footer-section-title">Nous trouver</div>
+          <p *ngIf="centre.adresse || centre.ville">{{ centre.adresse }} {{ centre.ville }}</p>
+          <p *ngIf="centre.telephone">{{ centre.telephone }}</p>
+          <p *ngIf="centre.email">{{ centre.email }}</p>
+          <p *ngIf="centre.heureOuverture">{{ centre.heureOuverture }}</p>
+        </div>
+        <div *ngIf="centre.facebook || centre.instagram">
+          <div class="footer-section-title">Nous suivre</div>
+          <div class="footer-social">
+            <a *ngIf="centre.facebook" [href]="'https://facebook.com/' + centre.facebook" target="_blank" class="social-link">Facebook</a>
+            <a *ngIf="centre.instagram" [href]="'https://instagram.com/' + centre.instagram" target="_blank" class="social-link">Instagram</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copy">&copy; {{ centre.anneeFondation || 2024 }} {{ centre.nom }}</div>
+    </footer>
+
   </main>
 </div>
